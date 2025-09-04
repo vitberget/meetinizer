@@ -7,9 +7,10 @@ edition = "2024"
 anyhow = "1.0.99"
 axum = { version = "0.8.4", features = ["macros"] }
 clap = { version = "4.5.47", features = ["derive"] }
+clap_complete = "4.5.57"
 config = "0.15.15"
 jsonwebtoken = "9.3.1"
 otp = "0.2.0"
 # refinery = { version = "0.8.16", features = ["rusqlite"] }
 # rusqlite = { version = "0.37.0" }
-tokio = { version = "1.47.1", features = ["macros"] }
+tokio = { version = "1.47.1", features = ["macros", "rt-multi-thread"] }
