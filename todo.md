@@ -4,6 +4,9 @@
 
 - [ ] Helm
 - [ ] Docker compose
+- [ ] CI/CD
+    - [ ] Woodpecker
+    - [ ] GitHub
 
 ## Frontend
 
