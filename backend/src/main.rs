@@ -8,7 +8,7 @@ pub mod server;
 pub mod structs;
 
 #[tokio::main]
-pub async fn main() {
+pub async fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
     match cli.command {
@@ -17,5 +17,7 @@ pub async fn main() {
         cli::CliCommands::PrintDefaultLogConfig => todo!(),
         cli::CliCommands::Completion { shell } => print_completions(shell)
     }
+
+    Ok(())
 }
 
