@@ -3,28 +3,35 @@ use std::collections::HashSet;
 use anyhow::ensure;
 use chrono::{DateTime, Local};
 use serde::Serialize;
+use utoipa::ToSchema;
 use uuid::Uuid;
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, ToSchema)]
 pub struct User {
     pub name: String,
     pub email: String
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, ToSchema)]
 pub struct Slot {
     pub start: DateTime<Local>,
     pub end: DateTime<Local>,
 }
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, ToSchema)]
+pub struct Vote {
+    pub user: User,
+    pub slot: Slot
+}
+
+#[derive(Clone, Debug, Serialize, ToSchema)]
 pub struct Meeting {
     id: Uuid,
     name: String,
     comment: String,
     slots: HashSet<Slot>,
     users: HashSet<User>,
-    votes: HashSet<(User, Slot)>
+    votes: HashSet<Vote>
 }
 
 impl Meeting {
@@ -53,7 +60,7 @@ impl Meeting {
 
     pub fn remove_user(&mut self, user: User) -> anyhow::Result<()> { 
         let has_vote = self.votes.iter()
-            .any(|(vote_user, _)| vote_user == &user);
+            .any(|vote| vote.user == user);
         ensure!(!has_vote, "User has votes");
 
         self.users.remove(&user);
@@ -62,7 +69,7 @@ impl Meeting {
 
     pub fn remove_slot(&mut self, slot: Slot) -> anyhow::Result<()> { 
         let has_vote = self.votes.iter()
-            .any(|(_, vote_slot)| vote_slot == &slot);
+            .any(|vote| vote.slot == slot);
         ensure!(!has_vote, "Slot has votes");
 
         self.slots.remove(&slot);
@@ -73,12 +80,12 @@ impl Meeting {
         ensure!(self.users.contains(&user), "User not in list of users");
         ensure!(self.slots.contains(&slot), "Slot not in list of slots");
 
-        self.votes.insert((user, slot));
+        self.votes.insert(Vote { user, slot });
 
         Ok(())
     }
 
-    pub fn remove_vote(&mut self, user: User, slot:Slot) {
-        self.votes.remove(&(user, slot));
+    pub fn remove_vote(&mut self, vote: &Vote) {
+        self.votes.remove(vote);
     }
 }
