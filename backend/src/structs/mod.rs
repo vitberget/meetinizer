@@ -12,6 +12,15 @@ pub struct User {
     pub email: String
 }
 
+impl User {
+    pub fn new(name: &str, email: &str) -> Self {
+        Self {
+            name: name.to_owned(),
+            email: email. to_owned()
+        }
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, ToSchema)]
 pub struct Slot {
     pub start: DateTime<Local>,
@@ -20,7 +29,7 @@ pub struct Slot {
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, ToSchema)]
 pub struct Vote {
-    pub user: User,
+    pub user_email: String,
     pub slot: Slot
 }
 
@@ -60,7 +69,7 @@ impl Meeting {
 
     pub fn remove_user(&mut self, user: User) -> anyhow::Result<()> { 
         let has_vote = self.votes.iter()
-            .any(|vote| vote.user == user);
+            .any(|vote| vote.user_email == user.email);
         ensure!(!has_vote, "User has votes");
 
         self.users.remove(&user);
@@ -80,7 +89,7 @@ impl Meeting {
         ensure!(self.users.contains(&user), "User not in list of users");
         ensure!(self.slots.contains(&slot), "Slot not in list of slots");
 
-        self.votes.insert(Vote { user, slot });
+        self.votes.insert(Vote { user_email: user.email, slot });
 
         Ok(())
     }
