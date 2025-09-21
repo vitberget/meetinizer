@@ -6,6 +6,7 @@ use crate::server::start_server;
 pub mod cli;
 pub mod server;
 pub mod structs;
+pub mod config;
 
 #[tokio::main]
 pub async fn main() -> anyhow::Result<()> {
