@@ -3,18 +3,18 @@
 ## Backend
 
 * Rust 
-* Sqlite
-* Dockerfile
+* Sqlite?
 
 ## Frontend
 
-* Clojurescript frontend
-* Dockerfile
+* Clojurescript
+* Replicant
+* Figwheel main
 
 ## Auth
 
 * One admin password
-* Via mail - code
+* Via mail - code / HMAC thingie
 
 ## Options
 
