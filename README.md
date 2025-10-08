@@ -1,8 +1,14 @@
 # Meetinizer
 
-* Rust backend 
-* Clojurescript frontend
+## Backend
+
+* Rust 
 * Sqlite
+* Dockerfile
+
+## Frontend
+
+* Clojurescript frontend
 * Dockerfile
 
 ## Auth
