@@ -3,6 +3,7 @@ use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
 
 pub mod db;
+pub mod admin;
 
 pub fn login_router() -> OpenApiRouter {
     OpenApiRouter::new()

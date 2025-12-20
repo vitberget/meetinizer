@@ -1,6 +1,7 @@
 use clap::Parser as _;
 
 use crate::cli::{print_completions, Cli};
+use crate::server::login::admin::generate_admin_hash;
 use crate::server::start_server;
 
 pub mod cli;
@@ -14,6 +15,7 @@ pub async fn main() -> anyhow::Result<()> {
 
     match cli.command {
         cli::CliCommands::Serve => start_server().await?,
+        cli::CliCommands::GenerateAdminHash => generate_admin_hash(),
         cli::CliCommands::PrintDefaultConfig => todo!(),
         cli::CliCommands::PrintDefaultLogConfig => todo!(),
         cli::CliCommands::Completion { shell } => print_completions(shell)

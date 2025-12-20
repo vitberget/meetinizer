@@ -6,6 +6,12 @@ pub fn get_bind() -> anyhow::Result<String> {
     Ok(bind)
 }
 
+pub fn get_admin_hash() -> anyhow::Result<String> {
+    let config = get_config()?;
+    let hash = config.get_string("admin.hash")?;
+    Ok(hash)
+}
+
 fn get_config() -> anyhow::Result<Config> {
     let config = Config::builder()
         .add_source(config::File::with_name("settings.toml"))

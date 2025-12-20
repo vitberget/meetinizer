@@ -15,6 +15,9 @@ pub enum CliCommands {
     /// Start the server
     Serve,
 
+    /// Generate admin password hash
+    GenerateAdminHash,
+
     /// Print the default configuration to std out
     PrintDefaultConfig,
     /// Print the default logging configuration to std out
