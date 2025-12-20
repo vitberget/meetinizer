@@ -39,27 +39,32 @@ pub async fn api_request_login(Path((id,email)): Path<(String,String)>) -> Strin
 #[utoipa::path(
     get,
     tag = "LoginUser",
-    path = "/{id}/{email}/{body}",
+    path = "/{id}/{email}/{token}",
     responses(
         (status = 200, description = "Meeting found successfully"),
         (status = NOT_FOUND, description = "Meeting was not found")
     ),
     params(
-        ("id" = String, Path, description = "Meeting id to login to"),
+        ("meeting" = String, Path, description = "Meeting id to login to"),
     )
 )]
-pub async fn api_attempt_login(Path((id, email, body)): Path<(String, String, String)>) -> Result<(CookieJar, Redirect), StatusCode> {
+pub async fn api_attempt_login(Path((meeting, email, token)): Path<(String, String, String)>) -> Result<(CookieJar, Redirect), StatusCode> {
     println!("fkdlsjfkdls");
-    if let Ok(token) = db::attempt_login(&id, &email, &body).await {
-        let jar = CookieJar::new();
+    if let Ok(token) = db::attempt_login(&meeting, &email, &token).await {
 
-        let cookie = Cookie::build(("login", token))
-            .path(format!("/api/meeting/{id}"))
-            .http_only(true);
+        let path = format!("/api/meeting/{meeting}");
+        let redirect = Redirect::to(&format!("/api/meeting/login/{meeting}"));
 
-        let jar = jar.add(cookie);
+        let jwt_cookie = Cookie::build(("login", token)).path(path.to_owned()).http_only(true);
+        let meeting_cookie = Cookie::build(("meeting", meeting)).path(path.to_owned());
+        let email_cookie = Cookie::build(("email", email)).path(path.to_owned());
 
-        Ok((jar, Redirect::to(&format!("/api/meeting/login/{id}"))))
+        let jar = CookieJar::new()
+            .add(jwt_cookie)
+            .add(meeting_cookie)
+            .add(email_cookie);
+
+        Ok((jar, redirect))
     } else {
         Err(StatusCode::UNAUTHORIZED)
     }
