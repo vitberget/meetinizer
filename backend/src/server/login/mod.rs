@@ -2,11 +2,13 @@ use axum::extract::Path;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
 
+pub mod db;
+
 pub fn login_router() -> OpenApiRouter {
     OpenApiRouter::new()
         .routes(routes!(
-                request_login,
-                attempt_login
+                api_request_login,
+                api_attempt_login
         ))
 }
 
@@ -21,8 +23,11 @@ pub fn login_router() -> OpenApiRouter {
         ("id" = Uuid, Path, description = "Meeting id to login to"),
     )
 )]
-pub async fn request_login(Path((id,email)): Path<(String,String)>) -> String {
-    format!("id {id}, email {email}")
+pub async fn api_request_login(Path((id,email)): Path<(String,String)>) -> String {
+    // format!("id {id}, email {email}")
+    let valid = db::register_login(&id, &email).await.unwrap();
+    format!("{valid}")
+
 }
 
 #[utoipa::path(
@@ -36,6 +41,8 @@ pub async fn request_login(Path((id,email)): Path<(String,String)>) -> String {
         ("id" = Uuid, Path, description = "Meeting id to login to"),
     )
 )]
-pub async fn attempt_login(Path((id,email)): Path<(String,String)>, body: String) -> String {
-    format!("id {id}, email {email}, body {body}")
+pub async fn api_attempt_login(Path((id,email)): Path<(String,String)>, body: String) -> String {
+    db::attempt_login(&id, &email, &body).await.unwrap()
 }
+
+
