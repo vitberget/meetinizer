@@ -3,15 +3,18 @@ use utoipa_swagger_ui::SwaggerUi;
 
 use crate::config::get_bind;
 use crate::server::admin::admin_router;
+use crate::server::login::login_router;
 use crate::server::user::user_router;
 
 pub mod admin;
 pub mod user;
+pub mod login;
 
 pub async fn start_server() -> anyhow::Result<()> {
     let (router, mut api) = OpenApiRouter::new()
         .nest("/api/admin/", admin_router())
         .nest("/api/user/", user_router())
+        .nest("/api/login/", login_router())
         .split_for_parts();
 
     api.info.title = "hello".to_owned();
