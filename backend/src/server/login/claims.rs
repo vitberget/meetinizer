@@ -25,6 +25,8 @@ impl MeetingEmailClaims {
             &EncodingKey::from_secret(secret.as_ref())
             )?)
     }
+    pub fn get_meeting(&self) -> &str { &self.meeting }
+    pub fn get_email(&self) -> &str { &self.email }
 }
 
 impl TryFrom<(&str, &str)> for MeetingEmailClaims {

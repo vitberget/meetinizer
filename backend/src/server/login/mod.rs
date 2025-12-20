@@ -27,7 +27,7 @@ pub fn login_attempt_router() -> OpenApiRouter {
         (status = NOT_FOUND, description = "Meeting was not found")
     ),
     params(
-        ("id" = Uuid, Path, description = "Meeting id to login to"),
+        ("id" = String, Path, description = "Meeting id to login to"),
     )
 )]
 pub async fn api_request_login(Path((id,email)): Path<(String,String)>) -> String {
@@ -45,10 +45,11 @@ pub async fn api_request_login(Path((id,email)): Path<(String,String)>) -> Strin
         (status = NOT_FOUND, description = "Meeting was not found")
     ),
     params(
-        ("id" = Uuid, Path, description = "Meeting id to login to"),
+        ("id" = String, Path, description = "Meeting id to login to"),
     )
 )]
 pub async fn api_attempt_login(Path((id, email, body)): Path<(String, String, String)>) -> Result<(CookieJar, Redirect), StatusCode> {
+    println!("fkdlsjfkdls");
     if let Ok(token) = db::attempt_login(&id, &email, &body).await {
         let jar = CookieJar::new();
 

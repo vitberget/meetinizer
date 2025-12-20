@@ -41,6 +41,7 @@ pub async fn register_login(meeting: &str, email: &str) -> anyhow::Result<i64> {
 
 
 pub async fn attempt_login(meeting: &str, email: &str, secret: &str) -> anyhow::Result<String> {
+    println!("attempt_login");
     let mut lock = FAKE_DB.lock().await;
     let wee = lock.iter()
         .find(|login| login.meeting == meeting && login.email == email && login.secret == secret);

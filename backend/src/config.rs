@@ -15,6 +15,7 @@ pub fn get_admin_hash() -> anyhow::Result<String> {
 fn get_config() -> anyhow::Result<Config> {
     let config = Config::builder()
         .add_source(config::File::with_name("settings.toml"))
+        .add_source(config::Environment::with_prefix("MEETINIZER").separator("_"))
         .build()?;
 
     Ok(config)

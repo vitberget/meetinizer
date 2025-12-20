@@ -4,16 +4,16 @@ use utoipa_swagger_ui::SwaggerUi;
 use crate::config::get_bind;
 use crate::server::admin::admin_router;
 use crate::server::login::{login_attempt_router, login_request_router};
-use crate::server::user::user_router;
+use crate::server::meeting::meeting_router;
 
 pub mod admin;
-pub mod user;
+pub mod meeting;
 pub mod login;
 
 pub async fn start_server() -> anyhow::Result<()> {
     let (router, mut api) = OpenApiRouter::new()
         .nest("/api/admin/", admin_router())
-        .nest("/api/meeting/", user_router())
+        .nest("/api/meeting/", meeting_router())
         .nest("/api/login/attempt/", login_attempt_router())
         .nest("/api/login/request/", login_request_router())
         .split_for_parts();
