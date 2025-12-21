@@ -23,19 +23,14 @@ pub enum CliCommands {
     /// Print the default logging configuration to std out
     PrintDefaultLogConfig,
 
-    // /// User manipulation
-    // User {
-    //     #[clap(subcommand)]
-    //     user_command: UserCommands,
-    // },
     /// Shell completion
     Completion {
         shell: Shell
     }
 }
 
-pub fn print_completions<G: Generator>(r#gen: G) {
+pub fn print_completions<G: Generator>(shell: G) {
     let mut cmd = Cli::command();
     let name = cmd.get_name().to_string();
-    generate(r#gen, &mut cmd, name, &mut io::stdout());
+    generate(shell, &mut cmd, name, &mut io::stdout());
 }
