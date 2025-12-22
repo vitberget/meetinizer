@@ -1,5 +1,8 @@
 # Meetinizer
 
+* [backend/README.md](backend/README.md)
+* [frontend/README.md](frontend/README.md)
+
 ## Security
 
 Should I trust you/this project? -- Of course not. 
@@ -19,23 +22,19 @@ Login via email, to verify that the emails are correct and up to date.
 
 Admin login in a secure way, create meetings etc.
 
-## Backend
+### Auth
 
-* Rust 
-* Sqlite?
+For normal users:
 
-## Frontend
-
-* Clojurescript
-* Replicant
-* Figwheel main
-
-## Auth
-
-* One admin password
+* One admin password 
 * Via mail - code / HMAC thingie
 
-## Options
+For admin user:
+
+* Store argon2 hash somewhere
+* Onetime passwords in log?
+
+### Options
 
 * Day
     * Multiday choise over multiple month calendar
