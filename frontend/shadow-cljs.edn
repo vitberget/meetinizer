@@ -1,20 +1,10 @@
-;; shadow-cljs configuration
-{;:source-paths
- ; ["src"]
- ; ["src/dev"
- ;  "src/main"
- ;  "src/test"]
-
- ; :dependencies
- ; []
-
- :deps {}
+{ :deps {}
 
  :dev-http {9000 ["resources/public" "classpath:public"]}
 
  :builds
  {:meetinizer
   {:target :browser
-   :modules {:main {:init-fn meetinizer.main/main}}
+   :modules {:main {:init-fn meetinizer.main/init!}}
    :dev {:output-dir "resources/public/app-js"}}}
  }
