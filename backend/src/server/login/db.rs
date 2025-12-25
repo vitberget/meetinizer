@@ -6,7 +6,7 @@ use chrono::{DateTime, Duration, Utc};
 use tokio::sync::Mutex;
 use uuid::Uuid;
 
-use crate::server::login::claims::MeetingEmailClaims;
+use crate::{config::get_host, server::login::claims::MeetingEmailClaims};
 
 #[derive(Debug)]
 pub struct Login {
@@ -22,7 +22,7 @@ pub async fn register_login(meeting: &str, email: &str) -> anyhow::Result<i64> {
     println!("register_login {meeting} {email}");
 
     const VALID_TIME: Duration = Duration::minutes(15);
-    let secret = general_purpose::STANDARD_NO_PAD.encode(Uuid::new_v4().to_bytes_le());
+    let secret = Uuid::new_v4().to_string();
     let valid_until = Utc::now() + VALID_TIME;
 
     let login = Login {
@@ -32,7 +32,14 @@ pub async fn register_login(meeting: &str, email: &str) -> anyhow::Result<i64> {
         valid_until,
     };
 
-    println!(" Login {login:?}");
+    let host = get_host()?;
+
+    println!("  Login {login:?}");
+    println!("  Login mail: {host}api/login/attempt/{meeting}/{email}/{secret}",
+        meeting = urlencoding::encode(meeting),
+        email = urlencoding::encode(email),
+        secret = urlencoding::encode(&secret),
+        );
 
     FAKE_DB.lock().await.push(login);
 

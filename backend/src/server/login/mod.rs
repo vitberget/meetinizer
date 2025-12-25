@@ -49,11 +49,11 @@ pub async fn api_request_login(Path((id,email)): Path<(String,String)>) -> Strin
     )
 )]
 pub async fn api_attempt_login(Path((meeting, email, token)): Path<(String, String, String)>) -> Result<(CookieJar, Redirect), StatusCode> {
-    println!("fkdlsjfkdls");
+    println!("api_attempt_login");
     if let Ok(token) = db::attempt_login(&meeting, &email, &token).await {
 
         let path = format!("/api/meeting/{meeting}");
-        let redirect = Redirect::to(&format!("/api/meeting/login/{meeting}"));
+        let redirect = Redirect::to(&format!("/meet/{meeting}"));
 
         let jwt_cookie = Cookie::build(("login", token)).path(path.to_owned()).http_only(true);
         let meeting_cookie = Cookie::build(("meeting", meeting)).path(path.to_owned());

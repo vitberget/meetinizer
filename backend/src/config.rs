@@ -6,6 +6,12 @@ pub fn get_bind() -> anyhow::Result<String> {
     Ok(bind)
 }
 
+pub fn get_host() -> anyhow::Result<String> {
+    let config = get_config()?;
+    let bind = config.get_string("server.host")?;
+    Ok(bind)
+}
+
 pub fn get_admin_hash() -> anyhow::Result<String> {
     let config = get_config()?;
     let hash = config.get_string("admin.hash")?;
