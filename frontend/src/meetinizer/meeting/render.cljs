@@ -19,7 +19,7 @@
                          }]]
    [:input {:type "button" 
             :value "Send me login"
-            :on {:click [ [:auth/login] ]}
+            :on {:click [[:auth/login]]}
             }]])
 
             (defn render-meeting [state]
