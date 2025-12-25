@@ -1,15 +1,14 @@
 (ns meetinizer.render 
   (:require
-   [clojure.string :as s]
    [meetinizer.meeting.render :as mr]
+   [meetinizer.the-state :refer [get-path-parts]]
    [replicant.dom :as r]))
 
 (defn status-404 [] [:div [:h1 "404"]])
 
 (defn main-thing [el state]
   (let [path js/window.location.pathname
-        path-parts (->> (s/split path "/")
-                        (drop 1))
+        path-parts (get-path-parts)
         state (-> state 
                   (assoc :path path)
                   (assoc :path-parts path-parts))]

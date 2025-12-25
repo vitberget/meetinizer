@@ -7,6 +7,14 @@
    [:h1 "Hello everywhere"]
    "Your are at " (:path state)  
    ])
+
+(defn render-requesting [_]
+  [:div [:h1 "Requesting login email"]])
+
+(defn render-requested [_]
+  [:div [:h1 "Login mail sent"]
+   "Check your email inbox!"])
+
 (defn render-loading [_]
   [:div [:h1 "Loading..."]])
 
@@ -19,7 +27,7 @@
                          }]]
    [:input {:type "button" 
             :value "Send me login"
-            :on {:click [[:auth/login]]}
+            :on {:click [[:auth/login [:db/get :login/form] ]]}
             }]])
 
             (defn render-meeting [state]
@@ -35,6 +43,12 @@
 
                   (= :loading meeting)
                   (render-loading state)
+
+                  (= :requesting meeting)
+                  (render-requesting state)
+
+                  (= :requested meeting)
+                  (render-requested state)
 
                   (= :forbidden meeting)
                   (render-login state)
