@@ -17,11 +17,10 @@
 
 - [ ] DB
 - [ ] Logging
-- [ ] Config
+- [x] Config
 - [ ] OpenAPI?
 - [ ] Dockerfile build
 - [ ] Auth
     - [ ] Admin
-    - [ ] User 
-        - [ ] by mail
-        - [ ] by totp
+    - [x] User 
+        - [x] by mail
