@@ -1,30 +1,8 @@
 use axum::{extract::Path, Json};
 use chrono::{Local, NaiveDate};
-use utoipa_axum::{router::OpenApiRouter, routes};
 
 use crate::structs::{Meeting, Slot, User};
-// TODO logging 
-pub fn admin_router() -> OpenApiRouter {
-    OpenApiRouter::new()
-        .routes(routes!(
-                admin_get_meeting,
-                admin_create_meeting,
-                admin_update_meeting
-        ))
-}
 
-#[utoipa::path(
-    get,
-    tag = "Admin",
-    path = "/get/{id}",
-    responses(
-        (status = 200, description = "Meeting found successfully", body = Meeting),
-        (status = NOT_FOUND, description = "Meeting was not found")
-    ),
-    params(
-        ("id" = Uuid, Path, description = "Meeting id to get"),
-    )
-)]
 pub async fn admin_get_meeting(Path(id): Path<String>) -> Json<Meeting> {
     println!("admin get meeting");
     let mut meeting = Meeting::new(format!("Hello {id}"));
@@ -39,33 +17,12 @@ pub async fn admin_get_meeting(Path(id): Path<String>) -> Json<Meeting> {
 }
 
 // TODO protect, only Admin
-#[utoipa::path(
-    post,
-    tag = "Admin",
-    path = "/create/{name}",
-    responses(
-        (status = 200, description = "Meeting created successfully", body = Meeting),
-        (status = NOT_FOUND, description = "Meeting was not found")
-    ),
-    params(
-        ("name" = String, Path, description = "Name of meeting"),
-    )
-)]
 pub async fn admin_create_meeting(Path(name): Path<String>) -> Json<Meeting> {
     let meeting = Meeting::new(name);
     Json(meeting)
 }
 
 // TODO protect, only Admin
-#[utoipa::path(
-    put,
-    tag = "Admin",
-    path = "/update",
-    // responses(
-    //     (status = 200, description = "Meeting created successfully", body = Meeting),
-    //     (status = NOT_FOUND, description = "Meeting was not found")
-    // ),
-)]
 pub async fn admin_update_meeting(Json(meeting): Json<Meeting>) -> Json<Meeting> {
     // let meeting = Meeting::new(name);
     Json(meeting)

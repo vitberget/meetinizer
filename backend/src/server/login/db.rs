@@ -1,12 +1,12 @@
 use std::sync::{Arc, LazyLock};
 
 use anyhow::bail;
-use base64::{Engine, engine::general_purpose};
 use chrono::{DateTime, Duration, Utc};
 use tokio::sync::Mutex;
 use uuid::Uuid;
 
-use crate::{config::get_host, server::login::claims::MeetingEmailClaims};
+use crate::config::get_host;
+use crate::server::login::claims::MeetingEmailClaims;
 
 #[derive(Debug)]
 pub struct Login {
@@ -35,7 +35,7 @@ pub async fn register_login(meeting: &str, email: &str) -> anyhow::Result<i64> {
     let host = get_host()?;
 
     println!("  Login {login:?}");
-    println!("  Login mail: {host}api/login/attempt/{meeting}/{email}/{secret}",
+    println!("  Login mail: {host}api/meeting/{meeting}/login/{email}/{secret}",
         meeting = urlencoding::encode(meeting),
         email = urlencoding::encode(email),
         secret = urlencoding::encode(&secret),

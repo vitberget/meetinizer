@@ -1,32 +1,23 @@
-use utoipa_axum::router::OpenApiRouter;
-use utoipa_swagger_ui::SwaggerUi;
+use axum::Router;
+use axum::routing::get;
 
 use crate::config::get_bind;
-use crate::server::admin::admin_router;
-use crate::server::login::{login_attempt_router, login_request_router};
-use crate::server::meeting::meeting_router;
+use crate::server::login::{api_attempt_login, api_request_login};
+use crate::server::meeting::{get_meeting, get_whoami};
 
 pub mod admin;
 pub mod meeting;
 pub mod login;
 
 pub async fn start_server() -> anyhow::Result<()> {
-    let (router, mut api) = OpenApiRouter::new()
-        .nest("/api/admin/", admin_router())
-        .nest("/api/meeting/", meeting_router())
-        .nest("/api/login/attempt/", login_attempt_router())
-        .nest("/api/login/request/", login_request_router())
-        .split_for_parts();
-
-    api.info.title = "hello".to_owned();
-    api.info.description = Some("I am a happy boy!".to_owned());
-    api.info.contact = None; // TODO perhaps set info.contact?
-    api.info.license = None; // TODO set info.licence!
-    api.info.version = "test-1".to_owned();
+    let router = Router::new()
+        .route("/api/meeting/{id}", get(get_meeting))
+        .route("/api/meeting/{id}/whoami", get(get_whoami))
+        .route("/api/meeting/{id}/request-login/{email}", get(api_request_login))
+        .route("/api/meeting/{id}/login/{email}/{token}", get(api_attempt_login));
 
     // TODO logging
     let listener = tokio::net::TcpListener::bind(get_bind()?).await?;
-    let router = router.merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", api));
     axum::serve(listener, router).await?;
 
     Ok(())

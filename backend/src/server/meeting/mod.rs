@@ -2,30 +2,8 @@ use axum::{Json, extract::Path, http::StatusCode};
 use axum_extra::extract::CookieJar;
 use utoipa_axum::{router::OpenApiRouter, routes};
 
-
 pub mod mock;
 
-pub fn meeting_router() -> OpenApiRouter {
-    OpenApiRouter::new()
-        .routes(routes!(
-                get_meeting,
-                // create_meeting,
-                // update_meeting
-        ))
-}
-
-#[utoipa::path(
-    get,
-    tag = "Meeting",
-    path = "/{id}",
-    responses(
-        (status = 200, description = "Meeting found successfully", body = Meeting),
-        (status = NOT_FOUND, description = "Meeting was not found")
-    ),
-    params(
-        ("id" = String, Path, description = "Meeting id to get"),
-    )
-)]
 pub async fn get_meeting(
     Path(id): Path<String>,
     cookies: CookieJar
@@ -43,12 +21,33 @@ pub async fn get_meeting(
             Err(StatusCode::FORBIDDEN)
         }
     } else {
-
         println!("missing loginb cookie");
         Err(StatusCode::FORBIDDEN)
     }
 }
 
+pub async fn get_whoami(
+    Path(id): Path<String>,
+    cookies: CookieJar
+) -> Result<String, StatusCode> {
+    if let Some(login) = cookies.get("login") {
+        if let Ok(claims) = <(&str, &str) as TryInto<MeetingEmailClaims>>::try_into((login.value(), "secret")) {
+            if claims.get_meeting() == id {
+                // Ok(Json(get_meeting_mock(&id)))
+                Ok(claims.get_email().to_string())
+            } else {
+                println!("wrong meeting inclaim");
+                Err(StatusCode::FORBIDDEN)
+            }
+        } else {
+            println!("not a claim in cookie");
+            Err(StatusCode::FORBIDDEN)
+        }
+    } else {
+        println!("missing loginb cookie");
+        Err(StatusCode::FORBIDDEN)
+    }
+}
 
 use chrono::{Local, NaiveDate};
 
