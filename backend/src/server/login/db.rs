@@ -8,6 +8,7 @@ use uuid::Uuid;
 
 use crate::config::{get_host, get_jwt_secret, get_jwt_valid_seconds};
 use crate::server::login::claims::MeetingEmailClaims;
+use crate::server::login::mail::mail_link;
 
 #[derive(Debug)]
 pub struct Login {
@@ -40,12 +41,15 @@ pub async fn register_login(meeting: &str, email: &str) -> anyhow::Result<i64> {
         secret = urlencoding::encode(&secret)
     );
 
+    mail_link(email, &login_url).await?;
+
     debug!("  Login url: {login_url}");
 
     FAKE_DB.lock().await.push(login);
 
     Ok(valid_time.as_seconds_f32() as i64)
 }
+
 
 
 #[tracing::instrument]

@@ -7,6 +7,7 @@ use axum_extra::extract::cookie::Cookie;
 pub mod db;
 pub mod claims;
 pub mod admin;
+pub mod mail;
 
 pub async fn api_request_login(Path((id,email)): Path<(String,String)>) -> String {
     let valid = db::register_login(&id, &email).await.unwrap();

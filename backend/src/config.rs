@@ -31,3 +31,28 @@ fn get_config() -> anyhow::Result<Config> {
         .add_source(config::Environment::with_prefix("MEETINIZER").separator("_"))
         .build()?)
 }
+
+pub fn get_mail_server() -> anyhow::Result<String> {
+    let server = get_config()?.get_string("mail.server")?;
+    Ok(server)
+}
+
+pub fn get_mail_port() -> anyhow::Result<i64> {
+    let port = get_config()?.get_int("mail.port")?;
+    Ok(port)
+}
+
+pub fn get_mail_user() -> anyhow::Result<String> {
+    let user = get_config()?.get_string("mail.user")?;
+    Ok(user)
+}
+
+pub fn get_mail_password() -> anyhow::Result<String> {
+    let password = get_config()?.get_string("mail.password")?;
+    Ok(password)
+}
+
+pub fn get_mail_from() -> anyhow::Result<String> {
+    let from = get_config()?.get_string("mail.from")?;
+    Ok(from)
+}
