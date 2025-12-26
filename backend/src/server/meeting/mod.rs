@@ -1,6 +1,5 @@
 use axum::{Json, extract::Path, http::StatusCode};
 use axum_extra::extract::CookieJar;
-use utoipa_axum::{router::OpenApiRouter, routes};
 
 pub mod mock;
 
@@ -9,19 +8,24 @@ pub async fn get_meeting(
     cookies: CookieJar
 ) -> Result<Json<Meeting>, StatusCode> {
     if let Some(login) = cookies.get("login") {
-        if let Ok(claims) = <(&str, &str) as TryInto<MeetingEmailClaims>>::try_into((login.value(), "secret")) {
-            if claims.get_meeting() == id {
-                Ok(Json(get_meeting_mock(&id)))
+        if let Ok(secret) = get_jwt_secret() {
+            if let Ok(claims) = <(&str, &str) as TryInto<MeetingEmailClaims>>::try_into((login.value(), &secret)) {
+                if claims.get_meeting() == id {
+                    Ok(Json(get_meeting_mock(&id)))
+                } else {
+                    warn!("wrong meeting in claim");
+                    Err(StatusCode::FORBIDDEN)
+                }
             } else {
-                println!("wrong meeting inclaim");
+                warn!("not a claim in cookie");
                 Err(StatusCode::FORBIDDEN)
             }
         } else {
-            println!("not a claim in cookie");
+            warn!("failed get_jwt_secret");
             Err(StatusCode::FORBIDDEN)
         }
     } else {
-        println!("missing loginb cookie");
+        warn!("missing login cookie");
         Err(StatusCode::FORBIDDEN)
     }
 }
@@ -31,30 +35,36 @@ pub async fn get_whoami(
     cookies: CookieJar
 ) -> Result<String, StatusCode> {
     if let Some(login) = cookies.get("login") {
-        if let Ok(claims) = <(&str, &str) as TryInto<MeetingEmailClaims>>::try_into((login.value(), "secret")) {
-            if claims.get_meeting() == id {
-                // Ok(Json(get_meeting_mock(&id)))
-                Ok(claims.get_email().to_string())
+        if let Ok(secret) = get_jwt_secret() {
+            if let Ok(claims) = <(&str, &str) as TryInto<MeetingEmailClaims>>::try_into((login.value(), &secret)) {
+                if claims.get_meeting() == id {
+                    // Ok(Json(get_meeting_mock(&id)))
+                    Ok(claims.get_email().to_string())
+                } else {
+                    warn!("wrong meeting in claim");
+                    Err(StatusCode::FORBIDDEN)
+                }
             } else {
-                println!("wrong meeting inclaim");
+                warn!("not a claim in cookie");
                 Err(StatusCode::FORBIDDEN)
             }
         } else {
-            println!("not a claim in cookie");
+            warn!("failed get_jwt_secret");
             Err(StatusCode::FORBIDDEN)
         }
     } else {
-        println!("missing loginb cookie");
+        warn!("missing login cookie");
         Err(StatusCode::FORBIDDEN)
     }
 }
 
 use chrono::{Local, NaiveDate};
+use tracing::{debug, warn};
 
-use crate::{server::login::claims::MeetingEmailClaims, structs::{Meeting, Slot, User}};
+use crate::{config::get_jwt_secret, server::login::claims::MeetingEmailClaims, structs::{Meeting, Slot, User}};
 
 pub fn get_meeting_mock(id: &str) -> Meeting {
-    println!("meeting mock");
+    debug!("meeting mock");
 
     let mut meeting = Meeting::new(format!("Hello {id}"));
     meeting.add_user(User::new("Kenneth Hedman", "test@vitberget.se"));

@@ -1,7 +1,0 @@
-[server]
-bind="0.0.0.0:3000"
-host="http://localhost:9001/"
-# host="http://localhost:3000/"
-
-[admin]
-hash="$argon2id$v=19$m=19456,t=2,p=1$wa/baHSF34MyObEopVKddq3Ndtf1hm9B3S6zjj4x$DMGSkGwKfKaIw/2l77QRJv3gOM4KfemHtgp7pENFZ0Q"

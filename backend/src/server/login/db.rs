@@ -3,9 +3,10 @@ use std::sync::{Arc, LazyLock};
 use anyhow::bail;
 use chrono::{DateTime, Duration, Utc};
 use tokio::sync::Mutex;
+use tracing::{debug, info, warn};
 use uuid::Uuid;
 
-use crate::config::get_host;
+use crate::config::{get_host, get_jwt_secret, get_jwt_valid_seconds};
 use crate::server::login::claims::MeetingEmailClaims;
 
 #[derive(Debug)]
@@ -19,11 +20,11 @@ pub struct Login {
 static FAKE_DB: LazyLock<Arc<Mutex<Vec<Login>>>> = LazyLock::new(Default::default);
 
 pub async fn register_login(meeting: &str, email: &str) -> anyhow::Result<i64> {
-    println!("register_login {meeting} {email}");
+    info!("register_login {meeting} {email}");
 
-    const VALID_TIME: Duration = Duration::minutes(15);
+    let valid_time: Duration = Duration::seconds(get_jwt_valid_seconds()?);
     let secret = Uuid::new_v4().to_string();
-    let valid_until = Utc::now() + VALID_TIME;
+    let valid_until = Utc::now() + valid_time;
 
     let login = Login {
         meeting: meeting.to_owned(),
@@ -32,38 +33,44 @@ pub async fn register_login(meeting: &str, email: &str) -> anyhow::Result<i64> {
         valid_until,
     };
 
-    let host = get_host()?;
-
-    println!("  Login {login:?}");
-    println!("  Login mail: {host}api/meeting/{meeting}/login/{email}/{secret}",
+    let login_url = format!("{host}api/meeting/{meeting}/login/{email}/{secret}",
+        host = get_host()?,
         meeting = urlencoding::encode(meeting),
         email = urlencoding::encode(email),
-        secret = urlencoding::encode(&secret),
-        );
+        secret = urlencoding::encode(&secret)
+    );
+
+    debug!("  Login url: {login_url}");
 
     FAKE_DB.lock().await.push(login);
 
-    Ok(VALID_TIME.as_seconds_f32() as i64)
+    Ok(valid_time.as_seconds_f32() as i64)
 }
 
 
-pub async fn attempt_login(meeting: &str, email: &str, secret: &str) -> anyhow::Result<String> {
-    println!("attempt_login");
+#[tracing::instrument]
+pub async fn attempt_login(meeting: &str, email: &str, token: &str) -> anyhow::Result<String> {
+    info!("attempt_login");
     let mut lock = FAKE_DB.lock().await;
     let wee = lock.iter()
-        .find(|login| login.meeting == meeting && login.email == email && login.secret == secret);
+        .find(|login| login.meeting == meeting && login.email == email && login.secret == token);
 
     match wee {
         Some(login) => {
             let valid = Utc::now() < login.valid_until;
-            lock.retain(|l| !(l.email == email && l.meeting == meeting && l.secret == secret));
+            lock.retain(|l| !(l.email == email && l.meeting == meeting && l.secret == token));
 
             if valid {
-                Ok(MeetingEmailClaims::new(meeting, email).to_jwt("secret")?)
+                info!("Login successful");
+                Ok(MeetingEmailClaims::new(meeting, email).to_jwt(&get_jwt_secret()?)?)
             } else {
+                warn!("To late to login");
                 bail!("To late loooser")
             }
         },
-        None => bail!("Go home, you are drunk")
+        None => {
+            warn!("No maching login");
+            bail!("Go home, you are drunk")
+        }
     }
 }

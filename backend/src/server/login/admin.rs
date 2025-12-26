@@ -1,6 +1,7 @@
 use argon2::{Config, verify_encoded};
 use rand::Rng;
 use rpassword::prompt_password;
+use tracing::warn;
 
 use crate::config::get_admin_hash;
 
@@ -11,7 +12,7 @@ pub fn generate_admin_hash() {
     if password_1 == password_2 {
         argon_hashy(&password_1);
     } else {
-        eprintln!("Password mismatch!");
+        warn!("Admin password mismatch!");
     }
 }
 
@@ -23,7 +24,7 @@ fn argon_hashy(password: &str) {
     let config = Config::default();
     let hash = argon2::hash_encoded(password.as_bytes(), &salt, &config).unwrap();
 
-    println!("Insert into settings.toml:");
+    eprintln!("Insert into settings.toml:");
     println!("[admin]");
     println!("hash=\"{hash}\"");
 }

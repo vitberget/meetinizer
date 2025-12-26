@@ -1,5 +1,6 @@
 use axum::Router;
 use axum::routing::get;
+use tracing::info;
 
 use crate::config::get_bind;
 use crate::server::login::{api_attempt_login, api_request_login};
@@ -10,14 +11,22 @@ pub mod meeting;
 pub mod login;
 
 pub async fn start_server() -> anyhow::Result<()> {
+    tracing_subscriber::fmt::init();
+
+    info!("Starting Meetinizer");
+
     let router = Router::new()
         .route("/api/meeting/{id}", get(get_meeting))
         .route("/api/meeting/{id}/whoami", get(get_whoami))
         .route("/api/meeting/{id}/request-login/{email}", get(api_request_login))
         .route("/api/meeting/{id}/login/{email}/{token}", get(api_attempt_login));
 
-    // TODO logging
-    let listener = tokio::net::TcpListener::bind(get_bind()?).await?;
+    let bind = get_bind()?;
+
+    info!("Starting web server on {bind}");
+
+    let listener = tokio::net::TcpListener::bind(bind).await?;
+    
     axum::serve(listener, router).await?;
 
     Ok(())

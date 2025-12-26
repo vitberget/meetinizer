@@ -15,7 +15,6 @@ pub async fn api_request_login(Path((id,email)): Path<(String,String)>) -> Strin
 }
 
 pub async fn api_attempt_login(Path((meeting, email, token)): Path<(String, String, String)>) -> Result<(CookieJar, Redirect), StatusCode> {
-    println!("api_attempt_login");
     if let Ok(token) = db::attempt_login(&meeting, &email, &token).await {
 
         let path = format!("/api/meeting/{meeting}");

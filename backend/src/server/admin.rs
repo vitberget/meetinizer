@@ -4,7 +4,6 @@ use chrono::{Local, NaiveDate};
 use crate::structs::{Meeting, Slot, User};
 
 pub async fn admin_get_meeting(Path(id): Path<String>) -> Json<Meeting> {
-    println!("admin get meeting");
     let mut meeting = Meeting::new(format!("Hello {id}"));
     meeting.add_user(User::new("Kenneth Hedman", "test@vitberget.se"));
     let slot = Slot { 
