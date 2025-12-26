@@ -37,7 +37,7 @@ pub async fn api_admin_get_meeting(
 pub async fn api_admin_login(body: String) -> Result<CookieJar, StatusCode> {
     if let Ok(true) = is_correct_admin_password(&body) {
         if let Ok(secret) = get_jwt_secret() {
-            if let Ok(token) = AdminClaims::new().to_jwt(&secret) {
+            if let Ok(token) = AdminClaims::default().to_jwt(&secret) {
                 let cookie_jar = CookieJar::new()
                     .add(Cookie::build(("admin", token)).path("/api/admin/").http_only(true));
 

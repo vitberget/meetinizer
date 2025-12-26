@@ -21,7 +21,7 @@ impl MeetingEmailClaims {
     pub fn to_jwt(&self, secret: &str) -> anyhow::Result<String> {
         Ok(encode(
             &Header::default(), 
-            &MeetingEmailClaims::new(&self.meeting, &self.email), 
+            self,
             &EncodingKey::from_secret(secret.as_ref())
             )?)
     }

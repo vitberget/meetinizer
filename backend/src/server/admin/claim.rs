@@ -8,18 +8,21 @@ pub struct AdminClaims {
 }
 
 impl AdminClaims {
-    pub fn new() -> Self {
+    pub fn to_jwt(&self, secret: &str) -> anyhow::Result<String> {
+        Ok(encode(
+            &Header::default(), 
+            self,
+            &EncodingKey::from_secret(secret.as_ref())
+            )?)
+    }
+}
+
+impl Default for AdminClaims {
+    fn default() -> Self {
         Self {
             iat: get_current_timestamp(),
             exp: get_current_timestamp() + 30*24*60*60 
         }
-    }
-    pub fn to_jwt(&self, secret: &str) -> anyhow::Result<String> {
-        Ok(encode(
-            &Header::default(), 
-            &AdminClaims::new(), 
-            &EncodingKey::from_secret(secret.as_ref())
-            )?)
     }
 }
 
