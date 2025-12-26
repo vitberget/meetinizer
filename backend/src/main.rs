@@ -1,7 +1,7 @@
 use clap::Parser as _;
 
 use crate::cli::{print_completions, Cli};
-use crate::server::login::admin::generate_admin_hash;
+use crate::server::admin::login::generate_admin_hash;
 use crate::server::start_server;
 
 pub mod cli;

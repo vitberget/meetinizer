@@ -1,7 +1,10 @@
-use axum::{Json, extract::Path, http::StatusCode};
+use axum::Json;
+use axum::extract::Path;
+use axum::http::StatusCode;
 use axum_extra::extract::CookieJar;
 
 pub mod mock;
+pub mod login;
 
 pub async fn get_meeting(
     Path(id): Path<String>,
@@ -61,7 +64,7 @@ pub async fn get_whoami(
 use chrono::{Local, NaiveDate};
 use tracing::{debug, warn};
 
-use crate::{config::get_jwt_secret, server::login::claims::MeetingEmailClaims, structs::{Meeting, Slot, User}};
+use crate::{config::get_jwt_secret, server::meeting::login::claims::MeetingEmailClaims, structs::{Meeting, Slot, User}};
 
 pub fn get_meeting_mock(id: &str) -> Meeting {
     debug!("meeting mock");

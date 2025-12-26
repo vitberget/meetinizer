@@ -3,12 +3,12 @@ use axum::routing::get;
 use tracing::{Level, info};
 
 use crate::config::get_bind;
-use crate::server::login::{api_attempt_login, api_request_login};
+use crate::server::admin::{api_admin_get_meeting, api_admin_login};
+use crate::server::meeting::login::{api_attempt_login, api_request_login};
 use crate::server::meeting::{get_meeting, get_whoami};
 
 pub mod admin;
 pub mod meeting;
-pub mod login;
 
 pub async fn start_server() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
@@ -18,6 +18,9 @@ pub async fn start_server() -> anyhow::Result<()> {
     info!("Starting Meetinizer");
 
     let router = Router::new()
+        .route("/api/admin/meeting/{id}", get(api_admin_get_meeting))
+        .route("/api/admin/login/", get(api_admin_login))
+
         .route("/api/meeting/{id}", get(get_meeting))
         .route("/api/meeting/{id}/whoami", get(get_whoami))
         .route("/api/meeting/{id}/request-login/{email}", get(api_request_login))

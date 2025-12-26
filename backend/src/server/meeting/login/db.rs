@@ -7,8 +7,8 @@ use tracing::{debug, info, warn};
 use uuid::Uuid;
 
 use crate::config::{get_host, get_jwt_secret, get_jwt_valid_seconds};
-use crate::server::login::claims::MeetingEmailClaims;
-use crate::server::login::mail::mail_link;
+use crate::server::meeting::login::claims::MeetingEmailClaims;
+use crate::server::meeting::login::mail::mail_link;
 
 #[derive(Debug)]
 pub struct Login {

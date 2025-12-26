@@ -6,13 +6,11 @@ use axum_extra::extract::cookie::Cookie;
 
 pub mod db;
 pub mod claims;
-pub mod admin;
 pub mod mail;
 
 pub async fn api_request_login(Path((id,email)): Path<(String,String)>) -> String {
     let valid = db::register_login(&id, &email).await.unwrap();
     format!("{valid}")
-
 }
 
 pub async fn api_attempt_login(Path((meeting, email, token)): Path<(String, String, String)>) -> Result<(CookieJar, Redirect), StatusCode> {
@@ -35,5 +33,3 @@ pub async fn api_attempt_login(Path((meeting, email, token)): Path<(String, Stri
         Err(StatusCode::UNAUTHORIZED)
     }
 }
-
-
