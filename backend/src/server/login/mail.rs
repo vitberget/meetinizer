@@ -19,7 +19,7 @@ pub async fn mail_link(email: &str, login_url: &str) -> anyhow::Result<()> {
         .text_body("Hello world!");
 
     let tls = true;
-    info!("Connecting to SMTP server {server}:{port} tls:{true}");
+    info!("Connecting to SMTP server {server}:{port} tls:{tls}");
     let mut client = SmtpClientBuilder::new(server, port as u16)
         .implicit_tls(tls)
         .credentials((user, password))
