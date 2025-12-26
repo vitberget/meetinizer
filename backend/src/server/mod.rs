@@ -1,6 +1,6 @@
 use axum::Router;
 use axum::routing::get;
-use tracing::info;
+use tracing::{Level, info};
 
 use crate::config::get_bind;
 use crate::server::login::{api_attempt_login, api_request_login};
@@ -11,7 +11,9 @@ pub mod meeting;
 pub mod login;
 
 pub async fn start_server() -> anyhow::Result<()> {
-    tracing_subscriber::fmt::init();
+    tracing_subscriber::fmt()
+        .with_max_level(Level::DEBUG)
+        .init();
 
     info!("Starting Meetinizer");
 
