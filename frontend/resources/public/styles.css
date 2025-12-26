@@ -2,3 +2,28 @@ body {
     font-size: 26px;
     font-family: sans-serif;
 }
+
+main {
+    h1 {
+        color:blue;
+    }
+
+    &.login {
+        div.info {
+            margin-top:1em;
+            margin-bottom:1.5em;
+        }
+        input[type="email"] {
+            margin-left: 2em;
+            margin-right: 2em;
+            font-size: 26px;
+        }
+        input[type="button"] {
+            margin-top: 1em;
+            display: block;
+            background: transparent;
+            font-size: 0.8em;
+            border-radius: 6px;
+        }
+    }
+}

@@ -34,7 +34,9 @@
                (let [status (.-status the-result)]
                  (condp = status
                    ; TODO show seconds left
-                   200 (swap! state-atom assoc-in [:meeting id] :requested)
+                   200 (-> (.text the-result) 
+                           (.then (fn[text]
+                                    (swap! state-atom assoc-in [:meeting id] {:requested text}))))
 
                    403 (swap! state-atom assoc-in [:meeting id] :forbidden)
 
