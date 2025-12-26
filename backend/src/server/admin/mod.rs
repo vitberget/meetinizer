@@ -33,6 +33,27 @@ pub async fn api_admin_get_meeting(
         Err(StatusCode::FORBIDDEN)
     }
 }
+pub async fn api_admin_list_meetings( cookies: CookieJar) -> Result<Json<Vec<String>>, StatusCode> {
+    if let Some(admin) = cookies.get("admin") {
+        if let Ok(secret) = get_jwt_secret() {
+            if let Ok(_claims) = <(&str, &str) as TryInto<AdminClaims>>::try_into((admin.value(), &secret)) {
+                Ok(Json(vec![
+                        "fake1".to_string(), 
+                        "fake2".to_string()
+                ]))
+            } else {
+                warn!("not a claim in cookie");
+                Err(StatusCode::FORBIDDEN)
+            }
+        } else {
+            warn!("failed get_jwt_secret");
+            Err(StatusCode::FORBIDDEN)
+        }
+    } else {
+        warn!("missing login cookie");
+        Err(StatusCode::FORBIDDEN)
+    }
+}
 
 pub async fn api_admin_login(body: String) -> Result<CookieJar, StatusCode> {
     if let Ok(true) = is_correct_admin_password(&body) {
@@ -42,7 +63,6 @@ pub async fn api_admin_login(body: String) -> Result<CookieJar, StatusCode> {
                     .add(Cookie::build(("admin", token)).path("/api/admin/").http_only(true));
 
                 Ok(cookie_jar)
-
             } else {
                 Err(StatusCode::FORBIDDEN)
             }
