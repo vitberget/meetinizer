@@ -8,6 +8,7 @@ pub mod cli;
 pub mod server;
 pub mod structs;
 pub mod config;
+pub mod db;
 
 #[tokio::main]
 pub async fn main() -> anyhow::Result<()> {
