@@ -45,11 +45,11 @@ pub struct Meeting {
 }
 
 impl Meeting {
-    pub fn new(name: String) -> Self {
+    pub fn new(name: &str) -> Self {
         Self {
             id: Uuid::new_v4(),
             revision: Uuid::new_v4(),
-            name,
+            name: name.to_string(),
             comment: "".to_string(),
             slots: HashSet::new(),
             users: HashSet::new(),
@@ -58,6 +58,7 @@ impl Meeting {
     }
 
     pub fn get_id(&self) -> Uuid { self.id }
+    pub fn get_revision(&self) -> Uuid { self.revision }
 
     pub fn get_name(&self) -> String { self.name.to_owned() }
     pub fn set_name(&mut self, new_name: String) { 
@@ -66,8 +67,8 @@ impl Meeting {
     }
 
     pub fn get_comment(&self) -> String { self.comment.to_owned() }
-    pub fn set_comment(&mut self, new_comment: String) {
-        self.comment = new_comment; 
+    pub fn set_comment(&mut self, new_comment: &str) {
+        self.comment = new_comment.to_string(); 
         self.revision = Uuid::new_v4();
     }
 

@@ -7,6 +7,4 @@ CREATE TABLE meetings (
     json text
 );
 
-CREATE UNIQUE INDEX unique_index_name ON meetings(name);
-CREATE UNIQUE INDEX unique_index_uuid ON meetings(uuid);
-CREATE UNIQUE INDEX unique_index_uuid_version ON meetings(uuid, version);
+CREATE UNIQUE INDEX unique_index_name_uuid_version ON meetings(name, uuid, version);

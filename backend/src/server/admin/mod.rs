@@ -92,7 +92,7 @@ pub async fn api_admin_logout() -> Result<CookieJar, StatusCode> {
 
 // TODO protect, only Admin
 pub async fn admin_create_meeting(Path(name): Path<String>) -> Json<Meeting> {
-    let meeting = Meeting::new(name);
+    let meeting = Meeting::new(&name);
     Json(meeting)
 }
 

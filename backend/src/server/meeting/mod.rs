@@ -69,7 +69,7 @@ use crate::{config::get_jwt_secret, server::meeting::login::claims::MeetingEmail
 pub fn get_meeting_mock(id: &str) -> Meeting {
     debug!("meeting mock");
 
-    let mut meeting = Meeting::new(format!("Hello {id}"));
+    let mut meeting = Meeting::new(&format!("Hello {id}"));
     meeting.add_user(User::new("Kenneth Hedman", "test@vitberget.se"));
     let slot = Slot { 
         start: NaiveDate::from_ymd_opt(2025, 6, 4).unwrap().and_hms_opt(18,0,0).unwrap().and_local_timezone(Local).earliest().unwrap(),
