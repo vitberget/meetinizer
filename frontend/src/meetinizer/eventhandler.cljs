@@ -45,7 +45,7 @@
       (prn "Enriched action" enriched-action)
       (condp = action-name
         :db/assoc (apply swap! state-atom assoc args)
-        :auth/login (apply do-the-login args)
+        :meeting/login (apply do-the-login args)
         :admin/login (apply do-admin-login args)
 
 

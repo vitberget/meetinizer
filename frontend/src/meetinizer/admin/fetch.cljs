@@ -15,11 +15,7 @@
                    403 (swap! state-atom assoc-in [:meeting-ids] :forbidden)
 
                    (swap! state-atom assoc-in [:meeting-ids] :error)))))))
-; const response = await fetch("https://example.org/post", {
-;   method: "POST",
-;   body: JSON.stringify({ username: "example" }),
-;   // …
-; });
+
 (defn admin-login [password]
   (-> (js/fetch "/api/admin/login" (clj->js {:method "POST" :body password}))
       (.then (fn [the-result]
@@ -43,4 +39,6 @@
 (comment
   (admin-login "123")
   (admin-logout)
+  (fetch-meeting-list)
+  @state-atom
   )

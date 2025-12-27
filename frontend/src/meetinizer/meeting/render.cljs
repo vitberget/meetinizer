@@ -34,13 +34,12 @@
    [:div.form
     [:label "Email:"
      [:input#login-email {:type "email"
-                          :replicant/on-mount [[:db/assoc :login/form-element :dom/node]]
-                          :on {:input [[:db/assoc :login/form :event/target.value]]}
+                          :replicant/on-mount [[:db/assoc :meeting/login-form-element :dom/node]]
+                          :on {:input [[:db/assoc :meeting/login-form :event/target.value]]}
                           }]]
     [:input {:type "button" 
              :value "Send me login mail"
-             :on {:click [[:auth/login [:db/get :login/form] ]]}
-             }]]])
+             :on {:click [[:meeting/login [:db/get :meeting/login-form]]]}}]]])
 
 (defn render-meeting [state]
   (let [meeting-id (second (:path-parts state))

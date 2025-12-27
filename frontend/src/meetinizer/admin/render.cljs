@@ -10,21 +10,20 @@
   [:main.admin.login
    [:h1 "Enter admin password"]
    [:input#login-email {:type "email"
-                        :replicant/on-mount [[:db/assoc :admin-login/form-element :dom/node]]
+                        :replicant/on-mount [[:db/assoc :admin/login-form-element :dom/node]]
                         :on {:input [[:db/assoc :admin/login-form :event/target.value]]}
                         }]
    [:input {:type "button" 
             :value "Login as admin"
-            :on {:click [[:admin/login [:db/get :admin/login-form]]]}}]
-   ])
+            :on {:click [[:admin/login [:db/get :admin/login-form]]]}}]])
 
-(defn render-list [state]
+(defn render-list [{meeting-ids :meeting-ids}]
   [:main.admin.list
    [:h1 "Meetings"]
-   [:ul
-    [:li "Meet 1"]
-    [:li "Meet 2"]
-    [:li "Meet 3"]]])
+   (if (empty? meeting-ids)
+     "No meetings yet"   
+     [:ul (->> meeting-ids
+               (map (fn[m] [:li m])))])])
 
 (defn render-admin [state]
   (let [meetings (:meeting-ids state)]
