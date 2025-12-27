@@ -1,7 +1,5 @@
-
 use std::sync::{Arc, LazyLock};
 
-use anyhow::Context;
 use rusqlite::{Error, named_params};
 use serde_json::json;
 use tokio::sync::Mutex;
@@ -14,6 +12,7 @@ use crate::structs::Meeting;
 static REAL_DB: LazyLock<Arc<Mutex<RealDB>>> = LazyLock::new(|| Arc::new(Mutex::new(RealDB { not_for_you: true })));
 
 pub struct RealDB { 
+    #[allow(unused)]
     not_for_you: bool
 }
 
@@ -33,24 +32,21 @@ impl RealDB {
 
     pub fn get_meeting(&self, name: &str) -> anyhow::Result<Meeting> {
         let conn = get_meeting_connection()?;
-        let mut stmt = conn.prepare( "SELECT name, uuid, version, json from meetings where name = :name order by created desc limit 1")?;
+        let mut stmt = conn.prepare("SELECT name, uuid, version, json from meetings where name = :name order by created desc limit 1")?;
 
-        let result = stmt.query_row(
+        Ok(stmt.query_row(
             named_params! { ":name": name },
             |row| {
                 let json: String = row.get("json")?;
                 match serde_json::from_str::<Meeting>(&json) {
-                    Ok(meeting) => Ok(Some(meeting)),
+                    Ok(meeting) => Ok(meeting),
                     Err(err) => {
                         error!("Failed to parse json to meeting {json} {err}");
                         Err(Error::InvalidColumnName("Not json in json".to_string()))
                     }
                 }
             }
-        )?;
-
-        let meeting = result.context("No result")?;
-        Ok(meeting)
+        )?)
     }
 }
 
