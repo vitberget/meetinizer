@@ -26,4 +26,15 @@ main {
             border-radius: 6px;
         }
     }
+
+    &.meeting {
+        table {
+            /* width: 800px; */
+            .dateheader {
+                font-size: 0.5em;
+                display: inline-flex;
+                flex-direction: column;
+            }
+        }
+    }
 }

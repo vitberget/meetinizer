@@ -1,12 +1,7 @@
 (ns meetinizer.meeting.render
   (:require [meetinizer.meeting.fetch :refer [fetch-meeting]]
+            [meetinizer.meeting.render-meeting :refer [render-actually]]
             [meetinizer.the-state :refer [state-atom]]))
-
-(defn render-actually [state]
-  [:main.meeting 
-   [:h1 "Hello everywhere"]
-   "Your are at " (:path state)  
-   ])
 
 (defn render-requesting [_]
   [:main.meeting.requesting 
@@ -26,6 +21,10 @@
 (defn render-loading [_]
   [:main.meeting.loading
    [:h1 "Loading..."]])
+
+(defn render-error [_]
+  [:main.meeting.error
+   [:h1 "Error!"]])
 
 (defn render-login [{path-parts :path-parts}]
   [:main.meeting.login
@@ -62,9 +61,11 @@
       (= :forbidden meeting)
       (render-login state)
 
+      (= :error meeting)
+      (render-error state)
 
       :else
-      (render-actually state)
+      (render-actually state meeting)
       )))
 
 (comment
