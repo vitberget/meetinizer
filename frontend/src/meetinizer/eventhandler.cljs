@@ -1,17 +1,18 @@
 (ns meetinizer.eventhandler 
   (:require
-   [clojure.walk :as walk]
-   [meetinizer.meeting.fetch :refer [login]]
-   [meetinizer.the-state :refer [get-path-parts state-atom]]))
+    [clojure.walk :as walk]
+    [meetinizer.admin.fetch :as af]
+    [meetinizer.meeting.fetch :refer [login]]
+    [meetinizer.the-state :refer [get-path-parts state-atom]]))
 
 (defn- enrich-action-from-state [state action]
   (walk/postwalk
-   (fn [x]
-     (cond
-       (and (vector? x)
-            (= :db/get (first x))) (get state (second x))
-       :else x))
-   action))
+    (fn [x]
+      (cond
+        (and (vector? x)
+             (= :db/get (first x))) (get state (second x))
+        :else x))
+    action))
 
 (defn- enrich-action-from-event [{:replicant/keys [js-event node]} actions]
   (walk/postwalk
@@ -30,6 +31,10 @@
     (swap! state-atom assoc-in [:meeting meeting-id] :requesting)
     (login meeting-id email)))
 
+(defn do-admin-login [password]
+  (swap! state-atom assoc :meeting-ids :requesting)
+  (af/admin-login password))
+
 (defn event-handler [{:replicant/keys [^js js-event] :as replicant-data} actions]
   (doseq [action actions]
     (prn "Triggered action" action)
@@ -41,6 +46,7 @@
       (condp = action-name
         :db/assoc (apply swap! state-atom assoc args)
         :auth/login (apply do-the-login args)
+        :admin/login (apply do-admin-login args)
 
 
         )))

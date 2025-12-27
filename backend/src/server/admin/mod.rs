@@ -1,4 +1,6 @@
-use axum::{Json, extract::Path, http::StatusCode};
+use axum::Json;
+use axum::extract::Path;
+use axum::http::StatusCode;
 use axum_extra::extract::CookieJar;
 use axum_extra::extract::cookie::Cookie;
 use tracing::warn;
@@ -72,6 +74,19 @@ pub async fn api_admin_login(body: String) -> Result<CookieJar, StatusCode> {
     } else {
         Err(StatusCode::FORBIDDEN)
     }
+}
+
+pub async fn api_admin_logout() -> Result<CookieJar, StatusCode> {
+    let cookies = CookieJar::new()
+        .add(Cookie::build(("admin",""))
+            .path("/api/admin/")
+            .http_only(true)
+            
+            // .max_age(axum_extra::extract::cookie::)
+            // .expires(now)
+        );
+
+    Ok(cookies)
 }
 
 
