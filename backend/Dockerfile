@@ -1,6 +1,7 @@
 FROM rust:1.92-alpine3.23 as build
 
 WORKDIR /app/
+ADD sql_migrations /app/sql_migrations/
 ADD Cargo.toml Cargo.lock /app/
 ADD src /app/src/
 RUN cargo build --release
