@@ -1,15 +1,20 @@
+use std::sync::Arc;
+
 use axum::Json;
 use axum::extract::Path;
 use axum::http::StatusCode;
 use axum_extra::extract::CookieJar;
 use axum_extra::extract::cookie::Cookie;
+use serde::{Deserialize, Serialize};
 use tracing::warn;
+use uuid::Uuid;
 
 use crate::config::get_jwt_secret;
+use crate::db::meeting::MEETING_DB;
 use crate::server::admin::claim::AdminClaims;
 use crate::server::admin::login::is_correct_admin_password;
 use crate::server::meeting::get_meeting_mock;
-use crate::structs::Meeting;
+use crate::structs::{Meeting, Slot};
 
 pub mod claim;
 pub mod login;
@@ -56,6 +61,24 @@ pub async fn api_admin_list_meetings( cookies: CookieJar) -> Result<Json<Vec<Str
         Err(StatusCode::FORBIDDEN)
     }
 }
+#[derive(Debug, Serialize, Deserialize)]
+pub struct AddSlot {
+    pub meeting_uuid: Uuid,
+    pub meeting_revision: Uuid,
+    pub slot: Slot
+}
+
+pub async fn api_admin_add_slot(Json(add_slot): Json<AddSlot>) -> Result<Meeting, (StatusCode, String)> {
+    let arc = Arc::clone(&MEETING_DB);
+    let meeting_db = arc.lock().await;
+    match meeting_db.add_slot(&add_slot.meeting_uuid, &add_slot.meeting_revision, add_slot.slot) {
+        Ok(meeting) => Ok(meeting),
+        Err(err) => Err((StatusCode::INTERNAL_SERVER_ERROR, format!("{err}")))
+    }
+
+
+    // todo!()
+}
 
 pub async fn api_admin_login(body: String) -> Result<CookieJar, StatusCode> {
     if let Ok(true) = is_correct_admin_password(&body) {
@@ -81,23 +104,8 @@ pub async fn api_admin_logout() -> Result<CookieJar, StatusCode> {
         .add(Cookie::build(("admin",""))
             .path("/api/admin/")
             .http_only(true)
-            
-            // .max_age(axum_extra::extract::cookie::)
-            // .expires(now)
         );
 
     Ok(cookies)
 }
 
-
-// TODO protect, only Admin
-pub async fn admin_create_meeting(Path(name): Path<String>) -> Json<Meeting> {
-    let meeting = Meeting::new(&name);
-    Json(meeting)
-}
-
-// TODO protect, only Admin
-pub async fn admin_update_meeting(Json(meeting): Json<Meeting>) -> Json<Meeting> {
-    // let meeting = Meeting::new(name);
-    Json(meeting)
-}

@@ -27,6 +27,18 @@ pub struct Slot {
     pub end: DateTime<Local>,
 }
 
+impl Slot {
+    pub fn from_str(start: &str, end: &str) -> anyhow::Result<Self> {
+        let start = if start.starts_with("\"") { start } else { &format!("\"{start}\"")};
+        let end = if end.ends_with("\"") { end } else { &format!("\"{end}\"")};
+
+        let start: DateTime<Local> = serde_json::from_str(start)?;
+        let end: DateTime<Local> = serde_json::from_str(end)?;
+
+        Ok(Slot { start, end })
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize, ToSchema)]
 pub struct Vote {
     pub user_email: String,

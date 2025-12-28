@@ -1,22 +1,24 @@
 use std::sync::{Arc, LazyLock};
 
+use anyhow::bail;
 use rusqlite::{Error, named_params};
 use serde_json::json;
 use tokio::sync::Mutex;
 use tracing::error;
+use uuid::Uuid;
 
 use crate::db::get_meeting_connection;
-use crate::structs::Meeting;
+use crate::structs::{Meeting, Slot, User};
 
 
-static REAL_DB: LazyLock<Arc<Mutex<RealDB>>> = LazyLock::new(|| Arc::new(Mutex::new(RealDB { not_for_you: true })));
+pub static MEETING_DB: LazyLock<Arc<Mutex<MeetingDB>>> = LazyLock::new(|| Arc::new(Mutex::new(MeetingDB { not_for_you: true })));
 
-pub struct RealDB { 
+pub struct MeetingDB { 
     #[allow(unused)]
     not_for_you: bool
 }
 
-impl RealDB {
+impl MeetingDB {
     pub fn insert_meeting(&self, meeting: &Meeting) -> anyhow::Result<()> {
         get_meeting_connection()?.execute(
             "INSERT INTO meetings (name, uuid, version, json) VALUES (:name, :uuid, :version, :json)", 
@@ -30,7 +32,7 @@ impl RealDB {
         Ok(())
     }
 
-    pub fn get_meeting(&self, name: &str) -> anyhow::Result<Meeting> {
+    pub fn get_meeting_by_name(&self, name: &str) -> anyhow::Result<Meeting> {
         let conn = get_meeting_connection()?;
         let mut stmt = conn.prepare("SELECT name, uuid, version, json from meetings where name = :name order by created desc limit 1")?;
 
@@ -48,18 +50,73 @@ impl RealDB {
             }
         )?)
     }
+    pub fn get_meeting_by_uuid(&self, uuid: &Uuid) -> anyhow::Result<Meeting> {
+        let conn = get_meeting_connection()?;
+        let mut stmt = conn.prepare("SELECT name, uuid, version, json from meetings where uuid = :uuid order by created desc limit 1")?;
+
+        Ok(stmt.query_row(
+            named_params! { ":uuid": uuid.to_string() },
+            |row| {
+                let json: String = row.get("json")?;
+                match serde_json::from_str::<Meeting>(&json) {
+                    Ok(meeting) => Ok(meeting),
+                    Err(err) => {
+                        error!("Failed to parse json to meeting {json} {err}");
+                        Err(Error::InvalidColumnName("Not json in json".to_string()))
+                    }
+                }
+            }
+        )?)
+    }
+
+    pub fn add_user(&self, meeting_uuid: &str, revision: &str, name: &str, email: &str) -> anyhow::Result<Meeting> {
+        let mut meeting = self.get_meeting_by_uuid(&Uuid::parse_str(meeting_uuid)?)?;
+        if meeting.get_revision() == Uuid::parse_str(revision)? {
+            let user = User::new(name, email);
+            meeting.add_user(user);
+            self.insert_meeting(&meeting)?;
+            Ok(meeting)
+        } else {
+            bail!("Wrong revision");
+        }
+    }
+
+    pub fn add_slot(&self, meeting_uuid: &Uuid, revision: &Uuid, slot: Slot) -> anyhow::Result<Meeting> {
+        let mut meeting = self.get_meeting_by_uuid(meeting_uuid)?;
+        if meeting.get_revision() == *revision {
+            // let slot = Slot::from_str(start, end)?;
+            meeting.add_slot(slot);
+            self.insert_meeting(&meeting)?;
+            Ok(meeting)
+        } else {
+            bail!("Wrong revision");
+        }
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use anyhow::bail;
+    use chrono::{DateTime, Datelike, Local, NaiveDate, Timelike};
 
     use super::*;
+
+
+    #[test]
+    fn test_parse_datetime() -> anyhow::Result<()> {
+        let text = "\"2025-06-04T15:00:00+02:00\"";
+        let dt: DateTime<Local> = serde_json::from_str(text)?;
+        assert_eq!(dt.year(), 2025);
+        assert_eq!(dt.month(), 6);
+        assert_eq!(dt.day(), 4);
+        assert_eq!(dt.hour(), 15);
+        Ok(())
+    }
 
     #[tokio::test]
     #[ignore]
     async fn test_insert_meeting() -> anyhow::Result<()> {
-        let arc = Arc::clone(&REAL_DB);
+        let arc = Arc::clone(&MEETING_DB);
         let real_db = arc.lock().await;
 
         let meeting = Meeting::new("I am alive");
@@ -70,12 +127,16 @@ mod tests {
     #[tokio::test]
     #[ignore]
     async fn test_update_meeting() -> anyhow::Result<()> {
-        let arc = Arc::clone(&REAL_DB);
+        let arc = Arc::clone(&MEETING_DB);
         let real_db = arc.lock().await;
 
-        let mut meeting = real_db.get_meeting("I am alive")?;
+        let mut meeting = real_db.get_meeting_by_name("I am alive")?;
         meeting.set_comment("Some rando comment");
-        println!("meeting {meeting:?}");
+        let slot = Slot { 
+            start: NaiveDate::from_ymd_opt(2025, 6, 4).unwrap().and_hms_opt(15,0,0).unwrap().and_local_timezone(Local).earliest().unwrap(),
+            end: NaiveDate::from_ymd_opt(2025, 6, 4).unwrap().and_hms_opt(22,0,0).unwrap().and_local_timezone(Local).earliest().unwrap(),
+        };
+        meeting.add_slot(slot);
 
         real_db.insert_meeting(&meeting)?;
         bail!("e")
@@ -84,10 +145,10 @@ mod tests {
     #[tokio::test]
     #[ignore]
     async fn test_get_meeting() -> anyhow::Result<()> {
-        let arc = Arc::clone(&REAL_DB);
+        let arc = Arc::clone(&MEETING_DB);
         let real_db = arc.lock().await;
 
-        let meeting = real_db.get_meeting("I am alive")?;
+        let meeting = real_db.get_meeting_by_name("I am alive")?;
 
         println!("meeting {meeting:?}");
 
