@@ -15,12 +15,12 @@
 
 ## Backend
 
-- [ ] DB
-- [ ] Logging
+- [x] DB
+- [x] Logging
 - [x] Config
 - [ ] OpenAPI?
-- [ ] Dockerfile build
-- [ ] Auth
-    - [ ] Admin
+- [x] Dockerfile build
+- [x] Auth
+    - [x] Admin
     - [x] User 
         - [x] by mail
