@@ -23,8 +23,7 @@
   (->> votes
        (filter (fn[vote] (and
                            (= (:user_email vote) (:email user)) 
-                           (= (:slot vote) slot) 
-                           ) ) )
+                           (= (:slot vote) slot))))
        (first)))
 
 (defn render-actually [state {meeting-name :name 
