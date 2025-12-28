@@ -2,6 +2,20 @@
   (:require
    [meetinizer.the-state :refer [state-atom]]))
 
+(defn fetch-meeting [id]
+  (-> (js/fetch (str "/api/admin/meeting/" id))
+      (.then (fn [the-result]
+               (let [status (.-status the-result)]
+                 (condp = status
+                   200 (-> (.json the-result)
+                           (.then (fn [json]
+                                    (let [data (js->clj json :keywordize-keys true)]
+                                      (swap! state-atom assoc-in [:admin :meeting id] data)))))
+
+                   403 (swap! state-atom assoc-in [:admin :meeting id] :forbidden)
+
+                   (swap! state-atom assoc-in [:admin :meeting id] :error)))))))
+
 (defn fetch-meeting-list []
   (-> (js/fetch "/api/admin/list")
       (.then (fn [the-result]
