@@ -1,7 +1,8 @@
 (ns meetinizer.admin.render
   (:require
-   [meetinizer.admin.fetch :refer [fetch-meeting fetch-meeting-list]]
-   [meetinizer.the-state :refer [state-atom]]))
+    [meetinizer.admin.fetch :refer [fetch-meeting fetch-meeting-list]]
+    [meetinizer.meeting.render-meeting :refer [date-from time-from]]
+    [meetinizer.the-state :refer [state-atom]]))
 
 (defn render-loading [_]
   [:main.admin.loading
@@ -31,17 +32,26 @@
                                          :value m
                                          :on {:click [[:db/assoc :admin/selected-meeting m]]}}]])))])])
 
+(defn render-slots [slots]
+  [:section.slots
+   [:h2 "Slots"]
+   [:div.slots
+    (->> slots
+         (map (fn[slot] [:div.slot 
+                         [:div.from 
+                          [:div.date (date-from (:start slot))]
+                          [:div.date (time-from (:start slot))]]
+                         [:div.to 
+                          [:div.date (date-from (:end slot))]
+                          [:div.date (time-from (:end slot))]] ])))]])
+
 (defn render-meeting [meeting]
   (prn "Meeting")
   (prn meeting)
   [:main.admin.meeting
    [:h1 "You have chosen: " (:name meeting)]
-   [:section.slots
-    [:h2 "Slots"]
-    (->> meeting
-         (:slots)
-         (map (fn[slot] [:div.slot "hello"]))
-         ) ] ])
+   (render-slots (:slots meeting))
+   ])
 
 (defn render-admin [state]
   (let [meetings (:meeting-ids state)
