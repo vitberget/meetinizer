@@ -3,13 +3,24 @@ use std::sync::{Arc, LazyLock};
 use anyhow::bail;
 use rusqlite::{Error, named_params};
 use serde_json::json;
-use tokio::sync::Mutex;
+use tokio::sync::broadcast::{Receiver, Sender, channel};
+use tokio::sync::{Mutex};
 use tracing::error;
 use uuid::Uuid;
 
 use crate::db::get_meeting_connection;
 use crate::structs::{Meeting, Slot, User};
 
+static MEETING_QUEUE: LazyLock<Arc<Sender<Meeting>>> = LazyLock::new( || {
+        let (sender, _receiver) = channel(100);
+        Arc::new(sender)
+    } 
+);
+
+pub fn subscrive_to_meeting_queue() -> Receiver<Meeting> {
+    let meeting_queue = Arc::clone(&MEETING_QUEUE);
+    meeting_queue.subscribe()
+}
 
 pub static MEETING_DB: LazyLock<Arc<Mutex<MeetingDB>>> = LazyLock::new(|| Arc::new(Mutex::new(MeetingDB { not_for_you: true })));
 
@@ -19,7 +30,7 @@ pub struct MeetingDB {
 }
 
 impl MeetingDB {
-    pub fn insert_meeting(&self, meeting: &Meeting) -> anyhow::Result<()> {
+    fn insert_meeting(&self, meeting: &Meeting) -> anyhow::Result<()> {
         get_meeting_connection()?.execute(
             "INSERT INTO meetings (name, uuid, version, json) VALUES (:name, :uuid, :version, :json)", 
             named_params! {
@@ -29,7 +40,22 @@ impl MeetingDB {
                 ":json": json!(&meeting).to_string()
             })?;
 
+        let meeting = meeting.to_owned();
+        tokio::task::spawn(async {
+            let queue = Arc::clone(&MEETING_QUEUE);
+            let _ = queue.send(meeting);
+        });
+
         Ok(())
+    }
+
+    pub fn get_meeting_names(&self) -> anyhow::Result<Vec<String>> {
+        let conn = get_meeting_connection()?;
+        let mut stmt = conn.prepare("SELECT DISTINCT name from meetings")?;
+        Ok(stmt
+            .query_map([], |row| row.get("name"))?
+            .flatten()
+            .collect())
     }
 
     pub fn get_meeting_by_name(&self, name: &str) -> anyhow::Result<Meeting> {
@@ -50,6 +76,7 @@ impl MeetingDB {
             }
         )?)
     }
+
     pub fn get_meeting_by_uuid(&self, uuid: &Uuid) -> anyhow::Result<Meeting> {
         let conn = get_meeting_connection()?;
         let mut stmt = conn.prepare("SELECT name, uuid, version, json from meetings where uuid = :uuid order by created desc limit 1")?;
@@ -101,6 +128,16 @@ mod tests {
 
     use super::*;
 
+    #[tokio::test]
+    #[ignore]
+    async fn get_meeting_names() -> anyhow::Result<()> {
+        let arc = Arc::clone(&MEETING_DB);
+        let real_db = arc.lock().await;
+        let meetings = real_db.get_meeting_names()?;
+        println!("meetings {meetings:?}");
+
+        bail!("meh")
+    }
 
     #[test]
     fn test_parse_datetime() -> anyhow::Result<()> {

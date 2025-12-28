@@ -41,24 +41,35 @@ pub async fn api_admin_get_meeting(
     }
 }
 pub async fn api_admin_list_meetings( cookies: CookieJar) -> Result<Json<Vec<String>>, StatusCode> {
-    if let Some(admin) = cookies.get("admin") {
-        if let Ok(secret) = get_jwt_secret() {
-            if let Ok(_claims) = <(&str, &str) as TryInto<AdminClaims>>::try_into((admin.value(), &secret)) {
-                Ok(Json(vec![
-                        "fake1".to_string(), 
-                        "fake2".to_string()
-                ]))
-            } else {
-                warn!("not a claim in cookie");
+    match cookies.get("admin") {
+        Some(admin) => match get_jwt_secret() {
+            Ok(secret) => match <(&str, &str) as TryInto<AdminClaims>>::try_into((admin.value(), &secret)) {
+                Ok(_claims) => {
+                    let arc = Arc::clone(&MEETING_DB);
+                    let real_db = arc.lock().await;
+                    match real_db.get_meeting_names() {
+                        Ok(meetings) => Ok(Json(meetings)),
+                        Err(err) => {
+                            warn!("Error getting meeting names {err}");
+                            Err(StatusCode::FORBIDDEN)
+                        }
+                    }
+                }
+                Err(_) => {
+                    warn!("not a claim in cookie");
+                    Err(StatusCode::FORBIDDEN)
+                }
+            }
+
+            Err(_) => {
+                warn!("failed get_jwt_secret");
                 Err(StatusCode::FORBIDDEN)
             }
-        } else {
-            warn!("failed get_jwt_secret");
+        }
+        None => {
+            warn!("missing login cookie");
             Err(StatusCode::FORBIDDEN)
         }
-    } else {
-        warn!("missing login cookie");
-        Err(StatusCode::FORBIDDEN)
     }
 }
 #[derive(Debug, Serialize, Deserialize)]
