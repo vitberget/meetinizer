@@ -26,7 +26,6 @@ main {
 
         &.meeting {
             table {
-                /* width: 800px; */
                 .dateheader {
                     font-size: 0.5em;
                     display: inline-flex;
@@ -47,18 +46,27 @@ main {
                     display: flex;
                     column-gap: 20px;
                     border: 1px solid black;
-                    background: #a9a9a9;
-                    padding: 2px;
+                    border-radius: 10px;
+                    background: #c9c9ff;
+
+                    &:nth-child(2) {
+                        background: #ffc9c9;
+                    }
+
                     &.add {
                         background: none;
-                        border: none;
                     }
                 }
                 div.from, div.to {
-                    background: #95a3e8;
+                    /* background: #95a3e8; */
                     width: 200px;
                     border-radius: 10px;
-                    border: 2px solid #445599;
+                }
+                div.to {
+                    border-left: 1px solid #445599;
+                }
+                div.from {
+                    border-right: 1px solid #445599;
                 }
             }
         }
