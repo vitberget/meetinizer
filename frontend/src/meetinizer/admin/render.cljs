@@ -46,11 +46,9 @@
                           [:div.date (time-from (:end slot))]] ])))
     [:div.slot.add
      [:div.from "Start"
-      [:input {:type "datetime-local"}]
-      ]
+      [:input {:type "datetime-local"}] ]
      [:div.to "End"
-      [:input {:type "datetime-local"}]]
-     ]
+      [:input {:type "datetime-local"}]] ]
     ]])
 
 (defn render-meeting [meeting]

@@ -32,7 +32,7 @@
                               votes :votes 
                               :as meeting}]
   (prn meeting)
-  [:main.meeting 
+  [:main.meet.meeting 
    [:h1 "Meeting \"" meeting-name "\""]
    [:table
     [:tr

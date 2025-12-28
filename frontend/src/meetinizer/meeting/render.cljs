@@ -4,7 +4,7 @@
             [meetinizer.the-state :refer [state-atom]]))
 
 (defn render-requesting [_]
-  [:main.meeting.requesting 
+  [:main.meet.meeting.requesting 
    [:h1 "Requesting login email"]])
 
 (defn render-requested [state]
@@ -13,21 +13,21 @@
                        (second))
         seconds (get-in state [:meeting meeting-id :requested])]
     (prn meeting-id)
-    [:main.meeting.reqeusted
+    [:main.meet.meeting.reqeusted
      [:h1 "Login mail sent"]
      [:div "Check your email inbox!"]
      [:div "Valid for " seconds " seconds."]]))
 
 (defn render-loading [_]
-  [:main.meeting.loading
+  [:main.meet.meeting.loading
    [:h1 "Loading..."]])
 
 (defn render-error [_]
-  [:main.meeting.error
+  [:main.meet.meeting.error
    [:h1 "Error!"]])
 
 (defn render-login [{path-parts :path-parts}]
-  [:main.meeting.login
+  [:main.meet.meeting.login
    [:h1 "Login to meeting"]
    [:div.info "Login to meeting with id: " (second path-parts)]
    [:div.form
