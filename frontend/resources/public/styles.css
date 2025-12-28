@@ -40,7 +40,7 @@ main {
     &.admin {
         &.meeting {
             div.slots {
-                display: flex;
+                display: inline-flex;
                 flex-direction: column;
                 row-gap: 5px;
 
@@ -51,6 +51,10 @@ main {
                     border: 1px solid black;
                     background: #a9a9a9;
                     padding: 2px;
+                    &.add {
+                        background: none;
+                        border: none;
+                    }
                 }
                 div.from, div.to {
                     background: #95a3e8;
