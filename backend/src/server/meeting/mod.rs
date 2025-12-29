@@ -1,13 +1,18 @@
+use std::convert::Infallible;
 use std::sync::Arc;
 
+use async_stream::try_stream;
 use axum::Json;
 use axum::extract::Path;
 use axum::http::StatusCode;
+use axum::response::Sse;
+use axum::response::sse::{Event, KeepAlive};
 use axum_extra::extract::CookieJar;
+use futures_util::Stream;
 use serde::{Deserialize, Serialize};
 use tracing::{info, warn};
 
-use crate::db::meeting::MEETING_DB;
+use crate::db::meeting::{MEETING_DB, subscribe_to_meeting_queue};
 use crate::server::meeting::login::claims::MeetingEmailClaims;
 use crate::structs::{Meeting, User};
 
@@ -33,6 +38,32 @@ pub async fn get_meeting(
             Err(StatusCode::FORBIDDEN)
         }
     }
+}
+
+
+pub async fn sse_meeting(
+    Path(id): Path<String>,
+    cookies: CookieJar
+) -> Result<Sse<impl Stream<Item = Result<Event, Infallible>>>, StatusCode> {
+    // match MeetingEmailClaims::get_and_validate(&id, &cookies) {
+    //     Err(error) => {
+    //         warn!("Error getting claims {error}");
+    //         Err(StatusCode::FORBIDDEN)
+    //     }
+    //     Ok(_) => {
+            let mut queue = subscribe_to_meeting_queue();
+
+            Ok(Sse::new(try_stream! {
+                while let Ok(meeting) = queue.recv().await {
+                    if meeting.get_name() == id
+                        && let Ok(json) = serde_json::to_string(&meeting) {
+                            let event = Event::default().data(json);
+                            yield event;
+                    }
+                }
+            }).keep_alive(KeepAlive::default()))
+        // }
+    // }
 }
 
 pub async fn get_whoami(

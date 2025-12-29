@@ -50,17 +50,23 @@
                      [:div.start (date-from start) " " (time-from start)]
                      [:div.end (date-from end) " " (time-from end)]]]))))]
     (->> users 
+         (filter (fn[user] (not= user my-user)))
          (map (fn[user]
                 [:tr
-                 [:td {:class (if (= user my-user) "my-user" "")} (:name user)]
+                 [:td (:name user)]
                  (->> slots
                       (map (fn[slot]
                              [:td (if (votes-contains? votes user slot) "Y" "N")] 
-                             )) 
+                             )))])))
 
-                      )]))
-
-         )]])
+         [:tr 
+          [:td ">>" (:name my-user)]
+          (->> slots
+               (map (fn[slot]
+                      [:td [:input {:type "checkbox" :checked (votes-contains? votes my-user slot)}]
+                       ; (if (votes-contains? votes my-user slot) "Y" "N")
+                       ] 
+                      )))]]])
 
 
 (comment

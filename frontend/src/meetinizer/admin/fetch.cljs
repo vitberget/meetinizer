@@ -36,9 +36,7 @@
                (let [status (.-status the-result)]
                  (condp = status
                    ; TODO show seconds left
-                   200 (-> (.text the-result) 
-                           (.then (fn[text]
-                                    (swap! state-atom assoc :meeting-ids :requested ))))
+                   200 (swap! state-atom dissoc :meeting-ids)
 
                    403 (swap! state-atom assoc :meeting-ids :forbidden)
 
@@ -46,9 +44,10 @@
 
 (defn admin-logout []
   (-> (js/fetch "/api/admin/logout")
-      (.then (fn[fetch-result]
-               (prn "Logged out?")
-               ))))
+      (.then (js/setTimeout
+               (fn[]
+                 (swap! state-atom dissoc :meeting-ids))
+               500))))
 
 (comment
   (admin-login "123")

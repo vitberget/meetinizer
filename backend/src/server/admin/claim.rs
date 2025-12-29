@@ -38,8 +38,8 @@ impl AdminClaims {
                 }
             }
             None => {
-                warn!("missing login cookie");
-                bail!("missing login cookie");
+                warn!("missing admin cookie");
+                bail!("missing admin cookie");
             }
         }
     }

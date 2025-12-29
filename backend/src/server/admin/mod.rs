@@ -5,9 +5,7 @@ use axum::extract::Path;
 use axum::http::StatusCode;
 use axum_extra::extract::CookieJar;
 use axum_extra::extract::cookie::Cookie;
-use serde::{Deserialize, Serialize};
-use tracing::warn;
-use uuid::Uuid;
+use tracing::{info, warn};
 
 use crate::config::get_jwt_secret;
 use crate::db::meeting::MEETING_DB;
@@ -17,6 +15,44 @@ use crate::structs::{Meeting, Slot};
 
 pub mod claim;
 pub mod login;
+
+pub async fn api_admin_add_slot(
+    Path(id): Path<String>,
+    cookies: CookieJar,
+    Json(slot): Json<Slot>
+) -> Result<StatusCode, StatusCode> {
+    match AdminClaims::get_and_validate(&cookies) {
+        Err(error) => {
+            warn!("error getting admin claims {error}");
+            Err(StatusCode::FORBIDDEN)
+        }
+        Ok(_) => {
+            let arc = Arc::clone(&MEETING_DB);
+            let meeting_db = arc.lock().await;
+            match meeting_db.add_slot_unsafe(&id, slot.to_owned()) {
+                Ok(_) => {
+                    info!("admin insert slot {slot:?} into {id}");
+                    Ok(StatusCode::OK)
+                }
+                Err(error) => {
+                    warn!("admin failed to insert slot {slot:?} into {id}: {error}");
+                    Err(StatusCode::INTERNAL_SERVER_ERROR)
+                }
+            }
+
+        }
+    }
+}
+
+pub async fn api_admin_rm_slot(
+    Path(id): Path<String>,
+    cookies: CookieJar,
+    Json(slot): Json<Slot>
+) -> Result<StatusCode, StatusCode> {
+
+    todo!()
+}
+
 
 pub async fn api_admin_get_meeting(
     Path(id): Path<String>,
@@ -59,21 +95,21 @@ pub async fn api_admin_list_meetings( cookies: CookieJar) -> Result<Json<Vec<Str
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct AddSlot {
-    pub meeting_uuid: Uuid,
-    pub meeting_revision: Uuid,
-    pub slot: Slot
-}
-
-pub async fn api_admin_add_slot(Json(add_slot): Json<AddSlot>) -> Result<Meeting, (StatusCode, String)> {
-    let arc = Arc::clone(&MEETING_DB);
-    let meeting_db = arc.lock().await;
-    match meeting_db.add_slot(&add_slot.meeting_uuid, &add_slot.meeting_revision, add_slot.slot) {
-        Ok(meeting) => Ok(meeting),
-        Err(err) => Err((StatusCode::INTERNAL_SERVER_ERROR, format!("{err}")))
-    }
-}
+// #[derive(Debug, Serialize, Deserialize)]
+// pub struct AddSlot {
+//     pub meeting_uuid: Uuid,
+//     pub meeting_revision: Uuid,
+//     pub slot: Slot
+// }
+//
+// pub async fn api_admin_add_slot(Json(add_slot): Json<AddSlot>) -> Result<Meeting, (StatusCode, String)> {
+//     let arc = Arc::clone(&MEETING_DB);
+//     let meeting_db = arc.lock().await;
+//     match meeting_db.add_slot(&add_slot.meeting_uuid, &add_slot.meeting_revision, add_slot.slot) {
+//         Ok(meeting) => Ok(meeting),
+//         Err(err) => Err((StatusCode::INTERNAL_SERVER_ERROR, format!("{err}")))
+//     }
+// }
 
 pub async fn api_admin_login(body: String) -> Result<CookieJar, StatusCode> {
     match is_correct_admin_password(&body) {
@@ -84,7 +120,7 @@ pub async fn api_admin_login(body: String) -> Result<CookieJar, StatusCode> {
                         .add(Cookie::build(("admin", token))
                             .path("/api/admin/")
                             .http_only(true));
-                    Ok(cookie_jar)
+                            Ok(cookie_jar)
                 }
                 Err(_) => Err(StatusCode::FORBIDDEN),
             }

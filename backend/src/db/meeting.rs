@@ -17,7 +17,7 @@ static MEETING_QUEUE: LazyLock<Arc<Sender<Meeting>>> = LazyLock::new( || {
     } 
 );
 
-pub fn subscrive_to_meeting_queue() -> Receiver<Meeting> {
+pub fn subscribe_to_meeting_queue() -> Receiver<Meeting> {
     let meeting_queue = Arc::clone(&MEETING_QUEUE);
     meeting_queue.subscribe()
 }
@@ -123,6 +123,12 @@ impl MeetingDB {
         } else {
             bail!("Wrong revision");
         }
+    }
+    pub fn add_slot_unsafe(&self, meeting_name: &str, slot: Slot) -> anyhow::Result<Meeting> {
+        let mut meeting = self.get_meeting_by_name(meeting_name)?;
+        meeting.add_slot(slot);
+        self.insert_meeting(&meeting)?;
+        Ok(meeting)
     }
 }
 

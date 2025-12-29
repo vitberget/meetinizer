@@ -32,7 +32,7 @@
     (mf/login meeting-id email)))
 
 (defn do-admin-login [password]
-  (swap! state-atom assoc :meeting-ids :requesting)
+  (swap! state-atom assoc :meeting-ids :requesting-login)
   (af/admin-login password))
 
 (defn- do-the-register-name [username]
@@ -52,6 +52,7 @@
         :meeting/login (apply do-the-login args)
         :meeting/register-name (apply do-the-register-name args)
         :admin/login (apply do-admin-login args)
+        :admin/logout (af/admin-logout)
 
 
         )))

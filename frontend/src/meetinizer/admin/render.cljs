@@ -10,7 +10,11 @@
 
 (defn render-error [_]
   [:main.admin.loading
-   [:h1 "Loading..."]])
+   [:h1 "Error"]])
+
+(defn render-requesting [_]
+  [:main.admin.loading
+   [:h1 "Requesting login"]])
 
 (defn render-login [_]
   [:main.admin.login
@@ -25,6 +29,8 @@
 (defn render-list [{meeting-ids :meeting-ids}]
   [:main.admin.list
    [:h1 "Meetings"]
+   [:input {:type "button" :value "Log out"
+            :on {:click [[:admin/logout]]}}]
    (if (empty? meeting-ids)
      "No meetings yet"   
      [:ul (->> meeting-ids
@@ -63,6 +69,7 @@
   (let [meetings (:meeting-ids state)
         active-meeting (:admin/selected-meeting state)
         meeting (get-in state [:admin :meeting active-meeting])]
+    (prn state)
     (cond 
       (nil? meetings)
       (do
@@ -78,6 +85,12 @@
 
       (= :forbidden meetings)
       (render-login state)
+
+      (= :requesting-login meetings)
+      (render-requesting state)
+
+      (= :requested meetings)
+      (render-requesting state)
 
       (and active-meeting (nil? meeting))
       (do
