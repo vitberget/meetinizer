@@ -14,7 +14,7 @@ use tracing::{info, warn};
 
 use crate::db::meeting::{MEETING_DB, subscribe_to_meeting_queue};
 use crate::server::meeting::login::claims::MeetingEmailClaims;
-use crate::structs::{Meeting, User};
+use crate::structs::{Meeting, Slot, User, Vote};
 
 pub mod login;
 
@@ -84,12 +84,76 @@ pub struct RegisterName {
     pub name: String
 }
 
+pub async fn post_vote_add(
+    Path(id): Path<String>,
+    cookies: CookieJar,
+    Json(slot): Json<Slot>
+) -> Result<StatusCode, StatusCode> {
+    match MeetingEmailClaims::get_and_validate(&id, &cookies) {
+        Err(error) => {
+            warn!("Error getting claim: {error}");
+            Err(StatusCode::FORBIDDEN)
+        }
+        Ok(claims) => {
+            let vote = Vote {
+                user_email: claims.get_email().to_owned(),
+                slot,
+            };
+            let arc = Arc::clone(&MEETING_DB);
+            match arc.lock().await.add_vote_unsafe(&id, vote) {
+                Ok(_) => {
+                    info!("User {user:?} adding vote on {vote:?} in {id}", user = claims.get_email());
+                    Ok(StatusCode::OK)
+                }
+                Err(err) => {
+                    warn!("Error when user {user:?} adding vote on {vote:?} in {id}", user = claims.get_email());
+                    Err(StatusCode::FORBIDDEN)
+                }
+            } 
+        }
+    }
+}
+
+pub async fn post_vote_rm(
+    Path(id): Path<String>,
+    cookies: CookieJar,
+    Json(slot): Json<Slot>
+) -> Result<StatusCode, StatusCode> {
+    match MeetingEmailClaims::get_and_validate(&id, &cookies) {
+        Err(error) => {
+            warn!("Error getting claim: {error}");
+            Err(StatusCode::FORBIDDEN)
+        }
+        Ok(claims) => {
+            let vote = Vote {
+                user_email: claims.get_email().to_owned(),
+                slot,
+            };
+            let arc = Arc::clone(&MEETING_DB);
+            match arc.lock().await.rm_vote_unsafe(&id, vote) {
+                Ok(_) => {
+                    info!("User {user:?} removed vote on {vote:?} in {id}", user = claims.get_email());
+                    Ok(StatusCode::OK)
+                }
+                Err(err) => {
+                    warn!("Error when user {user:?} removing vote on {vote:?} in {id}", user = claims.get_email());
+                    Err(StatusCode::FORBIDDEN)
+                }
+            } 
+        }
+    }
+}
+
 pub async fn post_register_name(
     Path(id): Path<String>,
     cookies: CookieJar,
     Json(name): Json<RegisterName>
 ) -> Result<StatusCode, StatusCode> {
     match MeetingEmailClaims::get_and_validate(&id, &cookies) {
+        Err(error) => {
+            warn!("Error getting claim: {error}");
+            Err(StatusCode::FORBIDDEN)
+        }
         Ok(claims) => {
             let user = User::new(&name.name, claims.get_email());
 
@@ -104,10 +168,6 @@ pub async fn post_register_name(
                     Err(StatusCode::FORBIDDEN)
                 }
             } 
-        }
-        Err(error) => {
-            warn!("Error getting claim: {error}");
-            Err(StatusCode::FORBIDDEN)
         }
     }
 }

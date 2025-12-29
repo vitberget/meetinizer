@@ -123,11 +123,11 @@ impl Meeting {
         self.revision = Uuid::new_v4();
     }
 
-    pub fn add_vote(&mut self, user: User, slot: Slot) -> anyhow::Result<()> {
-        ensure!(self.users.contains(&user), "User not in list of users");
-        ensure!(self.slots.contains(&slot), "Slot not in list of slots");
+    pub fn add_vote(&mut self, vote: Vote) -> anyhow::Result<()> {
+        ensure!(self.users.iter().any(|u| u.email == vote.user_email), "User not in list of users");
+        ensure!(self.slots.contains(&vote.slot), "Slot not in list of slots");
 
-        self.votes.insert(Vote { user_email: user.email, slot });
+        self.votes.insert(vote);
         self.revision = Uuid::new_v4();
 
         Ok(())

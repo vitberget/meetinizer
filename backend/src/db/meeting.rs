@@ -136,6 +136,18 @@ impl MeetingDB {
         self.insert_meeting(&meeting)?;
         Ok(meeting)
     }
+    pub fn add_vote_unsafe(&self, meeting_name: &str, vote: Vote) -> anyhow::Result<Meeting> {
+        let mut meeting = self.get_meeting_by_name(meeting_name)?;
+        meeting.add_vote(vote)?;
+        self.insert_meeting(&meeting)?;
+        Ok(meeting)
+    }
+    pub fn rm_vote_unsafe(&self, meeting_name: &str, vote: Vote) -> anyhow::Result<Meeting> {
+        let mut meeting = self.get_meeting_by_name(meeting_name)?;
+        meeting.remove_vote(vote);
+        self.insert_meeting(&meeting)?;
+        Ok(meeting)
+    }
 }
 
 #[cfg(test)]

@@ -34,6 +34,8 @@ pub async fn start_server() -> anyhow::Result<()> {
         .route("/api/meeting/{id}/sse", get(sse_meeting))
         .route("/api/meeting/{id}/whoami", get(get_whoami))
         .route("/api/meeting/{id}/register-name", post(post_register_name))
+        .route("/api/meeting/{id}/vote/add", post(post_vote_add))
+        .route("/api/meeting/{id}/vote/rm", post(post_vote_rm))
         .route("/api/meeting/{id}/request-login/{email}", get(api_request_login))
         .route("/api/meeting/{id}/login/{email}/{token}", get(api_attempt_login));
 
