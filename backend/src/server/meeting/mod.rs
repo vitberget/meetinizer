@@ -45,12 +45,12 @@ pub async fn sse_meeting(
     Path(id): Path<String>,
     cookies: CookieJar
 ) -> Result<Sse<impl Stream<Item = Result<Event, Infallible>>>, StatusCode> {
-    // match MeetingEmailClaims::get_and_validate(&id, &cookies) {
-    //     Err(error) => {
-    //         warn!("Error getting claims {error}");
-    //         Err(StatusCode::FORBIDDEN)
-    //     }
-    //     Ok(_) => {
+    match MeetingEmailClaims::get_and_validate(&id, &cookies) {
+        Err(error) => {
+            warn!("Error getting claims {error}");
+            Err(StatusCode::FORBIDDEN)
+        }
+        Ok(_) => {
             let mut queue = subscribe_to_meeting_queue();
 
             Ok(Sse::new(try_stream! {
@@ -62,8 +62,8 @@ pub async fn sse_meeting(
                     }
                 }
             }).keep_alive(KeepAlive::default()))
-        // }
-    // }
+        }
+    }
 }
 
 pub async fn get_whoami(

@@ -118,6 +118,11 @@ impl Meeting {
         Ok(())
     }
 
+    pub fn remove_slot_unsafe(&mut self, slot: Slot) { 
+        self.slots.remove(&slot);
+        self.revision = Uuid::new_v4();
+    }
+
     pub fn add_vote(&mut self, user: User, slot: Slot) -> anyhow::Result<()> {
         ensure!(self.users.contains(&user), "User not in list of users");
         ensure!(self.slots.contains(&slot), "Slot not in list of slots");

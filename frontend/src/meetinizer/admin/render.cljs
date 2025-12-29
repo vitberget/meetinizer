@@ -51,7 +51,9 @@
                           [:div.date (date-from (:end slot))]
                           [:div.date (time-from (:end slot))]]
                         [:div.action 
-                         [:input {:type "button" :value "Remove"}]
+                         [:input {:type "button" 
+                                  :value "Remove"
+                                  :on {:click [[:admin/rm-slot id slot]]}}]
                          ] ])))
     [:div.slot.add
      [:div.from "Start"

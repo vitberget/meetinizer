@@ -130,6 +130,12 @@ impl MeetingDB {
         self.insert_meeting(&meeting)?;
         Ok(meeting)
     }
+    pub fn rm_slot_unsafe(&self, meeting_name: &str, slot: Slot) -> anyhow::Result<Meeting> {
+        let mut meeting = self.get_meeting_by_name(meeting_name)?;
+        meeting.remove_slot_unsafe(slot);
+        self.insert_meeting(&meeting)?;
+        Ok(meeting)
+    }
 }
 
 #[cfg(test)]

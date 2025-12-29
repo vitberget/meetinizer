@@ -47,6 +47,7 @@
                                (enrich-action-from-state @state-atom))
           [action-name & args] enriched-action]
       (prn "Enriched action" enriched-action)
+      (prn "args" args)
       (condp = action-name
         :db/assoc (apply swap! state-atom assoc args)
         :meeting/login (apply do-the-login args)
@@ -54,6 +55,7 @@
         :admin/login (apply do-admin-login args)
         :admin/logout (af/admin-logout)
         :admin/add-slot (apply af/add-slot args)
+        :admin/rm-slot (apply af/rm-slot args)
 
         )))
   ; (main-thing el @state-atom)

@@ -1,14 +1,19 @@
+use std::convert::Infallible;
 use std::sync::Arc;
 
+use async_stream::try_stream;
 use axum::Json;
 use axum::extract::Path;
 use axum::http::StatusCode;
+use axum::response::Sse;
+use axum::response::sse::{Event, KeepAlive};
 use axum_extra::extract::CookieJar;
 use axum_extra::extract::cookie::Cookie;
+use futures_util::Stream;
 use tracing::{info, warn};
 
 use crate::config::get_jwt_secret;
-use crate::db::meeting::MEETING_DB;
+use crate::db::meeting::{MEETING_DB, subscribe_to_meeting_queue};
 use crate::server::admin::claim::AdminClaims;
 use crate::server::admin::login::is_correct_admin_password;
 use crate::structs::{Meeting, Slot};
@@ -49,8 +54,27 @@ pub async fn api_admin_rm_slot(
     cookies: CookieJar,
     Json(slot): Json<Slot>
 ) -> Result<StatusCode, StatusCode> {
+    match AdminClaims::get_and_validate(&cookies) {
+        Err(error) => {
+            warn!("error getting admin claims {error}");
+            Err(StatusCode::FORBIDDEN)
+        }
+        Ok(_) => {
+            let arc = Arc::clone(&MEETING_DB);
+            let meeting_db = arc.lock().await;
+            match meeting_db.rm_slot_unsafe(&id, slot.to_owned()) {
+                Ok(_) => {
+                    info!("admin removed slot {slot:?} into {id}");
+                    Ok(StatusCode::OK)
+                }
+                Err(error) => {
+                    warn!("admin failed to remove slot {slot:?} into {id}: {error}");
+                    Err(StatusCode::INTERNAL_SERVER_ERROR)
+                }
+            }
 
-    todo!()
+        }
+    }
 }
 
 
@@ -139,5 +163,51 @@ pub async fn api_admin_logout() -> Result<CookieJar, StatusCode> {
         );
 
     Ok(cookies)
+}
+
+pub async fn sse_admin_meeting(
+    Path(id): Path<String>,
+    cookies: CookieJar
+) -> Result<Sse<impl Stream<Item = Result<Event, Infallible>>>, StatusCode> {
+    match AdminClaims::get_and_validate(&cookies) {
+        Err(error) => {
+            warn!("Error getting claims {error}");
+            Err(StatusCode::FORBIDDEN)
+        }
+        Ok(_) => {
+            let mut queue = subscribe_to_meeting_queue();
+
+            Ok(Sse::new(try_stream! {
+                while let Ok(meeting) = queue.recv().await {
+                    if meeting.get_name() == id
+                        && let Ok(json) = serde_json::to_string(&meeting) {
+                            let event = Event::default().data(json);
+                            yield event;
+                    }
+                }
+            }).keep_alive(KeepAlive::default()))
+        }
+    }
+}
+
+pub async fn sse_admin_all_meetings(cookies: CookieJar) -> Result<Sse<impl Stream<Item = Result<Event, Infallible>>>, StatusCode> {
+    match AdminClaims::get_and_validate(&cookies) {
+        Err(error) => {
+            warn!("Error getting claims {error}");
+            Err(StatusCode::FORBIDDEN)
+        }
+        Ok(_) => {
+            let mut queue = subscribe_to_meeting_queue();
+
+            Ok(Sse::new(try_stream! {
+                while let Ok(meeting) = queue.recv().await {
+                    if let Ok(json) = serde_json::to_string(&meeting) {
+                        let event = Event::default().data(json);
+                        yield event;
+                    }
+                }
+            }).keep_alive(KeepAlive::default()))
+        }
+    }
 }
 
