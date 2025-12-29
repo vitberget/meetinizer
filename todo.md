@@ -7,6 +7,7 @@
 - [ ] CI/CD
     - [ ] Woodpecker
     - [ ] GitHub
+- [ ] Meetings with special character names
 
 ## Frontend
 
