@@ -155,7 +155,7 @@ mod tests {
         let arc = Arc::clone(&MEETING_DB);
         let real_db = arc.lock().await;
 
-        let meeting = Meeting::new("I am alive");
+        let meeting = Meeting::new("alive");
         real_db.insert_meeting(&meeting)?;
         Ok(())
     }
@@ -166,7 +166,7 @@ mod tests {
         let arc = Arc::clone(&MEETING_DB);
         let real_db = arc.lock().await;
 
-        let mut meeting = real_db.get_meeting_by_name("I am alive")?;
+        let mut meeting = real_db.get_meeting_by_name("alive")?;
         meeting.set_comment("Some rando comment");
         let slot = Slot { 
             start: NaiveDate::from_ymd_opt(2025, 6, 4).unwrap().and_hms_opt(15,0,0).unwrap().and_local_timezone(Local).earliest().unwrap(),
@@ -184,7 +184,7 @@ mod tests {
         let arc = Arc::clone(&MEETING_DB);
         let real_db = arc.lock().await;
 
-        let meeting = real_db.get_meeting_by_name("I am alive")?;
+        let meeting = real_db.get_meeting_by_name("alive")?;
 
         println!("meeting {meeting:?}");
 
