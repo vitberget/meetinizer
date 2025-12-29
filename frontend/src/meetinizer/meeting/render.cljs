@@ -1,7 +1,9 @@
 (ns meetinizer.meeting.render
-  (:require [meetinizer.meeting.fetch :refer [fetch-meeting]]
-            [meetinizer.meeting.render-meeting :refer [render-actually]]
-            [meetinizer.the-state :refer [state-atom]]))
+  (:require
+   [meetinizer.meeting.fetch :refer [fetch-meeting]]
+   [meetinizer.meeting.render-meeting :refer [render-actually]]
+   [meetinizer.the-state :refer [state-atom]]
+   [meetinizer.utils.cookie :refer [get-cookie]]))
 
 (defn render-requesting [_]
   [:main.meet.meeting.requesting 
@@ -40,9 +42,22 @@
              :value "Send me login mail"
              :on {:click [[:meeting/login [:db/get :meeting/login-form]]]}}]]])
 
+(defn render-enter-name [state meeting]
+  [:main.meet.enter-name
+   [:h1 "Welcome, who are you?"]
+   [:input#login-email {:type "text"
+                        :replicant/on-mount [[:db/assoc :meeting/name-form-element :dom/node]]
+                        :on {:input [[:db/assoc :meeting/name-form :event/target.value]]}
+                        }]
+   [:input {:type "button" 
+            :value "Register name"
+            :on {:click [[:meeting/register-name [:db/get :meeting/name-form]]]}}]])
+
 (defn render-meeting [state]
   (let [meeting-id (second (:path-parts state))
-        meeting (get-in state [:meeting meeting-id])]
+        meeting (get-in state [:meeting meeting-id])
+        my-email (get-cookie "email")]
+    (prn state)
     (cond
       (nil? meeting)
       (do (fetch-meeting meeting-id)
@@ -65,8 +80,12 @@
       (render-error state)
 
       :else
-      (render-actually state meeting)
-      )))
+      (if-let [my-user (->> meeting
+                            (:users)
+                            (filter (fn [{email :email}] (= email my-email)))
+                            (first))]
+        (render-actually state meeting my-user)
+        (render-enter-name state meeting)))))
 
 (comment
   @state-atom

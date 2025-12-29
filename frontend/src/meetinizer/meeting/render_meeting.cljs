@@ -26,11 +26,13 @@
                            (= (:slot vote) slot))))
        (first)))
 
-(defn render-actually [state {meeting-name :name 
-                              slots :slots 
-                              users :users 
-                              votes :votes 
-                              :as meeting}]
+(defn render-actually [state 
+                       {meeting-name :name 
+                        slots :slots 
+                        users :users 
+                        votes :votes 
+                        :as meeting}
+                       my-email]
   (prn meeting)
   [:main.meet.meeting 
    [:h1 "Meeting \"" meeting-name "\""]
@@ -48,7 +50,7 @@
     (->> users 
          (map (fn[user]
                 [:tr
-                 [:td (:email user)]
+                 [:td (:name user)]
                  (->> slots
                       (map (fn[slot]
                              [:td (if (votes-contains? votes user slot) "Y" "N")] 

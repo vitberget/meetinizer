@@ -35,6 +35,9 @@
   (swap! state-atom assoc :meeting-ids :requesting)
   (af/admin-login password))
 
+(defn- do-the-register-name [arg1]
+  )
+
 (defn event-handler [{:replicant/keys [^js js-event] :as replicant-data} actions]
   (doseq [action actions]
     (prn "Triggered action" action)
@@ -46,6 +49,7 @@
       (condp = action-name
         :db/assoc (apply swap! state-atom assoc args)
         :meeting/login (apply do-the-login args)
+        :meeting/register-name (apply do-the-register-name args)
         :admin/login (apply do-admin-login args)
 
 
