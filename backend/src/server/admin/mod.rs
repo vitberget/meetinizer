@@ -13,7 +13,6 @@ use crate::config::get_jwt_secret;
 use crate::db::meeting::MEETING_DB;
 use crate::server::admin::claim::AdminClaims;
 use crate::server::admin::login::is_correct_admin_password;
-use crate::server::meeting::get_meeting_mock;
 use crate::structs::{Meeting, Slot};
 
 pub mod claim;
@@ -23,55 +22,43 @@ pub async fn api_admin_get_meeting(
     Path(id): Path<String>,
     cookies: CookieJar
 ) -> Result<Json<Meeting>, StatusCode> {
-    if let Some(admin) = cookies.get("admin") {
-        if let Ok(secret) = get_jwt_secret() {
-            if let Ok(_claims) = <(&str, &str) as TryInto<AdminClaims>>::try_into((admin.value(), &secret)) {
-                Ok(Json(get_meeting_mock(&id)))
-            } else {
-                warn!("not a claim in cookie");
-                Err(StatusCode::FORBIDDEN)
-            }
-        } else {
-            warn!("failed get_jwt_secret");
-            Err(StatusCode::FORBIDDEN)
-        }
-    } else {
-        warn!("missing login cookie");
-        Err(StatusCode::FORBIDDEN)
-    }
-}
-pub async fn api_admin_list_meetings( cookies: CookieJar) -> Result<Json<Vec<String>>, StatusCode> {
-    match cookies.get("admin") {
-        Some(admin) => match get_jwt_secret() {
-            Ok(secret) => match <(&str, &str) as TryInto<AdminClaims>>::try_into((admin.value(), &secret)) {
-                Ok(_claims) => {
-                    let arc = Arc::clone(&MEETING_DB);
-                    let real_db = arc.lock().await;
-                    match real_db.get_meeting_names() {
-                        Ok(meetings) => Ok(Json(meetings)),
-                        Err(err) => {
-                            warn!("Error getting meeting names {err}");
-                            Err(StatusCode::FORBIDDEN)
-                        }
-                    }
-                }
-                Err(_) => {
-                    warn!("not a claim in cookie");
+    match AdminClaims::get_and_validate(&cookies) {
+        Ok(_) => {
+            let arc = Arc::clone(&MEETING_DB);
+            match arc.lock().await.get_meeting_by_name(&id) {
+                Ok(meeting) => Ok(Json(meeting)),
+                Err(err) => {
+                    warn!("Error getting meeting {err}");
                     Err(StatusCode::FORBIDDEN)
                 }
             }
-
-            Err(_) => {
-                warn!("failed get_jwt_secret");
-                Err(StatusCode::FORBIDDEN)
-            }
         }
-        None => {
-            warn!("missing login cookie");
+        Err(err) => {
+            warn!("Error getting claims {err}");
             Err(StatusCode::FORBIDDEN)
         }
     }
 }
+
+pub async fn api_admin_list_meetings( cookies: CookieJar) -> Result<Json<Vec<String>>, StatusCode> {
+    match AdminClaims::get_and_validate(&cookies) {
+        Ok(_) => {
+            let arc = Arc::clone(&MEETING_DB);
+            match arc.lock().await.get_meeting_names() {
+                Ok(meetings) => Ok(Json(meetings)),
+                Err(err) => {
+                    warn!("Error getting meeting names {err}");
+                    Err(StatusCode::FORBIDDEN)
+                }
+            }
+        }
+        Err(err) => {
+            warn!("Error getting claims: {err}");
+            Err(StatusCode::FORBIDDEN)
+        }
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct AddSlot {
     pub meeting_uuid: Uuid,
@@ -86,27 +73,25 @@ pub async fn api_admin_add_slot(Json(add_slot): Json<AddSlot>) -> Result<Meeting
         Ok(meeting) => Ok(meeting),
         Err(err) => Err((StatusCode::INTERNAL_SERVER_ERROR, format!("{err}")))
     }
-
-
-    // todo!()
 }
 
 pub async fn api_admin_login(body: String) -> Result<CookieJar, StatusCode> {
-    if let Ok(true) = is_correct_admin_password(&body) {
-        if let Ok(secret) = get_jwt_secret() {
-            if let Ok(token) = AdminClaims::default().to_jwt(&secret) {
-                let cookie_jar = CookieJar::new()
-                    .add(Cookie::build(("admin", token)).path("/api/admin/").http_only(true));
-
-                Ok(cookie_jar)
-            } else {
-                Err(StatusCode::FORBIDDEN)
+    match is_correct_admin_password(&body) {
+        Ok(true) => match get_jwt_secret() {
+            Ok(secret) => match AdminClaims::default().to_jwt(&secret) {
+                Ok(token) => {
+                    let cookie_jar = CookieJar::new()
+                        .add(Cookie::build(("admin", token))
+                            .path("/api/admin/")
+                            .http_only(true));
+                    Ok(cookie_jar)
+                }
+                Err(_) => Err(StatusCode::FORBIDDEN),
             }
-        } else {
-            Err(StatusCode::FORBIDDEN)
+
+            Err(_) => Err(StatusCode::FORBIDDEN),
         }
-    } else {
-        Err(StatusCode::FORBIDDEN)
+        _ => Err(StatusCode::FORBIDDEN),
     }
 }
 

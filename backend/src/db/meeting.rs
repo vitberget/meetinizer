@@ -96,10 +96,9 @@ impl MeetingDB {
         )?)
     }
 
-    pub fn add_user(&self, meeting_uuid: &str, revision: &str, name: &str, email: &str) -> anyhow::Result<Meeting> {
-        let mut meeting = self.get_meeting_by_uuid(&Uuid::parse_str(meeting_uuid)?)?;
-        if meeting.get_revision() == Uuid::parse_str(revision)? {
-            let user = User::new(name, email);
+    pub fn add_user(&self, meeting_uuid: &Uuid, revision: &Uuid, user: User) -> anyhow::Result<Meeting> {
+        let mut meeting = self.get_meeting_by_uuid(meeting_uuid)?;
+        if meeting.get_revision() == *revision {
             meeting.add_user(user);
             self.insert_meeting(&meeting)?;
             Ok(meeting)

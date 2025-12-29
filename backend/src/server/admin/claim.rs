@@ -1,5 +1,10 @@
+use anyhow::bail;
+use axum_extra::extract::CookieJar;
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation, decode, encode, get_current_timestamp};
 use serde::{Deserialize, Serialize};
+use tracing::warn;
+
+use crate::config::get_jwt_secret;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct AdminClaims {
@@ -14,6 +19,29 @@ impl AdminClaims {
             self,
             &EncodingKey::from_secret(secret.as_ref())
             )?)
+    }
+
+    pub fn get_and_validate(cookies: &CookieJar) -> anyhow::Result<AdminClaims> {
+        match cookies.get("admin") {
+            Some(admin) => match get_jwt_secret() {
+                Ok(secret) => match <(&str, &str) as TryInto<AdminClaims>>::try_into((admin.value(), &secret)) {
+                    Ok(claims) => Ok(claims),
+                    Err(error) => {
+                        warn!("not a claim in cookie {error}");
+                        bail!("not a claim in cookie {error}");
+                    }
+                }
+
+                Err(error) => {
+                    warn!("failed get_jwt_secret {error}");
+                    bail!("failed get_jwt_secret {error}");
+                }
+            }
+            None => {
+                warn!("missing login cookie");
+                bail!("missing login cookie");
+            }
+        }
     }
 }
 

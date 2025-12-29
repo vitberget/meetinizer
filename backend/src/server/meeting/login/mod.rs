@@ -17,11 +17,12 @@ pub async fn api_attempt_login(Path((meeting, email, token)): Path<(String, Stri
     if let Ok(token) = db::attempt_login(&meeting, &email, &token).await {
 
         let path = format!("/api/meeting/{meeting}");
-        let redirect = Redirect::to(&format!("/meet/{meeting}"));
+        let redirect_path = format!("/meet/{meeting}");
+        let redirect = Redirect::to(&redirect_path);
 
         let jwt_cookie = Cookie::build(("login", token)).path(path.to_owned()).http_only(true);
-        let meeting_cookie = Cookie::build(("meeting", meeting)).path(path.to_owned());
-        let email_cookie = Cookie::build(("email", email)).path(path.to_owned());
+        let meeting_cookie = Cookie::build(("meeting", meeting)).path(redirect_path.to_owned());
+        let email_cookie = Cookie::build(("email", email)).path(redirect_path.to_owned());
 
         let jar = CookieJar::new()
             .add(jwt_cookie)

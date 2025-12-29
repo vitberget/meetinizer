@@ -6,7 +6,7 @@ use crate::config::get_bind;
 use crate::db::init::init_meeting;
 use crate::server::admin::{api_admin_get_meeting, api_admin_list_meetings, api_admin_login, api_admin_logout};
 use crate::server::meeting::login::{api_attempt_login, api_request_login};
-use crate::server::meeting::{get_meeting, get_whoami};
+use crate::server::meeting::{get_meeting, get_whoami, post_register_name};
 
 pub mod admin;
 pub mod meeting;
@@ -28,6 +28,7 @@ pub async fn start_server() -> anyhow::Result<()> {
 
         .route("/api/meeting/{id}", get(get_meeting))
         .route("/api/meeting/{id}/whoami", get(get_whoami))
+        .route("/api/meeting/{id}/register-name", post(post_register_name))
         .route("/api/meeting/{id}/request-login/{email}", get(api_request_login))
         .route("/api/meeting/{id}/login/{email}/{token}", get(api_attempt_login));
 

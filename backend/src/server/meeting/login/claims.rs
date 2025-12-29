@@ -1,5 +1,10 @@
+use anyhow::bail;
+use axum_extra::extract::CookieJar;
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation, decode, encode, get_current_timestamp};
 use serde::{Deserialize, Serialize};
+use tracing::warn;
+
+use crate::config::get_jwt_secret;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct MeetingEmailClaims {
@@ -27,6 +32,35 @@ impl MeetingEmailClaims {
     }
     pub fn get_meeting(&self) -> &str { &self.meeting }
     pub fn get_email(&self) -> &str { &self.email }
+
+    pub fn get_and_validate(meeting_id: &str, cookies: &CookieJar) -> anyhow::Result<MeetingEmailClaims> {
+        match cookies.get("login") {
+            Some(login) => match get_jwt_secret() {
+                Ok(secret) => match <(&str, &str) as TryInto<MeetingEmailClaims>>::try_into((login.value(), &secret)) {
+                    Ok(claims) => {
+                        if claims.get_meeting() == meeting_id {
+                            Ok(claims)
+                        } else {
+                            warn!("wrong meeting in claim");
+                            bail!("wrong meeting in claim");
+                        }
+                    }
+                    Err(error) => {
+                        warn!("not a claim in cookie {error}");
+                        bail!("not a claim in cookie {error}");
+                    }
+                }
+                Err(error) => {
+                    warn!("failed get_jwt_secret {error}");
+                    bail!("failed get_jwt_secret {error}");
+                }
+            }
+            None => {
+                warn!("missing login cookie");
+                bail!("missing login cookie");
+            }
+        }
+    }
 }
 
 impl TryFrom<(&str, &str)> for MeetingEmailClaims {
@@ -40,6 +74,7 @@ impl TryFrom<(&str, &str)> for MeetingEmailClaims {
         Ok(token_data.claims)
     }
 }
+
 
 #[cfg(test)]
 mod tests {

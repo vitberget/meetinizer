@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use axum::Json;
 use axum::extract::Path;
 use axum::http::StatusCode;
@@ -10,26 +12,21 @@ pub async fn get_meeting(
     Path(id): Path<String>,
     cookies: CookieJar
 ) -> Result<Json<Meeting>, StatusCode> {
-    if let Some(login) = cookies.get("login") {
-        if let Ok(secret) = get_jwt_secret() {
-            if let Ok(claims) = <(&str, &str) as TryInto<MeetingEmailClaims>>::try_into((login.value(), &secret)) {
-                if claims.get_meeting() == id {
-                    Ok(Json(get_meeting_mock(&id)))
-                } else {
-                    warn!("wrong meeting in claim");
+    match MeetingEmailClaims::get_and_validate(&id, &cookies) {
+        Ok(_) => {
+            let arc = Arc::clone(&MEETING_DB);
+            match arc.lock().await.get_meeting_by_name(&id) {
+                Ok(meeting) => Ok(Json(meeting)),
+                Err(error) => {
+                    warn!("Error getting meeting: {error}");
                     Err(StatusCode::FORBIDDEN)
                 }
-            } else {
-                warn!("not a claim in cookie");
-                Err(StatusCode::FORBIDDEN)
             }
-        } else {
-            warn!("failed get_jwt_secret");
+        }
+        Err(err) => {
+            warn!("Error getting claims {err}");
             Err(StatusCode::FORBIDDEN)
         }
-    } else {
-        warn!("missing login cookie");
-        Err(StatusCode::FORBIDDEN)
     }
 }
 
@@ -37,34 +34,57 @@ pub async fn get_whoami(
     Path(id): Path<String>,
     cookies: CookieJar
 ) -> Result<String, StatusCode> {
-    if let Some(login) = cookies.get("login") {
-        if let Ok(secret) = get_jwt_secret() {
-            if let Ok(claims) = <(&str, &str) as TryInto<MeetingEmailClaims>>::try_into((login.value(), &secret)) {
-                if claims.get_meeting() == id {
-                    // Ok(Json(get_meeting_mock(&id)))
-                    Ok(claims.get_email().to_string())
-                } else {
-                    warn!("wrong meeting in claim");
-                    Err(StatusCode::FORBIDDEN)
-                }
-            } else {
-                warn!("not a claim in cookie");
-                Err(StatusCode::FORBIDDEN)
-            }
-        } else {
-            warn!("failed get_jwt_secret");
+    match MeetingEmailClaims::get_and_validate(&id, &cookies) {
+        Ok(claims) => Ok(claims.get_email().to_string()),
+        Err(error) => {
+            warn!("Error getting claims {error}");
             Err(StatusCode::FORBIDDEN)
         }
-    } else {
-        warn!("missing login cookie");
-        Err(StatusCode::FORBIDDEN)
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct RegisterName {
+    pub meeting_uuid: Uuid,
+    pub meeting_revision: Uuid,
+    pub name: String
+}
+
+
+pub async fn post_register_name(
+    Path(id): Path<String>,
+    cookies: CookieJar,
+    Json(name): Json<RegisterName>
+) -> Result<StatusCode, StatusCode> {
+    match MeetingEmailClaims::get_and_validate(&id, &cookies) {
+        Ok(claims) => {
+            let user = User::new(&name.name, claims.get_email());
+
+            let arc = Arc::clone(&MEETING_DB);
+            match arc.lock().await.add_user(&name.meeting_uuid, &name.meeting_revision, user.to_owned()) {
+                Ok(_) => {
+                    info!("User {user:?} registred on {id}");
+                    Ok(StatusCode::OK)
+                }
+                Err(err) => {
+                    warn!("Error adding user {user:?} to meeting {id}: {err}");
+                    Err(StatusCode::FORBIDDEN)
+                }
+            } 
+        }
+        Err(error) => {
+            warn!("Error getting claim: {error}");
+            Err(StatusCode::FORBIDDEN)
+        }
     }
 }
 
 use chrono::{Local, NaiveDate};
-use tracing::{debug, warn};
+use serde::{Deserialize, Serialize};
+use tracing::{debug, info, warn};
+use uuid::Uuid;
 
-use crate::{config::get_jwt_secret, server::meeting::login::claims::MeetingEmailClaims, structs::{Meeting, Slot, User}};
+use crate::{db::meeting::MEETING_DB, server::meeting::{login::claims::MeetingEmailClaims}, structs::{Meeting, Slot, User}};
 
 pub fn get_meeting_mock(id: &str) -> Meeting {
     debug!("meeting mock");
