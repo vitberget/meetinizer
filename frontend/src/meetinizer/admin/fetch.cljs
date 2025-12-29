@@ -17,7 +17,7 @@
                    (swap! state-atom assoc-in [:admin :meeting id] :error)))))))
 
 (defn fetch-meeting-list []
-  (-> (js/fetch "/api/admin/list")
+  (-> (js/fetch "/api/admin/meetings/list")
       (.then (fn [the-result]
                (let [status (.-status the-result)]
                  (condp = status
@@ -71,8 +71,15 @@
                  (swap! state-atom dissoc :meeting-ids))
                500))))
 
+(defn admin-meeting-sse [id]
+  (let [sse (js/EventSource. (str "/api/admin/meeting/" id "/sse"))]
+    (swap! state-atom assoc-in [:admin :sse id] sse)
+    (set! (.-onmessage sse) (fn[event] (prn "event" event)))
+     ))
+
 (comment
   (admin-login "123")
+  (admin-meeting-sse "alive")
   (admin-logout)
   (fetch-meeting-list)
   @state-atom
