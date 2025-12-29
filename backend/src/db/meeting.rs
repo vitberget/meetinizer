@@ -99,12 +99,18 @@ impl MeetingDB {
     pub fn add_user(&self, meeting_uuid: &Uuid, revision: &Uuid, user: User) -> anyhow::Result<Meeting> {
         let mut meeting = self.get_meeting_by_uuid(meeting_uuid)?;
         if meeting.get_revision() == *revision {
-            meeting.add_user(user);
+            meeting.add_user(user)?;
             self.insert_meeting(&meeting)?;
             Ok(meeting)
         } else {
             bail!("Wrong revision");
         }
+    }
+    pub fn add_user_unsafe(&self, meeting_id: &str, user: User) -> anyhow::Result<Meeting> {
+        let mut meeting = self.get_meeting_by_name(meeting_id)?;
+        meeting.add_user(user)?;
+        self.insert_meeting(&meeting)?;
+        Ok(meeting)
     }
 
     pub fn add_slot(&self, meeting_uuid: &Uuid, revision: &Uuid, slot: Slot) -> anyhow::Result<Meeting> {
@@ -122,6 +128,8 @@ impl MeetingDB {
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
+
     use anyhow::bail;
     use chrono::{DateTime, Datelike, Local, NaiveDate, Timelike};
 
@@ -129,7 +137,19 @@ mod tests {
 
     #[tokio::test]
     #[ignore]
-    async fn get_meeting_names() -> anyhow::Result<()> {
+    async fn test_get_meeting_by_uuid() -> anyhow::Result<()> {
+        let arc = Arc::clone(&MEETING_DB);
+        let real_db = arc.lock().await;
+        let meeting = real_db.get_meeting_by_uuid(&Uuid::from_str("497eb28f-2f5a-4668-8275-22904646bfe5")?)?;
+        println!("meeting {meeting:?}");
+
+        bail!("meh")
+    }
+
+
+    #[tokio::test]
+    #[ignore]
+    async fn test_get_meeting_names() -> anyhow::Result<()> {
         let arc = Arc::clone(&MEETING_DB);
         let real_db = arc.lock().await;
         let meetings = real_db.get_meeting_names()?;

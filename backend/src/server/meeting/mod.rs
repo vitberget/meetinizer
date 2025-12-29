@@ -6,13 +6,11 @@ use axum::http::StatusCode;
 use axum_extra::extract::CookieJar;
 use serde::{Deserialize, Serialize};
 use tracing::{info, warn};
-use uuid::Uuid;
 
 use crate::db::meeting::MEETING_DB;
 use crate::server::meeting::login::claims::MeetingEmailClaims;
 use crate::structs::{Meeting, User};
 
-pub mod mock;
 pub mod login;
 
 pub async fn get_meeting(
@@ -52,8 +50,6 @@ pub async fn get_whoami(
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RegisterName {
-    pub meeting_uuid: Uuid,
-    pub meeting_revision: Uuid,
     pub name: String
 }
 
@@ -67,7 +63,7 @@ pub async fn post_register_name(
             let user = User::new(&name.name, claims.get_email());
 
             let arc = Arc::clone(&MEETING_DB);
-            match arc.lock().await.add_user(&name.meeting_uuid, &name.meeting_revision, user.to_owned()) {
+            match arc.lock().await.add_user_unsafe(&id, user.to_owned()) {
                 Ok(_) => {
                     info!("User {user:?} registred on {id}");
                     Ok(StatusCode::OK)

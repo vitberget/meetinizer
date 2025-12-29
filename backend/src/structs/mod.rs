@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use anyhow::ensure;
+use anyhow::{bail, ensure};
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -84,7 +84,14 @@ impl Meeting {
         self.revision = Uuid::new_v4();
     }
 
-    pub fn add_user(&mut self, user: User) { self.users.insert(user); }
+    pub fn add_user(&mut self, user: User) -> anyhow::Result<()> { 
+        if self.users.iter().any(|u| u.name == user.name || u.email == user.email) {
+            bail!("Conflicting user name and/or email");
+        }
+        self.users.insert(user); 
+        self.revision = Uuid::new_v4();
+        Ok(())
+    }
 
     pub fn add_slot(&mut self, slot: Slot) {
         self.slots.insert(slot); 
