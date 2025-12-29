@@ -4,6 +4,13 @@ use axum::Json;
 use axum::extract::Path;
 use axum::http::StatusCode;
 use axum_extra::extract::CookieJar;
+use serde::{Deserialize, Serialize};
+use tracing::{info, warn};
+use uuid::Uuid;
+
+use crate::db::meeting::MEETING_DB;
+use crate::server::meeting::login::claims::MeetingEmailClaims;
+use crate::structs::{Meeting, User};
 
 pub mod mock;
 pub mod login;
@@ -50,7 +57,6 @@ pub struct RegisterName {
     pub name: String
 }
 
-
 pub async fn post_register_name(
     Path(id): Path<String>,
     cookies: CookieJar,
@@ -77,30 +83,4 @@ pub async fn post_register_name(
             Err(StatusCode::FORBIDDEN)
         }
     }
-}
-
-use chrono::{Local, NaiveDate};
-use serde::{Deserialize, Serialize};
-use tracing::{debug, info, warn};
-use uuid::Uuid;
-
-use crate::{db::meeting::MEETING_DB, server::meeting::{login::claims::MeetingEmailClaims}, structs::{Meeting, Slot, User}};
-
-pub fn get_meeting_mock(id: &str) -> Meeting {
-    debug!("meeting mock");
-
-    let mut meeting = Meeting::new(&format!("Hello {id}"));
-    meeting.add_user(User::new("Kenneth Hedman", "test@vitberget.se"));
-    let slot = Slot { 
-        start: NaiveDate::from_ymd_opt(2025, 6, 4).unwrap().and_hms_opt(18,0,0).unwrap().and_local_timezone(Local).earliest().unwrap(),
-        end: NaiveDate::from_ymd_opt(2025, 6, 4).unwrap().and_hms_opt(21,0,0).unwrap().and_local_timezone(Local).earliest().unwrap(),
-    };
-    let slot2 = Slot { 
-        start: NaiveDate::from_ymd_opt(2025, 6, 7).unwrap().and_hms_opt(18,0,0).unwrap().and_local_timezone(Local).earliest().unwrap(),
-        end: NaiveDate::from_ymd_opt(2025, 6, 7).unwrap().and_hms_opt(21,0,0).unwrap().and_local_timezone(Local).earliest().unwrap(),
-    };
-    meeting.add_slot(slot.clone());
-    meeting.add_slot(slot2);
-    meeting.add_vote(User::new("Kenneth Hedman", "test@vitberget.se"), slot).unwrap();
-    meeting
 }
