@@ -32,7 +32,7 @@
                         users :users 
                         votes :votes 
                         :as meeting}
-                       my-email]
+                       my-user]
   (prn meeting)
   [:main.meet.meeting 
    [:h1 "Meeting \"" meeting-name "\""]
@@ -50,7 +50,7 @@
     (->> users 
          (map (fn[user]
                 [:tr
-                 [:td (:name user)]
+                 [:td {:class (if (= user my-user) "my-user" "")} (:name user)]
                  (->> slots
                       (map (fn[slot]
                              [:td (if (votes-contains? votes user slot) "Y" "N")] 

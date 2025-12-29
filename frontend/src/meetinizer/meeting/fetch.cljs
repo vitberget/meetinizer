@@ -42,13 +42,11 @@
 
                    (swap! state-atom assoc-in [:meeting id] :error)))))))
 
-(defn register-name [meeting-name meeting-uuid meeting-revision username]
+(defn register-name [meeting-name username]
   (-> (js/fetch (str "/api/meeting/" meeting-name "/register-name") 
                 (clj->js {:method "POST" 
                           :headers {"Content-Type" "application/json"}
-                          :body (.stringify js/JSON (clj->js {;:meeting_uuid meeting-uuid
-                                                              ;:meeting_revision meeting-revision
-                                                              :name username}))
+                          :body (.stringify js/JSON (clj->js {:name username}))
                           }))
       (.then (fn [the-result]
                (let [status (.-status the-result)]
@@ -65,7 +63,7 @@
                  )))))
 
 (comment
-  (register-name "alive" "497eb28f-2f5a-4668-8275-22904646bfe5" "34ecf428-5ff8-42d2-ae37-051f384c4b10" "Kenneth")
+  (register-name "alive" "Kenneth")
   (fetch-meeting "777")
   (login "123" "kalle")
   (fetch-whoami "777")

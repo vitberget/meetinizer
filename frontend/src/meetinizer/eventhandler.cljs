@@ -2,7 +2,7 @@
   (:require
     [clojure.walk :as walk]
     [meetinizer.admin.fetch :as af]
-    [meetinizer.meeting.fetch :refer [login]]
+    [meetinizer.meeting.fetch :as mf]
     [meetinizer.the-state :refer [get-path-parts state-atom]]))
 
 (defn- enrich-action-from-state [state action]
@@ -29,14 +29,15 @@
 (defn do-the-login [email]
   (let [meeting-id (second (get-path-parts))]
     (swap! state-atom assoc-in [:meeting meeting-id] :requesting)
-    (login meeting-id email)))
+    (mf/login meeting-id email)))
 
 (defn do-admin-login [password]
   (swap! state-atom assoc :meeting-ids :requesting)
   (af/admin-login password))
 
-(defn- do-the-register-name [arg1]
-  )
+(defn- do-the-register-name [username]
+  (let [meeting-id (second (get-path-parts))]
+  (mf/register-name meeting-id username)))
 
 (defn event-handler [{:replicant/keys [^js js-event] :as replicant-data} actions]
   (doseq [action actions]
