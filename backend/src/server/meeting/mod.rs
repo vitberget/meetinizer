@@ -100,13 +100,13 @@ pub async fn post_vote_add(
                 slot,
             };
             let arc = Arc::clone(&MEETING_DB);
-            match arc.lock().await.add_vote_unsafe(&id, vote) {
+            match arc.lock().await.add_vote_unsafe(&id, vote.to_owned()) {
                 Ok(_) => {
                     info!("User {user:?} adding vote on {vote:?} in {id}", user = claims.get_email());
                     Ok(StatusCode::OK)
                 }
                 Err(err) => {
-                    warn!("Error when user {user:?} adding vote on {vote:?} in {id}", user = claims.get_email());
+                    warn!("Error when user {user:?} adding vote on {vote:?} in {id} {err}", user = claims.get_email());
                     Err(StatusCode::FORBIDDEN)
                 }
             } 
@@ -130,13 +130,13 @@ pub async fn post_vote_rm(
                 slot,
             };
             let arc = Arc::clone(&MEETING_DB);
-            match arc.lock().await.rm_vote_unsafe(&id, vote) {
+            match arc.lock().await.rm_vote_unsafe(&id, vote.to_owned()) {
                 Ok(_) => {
                     info!("User {user:?} removed vote on {vote:?} in {id}", user = claims.get_email());
                     Ok(StatusCode::OK)
                 }
                 Err(err) => {
-                    warn!("Error when user {user:?} removing vote on {vote:?} in {id}", user = claims.get_email());
+                    warn!("Error when user {user:?} removing vote on {vote:?} in {id} {err}", user = claims.get_email());
                     Err(StatusCode::FORBIDDEN)
                 }
             } 

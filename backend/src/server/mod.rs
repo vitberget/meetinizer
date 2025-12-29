@@ -6,7 +6,7 @@ use crate::config::get_bind;
 use crate::db::init::init_meeting;
 use crate::server::admin::{api_admin_add_slot, api_admin_get_meeting, api_admin_list_meetings, api_admin_login, api_admin_logout, api_admin_rm_slot, sse_admin_all_meetings, sse_admin_meeting};
 use crate::server::meeting::login::{api_attempt_login, api_request_login};
-use crate::server::meeting::{get_meeting, get_whoami, post_register_name, sse_meeting};
+use crate::server::meeting::{get_meeting, get_whoami, post_register_name, post_vote_add, post_vote_rm, sse_meeting};
 
 pub mod admin;
 pub mod meeting;
@@ -25,8 +25,8 @@ pub async fn start_server() -> anyhow::Result<()> {
         .route("/api/admin/meeting/{id}/sse", get(sse_admin_meeting))
         .route("/api/admin/meeting/{id}/slot/add", post(api_admin_add_slot))
         .route("/api/admin/meeting/{id}/slot/rm", post(api_admin_rm_slot))
-        .route("/api/admin/sse/meeting", get(sse_admin_all_meetings))
-        .route("/api/admin/list", get(api_admin_list_meetings))
+        .route("/api/admin/meetings/sse", get(sse_admin_all_meetings))
+        .route("/api/admin/meetings/list", get(api_admin_list_meetings))
         .route("/api/admin/login", post(api_admin_login))
         .route("/api/admin/logout", get(api_admin_logout))
 

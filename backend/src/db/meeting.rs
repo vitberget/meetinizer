@@ -9,7 +9,7 @@ use tracing::error;
 use uuid::Uuid;
 
 use crate::db::get_meeting_connection;
-use crate::structs::{Meeting, Slot, User};
+use crate::structs::{Meeting, Slot, User, Vote};
 
 static MEETING_QUEUE: LazyLock<Arc<Sender<Meeting>>> = LazyLock::new( || {
         let (sender, _receiver) = channel(100);
@@ -144,7 +144,7 @@ impl MeetingDB {
     }
     pub fn rm_vote_unsafe(&self, meeting_name: &str, vote: Vote) -> anyhow::Result<Meeting> {
         let mut meeting = self.get_meeting_by_name(meeting_name)?;
-        meeting.remove_vote(vote);
+        meeting.remove_vote(&vote);
         self.insert_meeting(&meeting)?;
         Ok(meeting)
     }
