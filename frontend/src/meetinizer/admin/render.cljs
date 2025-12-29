@@ -38,7 +38,7 @@
                                          :value m
                                          :on {:click [[:db/assoc :admin/selected-meeting m]]}}]])))])])
 
-(defn render-slots [slots]
+(defn render-slots [{slots :slots id :name}]
   [:section.slots
    [:h2 "Slots"]
    [:div.slots
@@ -49,20 +49,30 @@
                           [:div.date (time-from (:start slot))]]
                          [:div.to 
                           [:div.date (date-from (:end slot))]
-                          [:div.date (time-from (:end slot))]] ])))
+                          [:div.date (time-from (:end slot))]]
+                        [:div.action 
+                         [:input {:type "button" :value "Remove"}]
+                         ] ])))
     [:div.slot.add
      [:div.from "Start"
-      [:input {:type "datetime-local"}] ]
+      [:input {:type "datetime-local"
+               :replicant/on-mount [[:db/assoc :admin/admin-slot-start-element :dom/node]]
+               :on {:input [[:db/assoc :admin/login-slot-start :event/target.value]]} }]]
      [:div.to "End"
-      [:input {:type "datetime-local"}]] ]
-    ]])
+      [:input {:type "datetime-local"
+               :replicant/on-mount [[:db/assoc :admin/admin-slot-end-element :dom/node]]
+               :on {:input [[:db/assoc :admin/login-slot-end :event/target.value]]} }]] 
+     [:div.action 
+      [:input {:type "button" 
+               :value "Add"
+               :on {:click [[:admin/add-slot id [:db/get :admin/login-slot-start] [:db/get :admin/login-slot-end]]]}}]]]]])
 
 (defn render-meeting [meeting]
   (prn "Meeting")
   (prn meeting)
   [:main.admin.meeting
    [:h1 "You have chosen: " (:name meeting)]
-   (render-slots (:slots meeting))
+   (render-slots meeting)
    ])
 
 (defn render-admin [state]

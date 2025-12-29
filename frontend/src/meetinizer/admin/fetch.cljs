@@ -30,6 +30,24 @@
 
                    (swap! state-atom assoc-in [:meeting-ids] :error)))))))
 
+(defn add-slot [id start end]
+  (let [start (-> start 
+                  (js/Date.)
+                  (.toISOString))
+        end (-> end
+                (js/Date.)
+                (.toISOString))
+        ]
+    (prn "add slot" id start end)
+    (-> (js/fetch (str "/api/admin/meeting/" id "/slot/add")
+                  (clj->js {:method "POST"
+                            :headers {"Content-Type" "application/json"}
+                            :body (.stringify js/JSON (clj->js {:start start :end end}))}))
+        (.then (fn [the-result]
+                 (let [status (.-status the-result)]
+                   (prn "added" status)
+                   ))))))
+
 (defn admin-login [password]
   (-> (js/fetch "/api/admin/login" (clj->js {:method "POST" :body password}))
       (.then (fn [the-result]

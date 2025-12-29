@@ -53,7 +53,7 @@
         :meeting/register-name (apply do-the-register-name args)
         :admin/login (apply do-admin-login args)
         :admin/logout (af/admin-logout)
-
+        :admin/add-slot (apply af/add-slot args)
 
         )))
   ; (main-thing el @state-atom)
