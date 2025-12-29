@@ -36,6 +36,8 @@
   (prn meeting)
   [:main.meet.meeting 
    [:h1 "Meeting \"" meeting-name "\""]
+   (when-let [comment (:comment meeting)]
+     [:div.comment comment])
    [:table
     [:tr
      [:th ""]
