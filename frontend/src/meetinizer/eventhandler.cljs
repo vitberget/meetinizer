@@ -2,7 +2,7 @@
   (:require
    [clojure.walk :as walk]
    [meetinizer.admin.fetch :as af :refer [admin-meeting-sse admin-stop-sse]]
-   [meetinizer.meeting.fetch :as mf]
+   [meetinizer.meeting.fetch :as mf :refer [meeting-sse stop-sse]]
    [meetinizer.the-state :refer [get-path-parts state-atom]]))
 
 (defn- enrich-action-from-state [state action]
@@ -39,10 +39,16 @@
   (let [meeting-id (second (get-path-parts))]
   (mf/register-name meeting-id username)))
 
-(defn- do-monitor-meeting [action id]
+(defn- do-admin-monitor-meeting [action id]
   (condp = action
     :start (admin-meeting-sse id)
     :stop (admin-stop-sse id)
+    (prn "do-monitor-meeting no action for" action)))
+
+(defn- do-monitor-meeting [action id]
+  (condp = action
+    :start (meeting-sse id)
+    :stop (stop-sse id)
     (prn "do-monitor-meeting no action for" action)))
 
 (defn event-handler [{:replicant/keys [^js js-event] :as replicant-data} actions]
@@ -62,7 +68,8 @@
         :admin/logout (af/admin-logout)
         :admin/add-slot (apply af/add-slot args)
         :admin/rm-slot (apply af/rm-slot args)
-        :admin/monitor-meeting (apply do-monitor-meeting args)
+        :admin/monitor-meeting (apply do-admin-monitor-meeting args)
+        :meet/monitor-meeting (apply do-monitor-meeting args)
 
         )))
   ; (main-thing el @state-atom)

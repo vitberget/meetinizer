@@ -62,6 +62,23 @@
                  ;   (swap! state-atom assoc :meeting-ids :error))
                  )))))
 
+(defn meeting-sse [id]
+  (let [sse (js/EventSource. (str "/api/admin/meeting/" id "/sse"))]
+    (swap! state-atom assoc-in [:sse id] sse)
+    (set! (.-onmessage sse) (fn[event] 
+                              (let [data (as-> event $
+                                           (.-data $)
+                                           (.parse js/JSON $)
+                                           (js->clj $ {:keywordize-keys true})
+                                           )]
+                                (swap! state-atom assoc-in [:meeting id] data)
+                                (prn "event" data))))
+    ))
+
+(defn stop-sse [id]
+  (.close (get-in @state-atom [:sse id]))
+  (swap! state-atom update-in [:sse] dissoc id))
+
 (comment
   (register-name "alive" "Kenneth")
   (fetch-meeting "777")
