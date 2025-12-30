@@ -26,3 +26,4 @@
     - [x] Admin
     - [x] User 
         - [x] by mail
+- [ ] Nicer mail
