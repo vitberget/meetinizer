@@ -67,7 +67,9 @@
      [:div.action 
       [:input {:type "button" 
                :value "Add"
-               :on {:click [[:admin/add-slot id [:db/get :admin/login-slot-start] [:db/get :admin/login-slot-end]]]}}]]]]])
+               :on {:click [[:admin/add-slot id [:db/get :admin/login-slot-start] [:db/get :admin/login-slot-end]]
+                            [:db/dissoc :admin/login-slot-start]
+                            [:db/dissoc :admin/login-slot-end]]}}]]]]])
 
 (defn render-meeting [{meeting-name :name :as meeting}]
   ; (prn "Meeting")

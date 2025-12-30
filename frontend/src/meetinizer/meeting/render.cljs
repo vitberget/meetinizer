@@ -42,8 +42,8 @@
              :value "Send me login mail"
              :on {:click [[:meeting/login [:db/get :meeting/login-form]]]}}]]])
 
-(defn render-enter-name [state meeting]
-  [:main.meet.enter-name
+(defn render-enter-name [state {meeting-name :name}]
+  [:main.meet.enter-name {:replicant/on-mount [[:meeting/monitor-meeting :start meeting-name]]}
    [:h1 "Welcome, who are you?"]
    [:input#login-email {:type "text"
                         :replicant/on-mount [[:db/assoc :meeting/name-form-element :dom/node]]

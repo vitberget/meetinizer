@@ -34,9 +34,7 @@
                         :as meeting}
                        my-user]
   (prn meeting)
-  [:main.meet.meeting {:replicant/on-mount [[:meet/monitor-meeting :start meeting-name]]
-                       :replicant/on-unmount [[:meet/monitor-meeting :stop meeting-name]] }
-
+  [:main.meet.meeting {:replicant/on-mount [[:meeting/monitor-meeting :start meeting-name]]}
    [:h1 "Meeting \"" meeting-name "\""]
    (when-let [comment (:comment meeting)]
      [:div.comment comment])

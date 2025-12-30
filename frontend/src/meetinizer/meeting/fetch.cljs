@@ -63,17 +63,19 @@
                  )))))
 
 (defn meeting-sse [id]
-  (let [sse (js/EventSource. (str "/api/admin/meeting/" id "/sse"))]
+  (let [sse (js/EventSource. (str "/api/meeting/" id "/sse"))]
     (swap! state-atom assoc-in [:sse id] sse)
     (set! (.-onmessage sse) (fn[event] 
                               (let [data (as-> event $
                                            (.-data $)
                                            (.parse js/JSON $)
-                                           (js->clj $ {:keywordize-keys true})
-                                           )]
+                                           (js->clj $ {:keywordize-keys true}))]
                                 (swap! state-atom assoc-in [:meeting id] data)
                                 (prn "event" data))))
-    ))
+    (set! (.-onerror sse) (fn [error]
+                            (prn "error sse" error)
+                            (.close sse) 
+                            (swap! state-atom update-in [:meeting] dissoc id)))))
 
 (defn stop-sse [id]
   (.close (get-in @state-atom [:sse id]))

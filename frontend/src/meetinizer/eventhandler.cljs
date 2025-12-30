@@ -47,7 +47,8 @@
 
 (defn- do-monitor-meeting [action id]
   (condp = action
-    :start (meeting-sse id)
+    :start (when-not (get-in @state-atom [:sse id])
+             (meeting-sse id))
     :stop (stop-sse id)
     (prn "do-monitor-meeting no action for" action)))
 
@@ -62,14 +63,17 @@
       (prn "args" args)
       (condp = action-name
         :db/assoc (apply swap! state-atom assoc args)
+        :db/dissoc (apply swap! state-atom dissoc args)
+
         :meeting/login (apply do-the-login args)
         :meeting/register-name (apply do-the-register-name args)
+        :meeting/monitor-meeting (apply do-monitor-meeting args)
+
         :admin/login (apply do-admin-login args)
         :admin/logout (af/admin-logout)
         :admin/add-slot (apply af/add-slot args)
         :admin/rm-slot (apply af/rm-slot args)
         :admin/monitor-meeting (apply do-admin-monitor-meeting args)
-        :meet/monitor-meeting (apply do-monitor-meeting args)
 
         )))
   ; (main-thing el @state-atom)
