@@ -39,7 +39,7 @@
    (when-let [comment (:comment meeting)]
      [:div.comment comment])
    [:table
-    [:tr
+    [:tr.header
      [:th ""]
      (->> slots
           (map (fn[slot] 
@@ -53,20 +53,18 @@
          (filter (fn[user] (not= user my-user)))
          (map (fn[user]
                 [:tr
-                 [:td (:name user)]
+                 [:td.name (:name user)]
                  (->> slots
                       (map (fn[slot]
-                             [:td (if (votes-contains? votes user slot) "Y" "N")] 
-                             )))])))
+                             [:td.vote (if (votes-contains? votes user slot) "✓" "✗")])))])))
 
-         [:tr 
-          [:td ">>" (:name my-user)]
-          (->> slots
-               (map (fn[slot]
-                      [:td [:input {:type "checkbox" :checked (votes-contains? votes my-user slot)}]
-                       ; (if (votes-contains? votes my-user slot) "Y" "N")
-                       ] 
-                      )))]]])
+    [:tr.my-user
+     [:td.name ">>" (:name my-user)]
+     (->> slots
+          (map (fn[slot]
+                 (let [is-active (votes-contains? votes my-user slot)]
+                   [:td.vote {:on {:click [[:meeting/set-vote slot (not is-active)]]}}
+                    (if is-active "✓" "✗")]))))]]])
 
 
 (comment

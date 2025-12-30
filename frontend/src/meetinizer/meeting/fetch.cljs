@@ -50,17 +50,28 @@
                           }))
       (.then (fn [the-result]
                (let [status (.-status the-result)]
-                 (prn status)
-                 ; (condp = status
-                 ;   ; TODO show seconds left
-                 ;   200 (-> (.text the-result) 
-                 ;           (.then (fn[text]
-                 ;                    (swap! state-atom assoc :meeting-ids :requested ))))
-                 ;
-                 ;   403 (swap! state-atom assoc :meeting-ids :forbidden)
-                 ;
-                 ;   (swap! state-atom assoc :meeting-ids :error))
-                 )))))
+                 (prn status))))))
+
+        ; .route("/api/meeting/{id}/vote/add", post(post_vote_add))
+        ; .route("/api/meeting/{id}/vote/rm", post(post_vote_rm))
+
+(defn add-vote [meeting-name vote]
+  (-> (js/fetch (str "/api/meeting/" meeting-name "/vote/add") 
+                (clj->js {:method "POST" 
+                          :headers {"Content-Type" "application/json"}
+                          :body (.stringify js/JSON (clj->js vote))}))
+      (.then (fn [the-result]
+               (let [status (.-status the-result)]
+                 (prn "add-vote" status))))))
+
+(defn rm-vote [meeting-name vote]
+  (-> (js/fetch (str "/api/meeting/" meeting-name "/vote/rm") 
+                (clj->js {:method "POST" 
+                          :headers {"Content-Type" "application/json"}
+                          :body (.stringify js/JSON (clj->js vote))}))
+      (.then (fn [the-result]
+               (let [status (.-status the-result)]
+                 (prn "add-vote" status))))))
 
 (defn meeting-sse [id]
   (let [sse (js/EventSource. (str "/api/meeting/" id "/sse"))]

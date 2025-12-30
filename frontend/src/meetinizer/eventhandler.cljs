@@ -2,7 +2,8 @@
   (:require
    [clojure.walk :as walk]
    [meetinizer.admin.fetch :as af :refer [admin-meeting-sse admin-stop-sse]]
-   [meetinizer.meeting.fetch :as mf :refer [meeting-sse stop-sse]]
+   [meetinizer.meeting.fetch :as mf :refer [add-vote meeting-sse rm-vote
+                                            stop-sse]]
    [meetinizer.the-state :refer [get-path-parts state-atom]]))
 
 (defn- enrich-action-from-state [state action]
@@ -52,6 +53,12 @@
     :stop (stop-sse id)
     (prn "do-monitor-meeting no action for" action)))
 
+(defn do-set-vote [vote active-or-not]
+  (let [meeting-id (second (get-path-parts))]
+  (if active-or-not
+    (add-vote meeting-id vote)
+    (rm-vote meeting-id vote))))
+
 (defn event-handler [{:replicant/keys [^js js-event] :as replicant-data} actions]
   (doseq [action actions]
     (prn "Triggered action" action)
@@ -68,6 +75,7 @@
         :meeting/login (apply do-the-login args)
         :meeting/register-name (apply do-the-register-name args)
         :meeting/monitor-meeting (apply do-monitor-meeting args)
+        :meeting/set-vote (apply do-set-vote args)
 
         :admin/login (apply do-admin-login args)
         :admin/logout (af/admin-logout)
