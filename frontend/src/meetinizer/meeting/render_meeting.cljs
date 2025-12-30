@@ -25,6 +25,27 @@
                            (= (:user_email vote) (:email user)) 
                            (= (:slot vote) slot))))
        (first)))
+(defn render-slot-header [{start :start end :end}]
+  (let [date-from-start (date-from start)
+        date-from-end (date-from end)
+        time-from-start (time-from start)
+        time-from-end (time-from end)]
+  [:th 
+   (cond
+     (and (= date-from-start date-from-end)
+          (= time-from-start time-from-end))
+     [:div.dateheader
+      [:div.start date-from-start]]
+
+     (= date-from-start date-from-end)
+     [:div.dateheader
+      [:div.start date-from-start]
+      [:div.end time-from-start " - " time-from-end]]
+
+     :else 
+     [:div.dateheader
+      [:div.start date-from-start " " time-from-start]
+      [:div.end date-from-end " " time-from-end]])]))
 
 (defn render-actually [state 
                        {meeting-name :name 
@@ -45,15 +66,8 @@
        [:div.comment comment])
      [:table
       [:tr.header
-       [:th ""]
-       (->> slots
-            (map (fn[slot] 
-                   (let [start (:start slot)
-                         end (:end slot)]
-                     [:th 
-                      [:div.dateheader
-                       [:div.start (date-from start) " " (time-from start)]
-                       [:div.end (date-from end) " " (time-from end)]]]))))]
+       [:th.blank [:div.dateheader [:div.start " "] [:div.end " "] ]]
+       (->> slots (map render-slot-header))]
       (->> users 
            (filter (fn[user] (not= user my-user)))
            (sort (fn [a b] (compare (:name a) (:name b))))
