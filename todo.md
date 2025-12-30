@@ -13,6 +13,7 @@
 
 - [x] Create
 - [ ] Dockerfile build
+- [ ] Split admin/meeeting?
 
 ## Backend
 
