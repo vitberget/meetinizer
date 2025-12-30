@@ -3,11 +3,14 @@
  :deps {
         ; org.clojure/clojure {:mvn/version "1.12.0"}
         ; org.clojure/clojurescript {:mvn/version "1.10.773"}
-        org.clojure/clojure {:mvn/version "1.11.1"}
-        org.clojure/clojurescript {:mvn/version "1.11.132"}
-        com.google.javascript/closure-compiler-unshaded {:mvn/version "v20240317"}
+        org.clojure/clojure {:mvn/version "1.12.4"}
+        org.clojure/clojurescript {:mvn/version "1.12.134"}
+        ; com.google.javascript/closure-compiler-unshaded {:mvn/version "v20240317"}
 
-        thheller/shadow-cljs {:mvn/version "2.28.18"}
-        no.cjohansen/replicant {:mvn/version "2025.02.02"}
+        tongue/tongue {:mvn/version "0.4.4"}
+
+        ; thheller/shadow-cljs {:mvn/version "2.28.18"}
+        thheller/shadow-cljs {:mvn/version "3.3.4"}
+        no.cjohansen/replicant {:mvn/version "2025.12.1"}
         }
  }

@@ -1,4 +1,4 @@
-{ :deps {}
+{:deps {}
 
  :dev-http {9000 ["resources/public" "classpath:public"]}
 
