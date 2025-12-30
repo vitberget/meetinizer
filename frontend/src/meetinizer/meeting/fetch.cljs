@@ -52,9 +52,6 @@
                (let [status (.-status the-result)]
                  (prn status))))))
 
-        ; .route("/api/meeting/{id}/vote/add", post(post_vote_add))
-        ; .route("/api/meeting/{id}/vote/rm", post(post_vote_rm))
-
 (defn add-vote [meeting-name vote]
   (-> (js/fetch (str "/api/meeting/" meeting-name "/vote/add") 
                 (clj->js {:method "POST" 

@@ -34,37 +34,48 @@
                         :as meeting}
                        my-user]
   (prn meeting)
-  [:main.meet.meeting {:replicant/on-mount [[:meeting/monitor-meeting :start meeting-name]]}
-   [:h1 "Meeting \"" meeting-name "\""]
-   (when-let [comment (:comment meeting)]
-     [:div.comment comment])
-   [:table
-    [:tr.header
-     [:th ""]
-     (->> slots
-          (map (fn[slot] 
-                 (let [start (:start slot)
-                       end (:end slot)]
-                   [:th 
-                    [:div.dateheader
-                     [:div.start (date-from start) " " (time-from start)]
-                     [:div.end (date-from end) " " (time-from end)]]]))))]
-    (->> users 
-         (filter (fn[user] (not= user my-user)))
-         (map (fn[user]
-                [:tr
-                 [:td.name (:name user)]
-                 (->> slots
-                      (map (fn[slot]
-                             [:td.vote (if (votes-contains? votes user slot) "✓" "✗")])))])))
+  (let [slots (->> slots
+                   (sort (fn [a b] (let [c (compare (:start a) (:start b))]
+                                     (if (zero? c)
+                                       (compare (:end a) (:end b))
+                                       c)))))]
+    [:main.meet.meeting {:replicant/on-mount [[:meeting/monitor-meeting :start meeting-name]]}
+     [:h1 "Meeting \"" meeting-name "\""]
+     (when-let [comment (:comment meeting)]
+       [:div.comment comment])
+     [:table
+      [:tr.header
+       [:th ""]
+       (->> slots
+            (map (fn[slot] 
+                   (let [start (:start slot)
+                         end (:end slot)]
+                     [:th 
+                      [:div.dateheader
+                       [:div.start (date-from start) " " (time-from start)]
+                       [:div.end (date-from end) " " (time-from end)]]]))))]
+      (->> users 
+           (filter (fn[user] (not= user my-user)))
+           (sort (fn [a b] (compare (:name a) (:name b))))
+           (map (fn[user]
+                  [:tr.other-user
+                   [:td.name (:name user)]
+                   (->> slots
+                        (map (fn[slot]
+                               (let [is-active (votes-contains? votes user slot)]
+                                 [:td.vote [:div.vote
+                                            {:class (if is-active "vote active" "vote")} 
+                                            (if is-active "✓" "✗")]]))))])))
 
-    [:tr.my-user
-     [:td.name ">>" (:name my-user)]
-     (->> slots
-          (map (fn[slot]
-                 (let [is-active (votes-contains? votes my-user slot)]
-                   [:td.vote {:on {:click [[:meeting/set-vote slot (not is-active)]]}}
-                    (if is-active "✓" "✗")]))))]]])
+      [:tr.my-user
+       [:td.name (:name my-user)]
+       (->> slots
+            (map (fn[slot]
+                   (let [is-active (votes-contains? votes my-user slot)]
+                     [:td.vote {:on {:click [[:meeting/set-vote slot (not is-active)]]}}
+                      [:div.vote 
+                       {:class (if is-active "vote active" "vote")} 
+                       (if is-active "✓" "✗")]]))))]]]))
 
 
 (comment
