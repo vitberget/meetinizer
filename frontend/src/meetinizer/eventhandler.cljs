@@ -47,6 +47,7 @@
     (prn "do-monitor-meeting no action for" action)))
 
 (defn- do-monitor-meeting [action id]
+  (prn "do-monitor-meeting" action id)
   (condp = action
     :start (when-not (get-in @state-atom [:sse id])
              (meeting-sse id))

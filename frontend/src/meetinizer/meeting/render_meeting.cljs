@@ -64,7 +64,7 @@
                         (map (fn[slot]
                                (let [is-active (votes-contains? votes user slot)]
                                  [:td.vote [:div.vote
-                                            {:class (if is-active "vote active" "vote")} 
+                                            {:class (if is-active ["vote" "active"] ["vote"])} 
                                             (if is-active "✓" "✗")]]))))])))
 
       [:tr.my-user
@@ -74,7 +74,7 @@
                    (let [is-active (votes-contains? votes my-user slot)]
                      [:td.vote {:on {:click [[:meeting/set-vote slot (not is-active)]]}}
                       [:div.vote 
-                       {:class (if is-active "vote active" "vote")} 
+                       {:class (if is-active ["vote" "active"] ["vote"])} 
                        (if is-active "✓" "✗")]]))))]]]))
 
 

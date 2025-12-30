@@ -90,6 +90,7 @@
   (swap! state-atom update-in [:sse] dissoc id))
 
 (comment
+  (meeting-sse "alive")
   (register-name "alive" "Kenneth")
   (fetch-meeting "777")
   (login "123" "kalle")
