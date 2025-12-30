@@ -1,6 +1,6 @@
 (ns meetinizer.admin.fetch
   (:require
-   [meetinizer.the-state :refer [state-atom]]))
+    [meetinizer.the-state :refer [state-atom]]))
 
 (defn fetch-meeting [id]
   (-> (js/fetch (str "/api/admin/meeting/" id))
@@ -74,12 +74,24 @@
 (defn admin-meeting-sse [id]
   (let [sse (js/EventSource. (str "/api/admin/meeting/" id "/sse"))]
     (swap! state-atom assoc-in [:admin :sse id] sse)
-    (set! (.-onmessage sse) (fn[event] (prn "event" event)))
-     ))
+    (set! (.-onmessage sse) (fn[event] 
+                              (let [data (as-> event $
+                                           (.-data $)
+                                           (.parse js/JSON $)
+                                           (js->clj $ {:keywordize-keys true})
+                                           )]
+                                (swap! state-atom assoc-in [:admin :meeting id] data)
+                                (prn "event" data))))
+    ))
+
+(defn admin-stop-sse [id]
+  (.close (get-in @state-atom [:admin :sse id]))
+  (swap! state-atom update-in [:admin :sse] dissoc id))
 
 (comment
   (admin-login "123")
   (admin-meeting-sse "alive")
+  (admin-stop-sse "alive")
   (admin-logout)
   (fetch-meeting-list)
   @state-atom

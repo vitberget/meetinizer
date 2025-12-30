@@ -70,8 +70,8 @@
                :on {:click [[:admin/add-slot id [:db/get :admin/login-slot-start] [:db/get :admin/login-slot-end]]]}}]]]]])
 
 (defn render-meeting [{meeting-name :name :as meeting}]
-  (prn "Meeting")
-  (prn meeting)
+  ; (prn "Meeting")
+  ; (prn meeting)
   [:main.admin.meeting {:replicant/on-mount [[:admin/monitor-meeting :start meeting-name]]
                         :replicant/on-unmount [[:admin/monitor-meeting :stop meeting-name]] }
    [:h1 "You have chosen: " meeting-name]

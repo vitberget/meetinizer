@@ -13,6 +13,7 @@
   (println "main!")
   (add-watch state-atom ::render 
              (fn [_ _ _ state]
+               (prn "main! new state")
                (main-thing el state)))
   (main-thing el @state-atom))
 
