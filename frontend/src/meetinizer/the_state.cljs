@@ -8,5 +8,10 @@
                         (drop 1))]
     path-parts))
 
+(defn path-part->meeting-id [path-parts]
+  (-> path-parts
+      (second)
+      (js/decodeURIComponent)))
+
 (defonce state-atom (atom {}))
 

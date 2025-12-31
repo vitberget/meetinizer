@@ -3,6 +3,7 @@ use axum::http::StatusCode;
 use axum::response::Redirect;
 use axum_extra::extract::CookieJar;
 use axum_extra::extract::cookie::Cookie;
+use uri_encode::encode_uri_component;
 
 pub mod db;
 pub mod claims;
@@ -15,6 +16,8 @@ pub async fn api_request_login(Path((id,email)): Path<(String,String)>) -> Strin
 
 pub async fn api_attempt_login(Path((meeting, email, token)): Path<(String, String, String)>) -> Result<(CookieJar, Redirect), StatusCode> {
     if let Ok(token) = db::attempt_login(&meeting, &email, &token).await {
+
+        let meeting = encode_uri_component(meeting);
 
         let path = format!("/api/meeting/{meeting}");
         let redirect_path = format!("/meet/{meeting}");

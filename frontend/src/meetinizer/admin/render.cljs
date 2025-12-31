@@ -71,6 +71,21 @@
                             [:db/dissoc :admin/login-slot-start]
                             [:db/dissoc :admin/login-slot-end]]}}]]]]])
 
+(defn- render-users [{users :users votes :votes}]
+  [:section.users
+   [:h2 "Users"]
+   [:table.users
+    [:tr
+     [:th "User"]
+     [:th "Vote count"] ]
+    (->> users
+         (map (fn[{username :name email :email}] 
+                [:tr 
+                 [:td username]
+                 [:td (->> votes
+                           (filter (fn [{e :user_email}] (= email e)))
+                           (count))]])))]])
+
 (defn render-meeting [{meeting-name :name :as meeting}]
   ; (prn "Meeting")
   ; (prn meeting)
@@ -78,6 +93,7 @@
                         :replicant/on-unmount [[:admin/monitor-meeting :stop meeting-name]] }
    [:h1 "You have chosen: " meeting-name]
    (render-slots meeting)
+   (render-users meeting)
    ])
 
 (defn render-admin [state]

@@ -2,7 +2,7 @@
   (:require [meetinizer.the-state :refer [state-atom]]))
 
 (defn fetch-meeting [id]
-  (-> (js/fetch (str "/api/meeting/" id))
+  (-> (js/fetch (str "/api/meeting/" (js/encodeURIComponent  id)))
       (.then (fn [the-result]
                (let [status (.-status the-result)]
                  (condp = status

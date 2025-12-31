@@ -4,7 +4,7 @@
    [meetinizer.admin.fetch :as af :refer [admin-meeting-sse admin-stop-sse]]
    [meetinizer.meeting.fetch :as mf :refer [add-vote meeting-sse rm-vote
                                             stop-sse]]
-   [meetinizer.the-state :refer [get-path-parts state-atom]]))
+   [meetinizer.the-state :refer [get-path-parts path-part->meeting-id state-atom]]))
 
 (defn- enrich-action-from-state [state action]
   (walk/postwalk
@@ -28,7 +28,7 @@
     actions))
 
 (defn do-the-login [email]
-  (let [meeting-id (second (get-path-parts))]
+  (let [meeting-id (path-part->meeting-id (get-path-parts))]
     (swap! state-atom assoc-in [:meeting meeting-id] :requesting)
     (mf/login meeting-id email)))
 
@@ -37,7 +37,7 @@
   (af/admin-login password))
 
 (defn- do-the-register-name [username]
-  (let [meeting-id (second (get-path-parts))]
+  (let [meeting-id (path-part->meeting-id (get-path-parts))]
   (mf/register-name meeting-id username)))
 
 (defn- do-admin-monitor-meeting [action id]
@@ -55,7 +55,7 @@
     (prn "do-monitor-meeting no action for" action)))
 
 (defn do-set-vote [vote active-or-not]
-  (let [meeting-id (second (get-path-parts))]
+  (let [meeting-id (path-part->meeting-id (get-path-parts))]
   (if active-or-not
     (add-vote meeting-id vote)
     (rm-vote meeting-id vote))))

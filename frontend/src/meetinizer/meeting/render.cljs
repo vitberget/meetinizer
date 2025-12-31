@@ -2,7 +2,7 @@
   (:require
    [meetinizer.meeting.fetch :refer [fetch-meeting]]
    [meetinizer.meeting.render-meeting :refer [render-actually]]
-   [meetinizer.the-state :refer [state-atom]]
+   [meetinizer.the-state :refer [path-part->meeting-id state-atom]]
    [meetinizer.utils.cookie :refer [get-cookie]]))
 
 (defn render-requesting [_]
@@ -12,7 +12,7 @@
 (defn render-requested [state]
   (let [meeting-id (-> state
                        (:path-parts)
-                       (second))
+                       (path-part->meeting-id))
         seconds (get-in state [:meeting meeting-id :requested])]
     (prn meeting-id)
     [:main.meet.meeting.reqeusted
@@ -29,18 +29,18 @@
    [:h1 "Error!"]])
 
 (defn render-login [{path-parts :path-parts}]
+  (let [meeting-id (path-part->meeting-id path-parts)]
   [:main.meet.meeting.login
    [:h1 "Login to meeting"]
-   [:div.info "Login to meeting with id: " (second path-parts)]
+   [:div.info "Login to meeting with id: " meeting-id]
    [:div.form
     [:label "Email:"
      [:input#login-email {:type "email"
                           :replicant/on-mount [[:db/assoc :meeting/login-form-element :dom/node]]
-                          :on {:input [[:db/assoc :meeting/login-form :event/target.value]]}
-                          }]]
+                          :on {:input [[:db/assoc :meeting/login-form :event/target.value]]} }]]
     [:input {:type "button" 
              :value "Send me login mail"
-             :on {:click [[:meeting/login [:db/get :meeting/login-form]]]}}]]])
+             :on {:click [[:meeting/login [:db/get :meeting/login-form]]]}}]]]))
 
 (defn render-enter-name [state {meeting-name :name}]
   [:main.meet.enter-name {:replicant/on-mount [[:meeting/monitor-meeting :start meeting-name]]}
@@ -53,8 +53,9 @@
             :value "Register name"
             :on {:click [[:meeting/register-name [:db/get :meeting/name-form]]]}}]])
 
+
 (defn render-meeting [state]
-  (let [meeting-id (second (:path-parts state))
+  (let [meeting-id (path-part->meeting-id (:path-parts state))
         meeting (get-in state [:meeting meeting-id])
         my-email (get-cookie "email")]
     (prn state)

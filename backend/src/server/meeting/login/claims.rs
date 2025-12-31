@@ -2,7 +2,7 @@ use anyhow::bail;
 use axum_extra::extract::CookieJar;
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation, decode, encode, get_current_timestamp};
 use serde::{Deserialize, Serialize};
-use tracing::warn;
+use tracing::{debug, warn};
 
 use crate::config::get_jwt_secret;
 
@@ -34,6 +34,7 @@ impl MeetingEmailClaims {
     pub fn get_email(&self) -> &str { &self.email }
 
     pub fn get_and_validate(meeting_id: &str, cookies: &CookieJar) -> anyhow::Result<MeetingEmailClaims> {
+        debug!("cookejar {cookies:?}");
         match cookies.get("login") {
             Some(login) => match get_jwt_secret() {
                 Ok(secret) => match <(&str, &str) as TryInto<MeetingEmailClaims>>::try_into((login.value(), &secret)) {
