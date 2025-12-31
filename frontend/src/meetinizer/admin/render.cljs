@@ -1,5 +1,6 @@
 (ns meetinizer.admin.render
   (:require
+    [clojure.string :as s]
     [meetinizer.admin.fetch :refer [fetch-meeting fetch-meeting-list]]
     [meetinizer.meeting.render-meeting :refer [date-from time-from]]
     [meetinizer.the-state :refer [state-atom]]))
@@ -50,11 +51,11 @@
                          [:div.to 
                           [:div.date (date-from (:end slot))]
                           [:div.date (time-from (:end slot))]]
-                        [:div.action 
-                         [:input {:type "button" 
-                                  :value "Remove"
-                                  :on {:click [[:admin/rm-slot id slot]]}}]
-                         ] ])))
+                         [:div.action 
+                          [:input {:type "button" 
+                                   :value "Remove"
+                                   :on {:click [[:admin/rm-slot id slot]]}}]
+                          ] ])))
     [:div.slot.add
      [:div.from "Start"
       [:input {:type "datetime-local"
@@ -77,24 +78,34 @@
    [:table.users
     [:tr
      [:th "User"]
+     [:th "Email"]
      [:th "Vote count"] ]
     (->> users
          (map (fn[{username :name email :email}] 
                 [:tr 
                  [:td username]
+                 [:td email]
                  [:td (->> votes
                            (filter (fn [{e :user_email}] (= email e)))
-                           (count))]])))]])
+                           (count))]])))]
+   [:h3 "All email"]
+   [:div.emails
+    [:div (->> users
+               (map :email)
+               (s/join ", "))]
+    [:div (->> users
+               (map (fn [{username :name email :email}] (str username " <" email ">" )))
+               (s/join ", "))]]])
 
 (defn render-meeting [{meeting-name :name :as meeting}]
-  ; (prn "Meeting")
-  ; (prn meeting)
   [:main.admin.meeting {:replicant/on-mount [[:admin/monitor-meeting :start meeting-name]]
                         :replicant/on-unmount [[:admin/monitor-meeting :stop meeting-name]] }
-   [:h1 "You have chosen: " meeting-name]
+   [:h1 "Meeting: " meeting-name]
+   [:input {:type "button"
+            :value "Back to list"
+            :on {:click [[:db/dissoc :admin/selected-meeting]]}}]
    (render-slots meeting)
-   (render-users meeting)
-   ])
+   (render-users meeting)])
 
 (defn render-admin [state]
   (let [meetings (:meeting-ids state)

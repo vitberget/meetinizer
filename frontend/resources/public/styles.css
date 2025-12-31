@@ -142,6 +142,12 @@ main {
                     border-right: 1px solid #445599;
                 }
             }
+            div.emails {
+                div {
+                    background: #dedede;
+                    margin-bottom: 1em;
+                }
+            }
         }
     }
 }

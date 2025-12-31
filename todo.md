@@ -8,6 +8,7 @@
     - [ ] Woodpecker
     - [ ] GitHub
 - [x] Meetings with special character names
+- [ ] Limit users to see all emails?
 
 ## Frontend
 
