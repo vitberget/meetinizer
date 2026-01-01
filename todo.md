@@ -15,7 +15,8 @@
 ## Frontend
 
 - [x] Create
-- [ ] Dockerfile build
+- [x] Dockerfile build
+- [ ] favicon
 - [ ] Split admin/meeeting?
 - [ ] <https://github.com/tonsky/tongue>
 
