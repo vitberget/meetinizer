@@ -1,4 +1,5 @@
 use axum::Router;
+use axum::http::StatusCode;
 use axum::routing::{get, post};
 use tracing::{Level, info};
 
@@ -21,6 +22,8 @@ pub async fn start_server() -> anyhow::Result<()> {
     init_meeting()?;
 
     let router = Router::new()
+        .route("/hc", get(get_healthcheck))
+
         .route("/api/admin/meeting/{id}", get(api_admin_get_meeting))
         .route("/api/admin/meeting/{id}/sse", get(sse_admin_meeting))
         .route("/api/admin/meeting/{id}/create", get(api_admin_create_meeting))
@@ -51,12 +54,6 @@ pub async fn start_server() -> anyhow::Result<()> {
     Ok(())
 }
 
-
-// TODO user action: add add_user
-// TODO user action: add remove_user
-// TODO user action: add add_vote
-// TODO user action: add remove_vote
-// TODO user action: create user
-// TODO user action: change name
-// TODO user action: login email
-
+async fn get_healthcheck() -> StatusCode {
+    StatusCode::OK
+}

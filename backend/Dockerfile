@@ -12,3 +12,5 @@ FROM alpine:3.23
 
 WORKDIR /app/
 COPY --from=build /app/target/release/meetinizer /app/
+
+ENTRYPOINT /app/meetinizer serve

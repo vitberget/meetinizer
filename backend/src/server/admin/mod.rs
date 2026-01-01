@@ -146,39 +146,36 @@ pub async fn api_admin_list_meetings( cookies: CookieJar) -> Result<Json<Vec<Str
     }
 }
 
-// #[derive(Debug, Serialize, Deserialize)]
-// pub struct AddSlot {
-//     pub meeting_uuid: Uuid,
-//     pub meeting_revision: Uuid,
-//     pub slot: Slot
-// }
-//
-// pub async fn api_admin_add_slot(Json(add_slot): Json<AddSlot>) -> Result<Meeting, (StatusCode, String)> {
-//     let arc = Arc::clone(&MEETING_DB);
-//     let meeting_db = arc.lock().await;
-//     match meeting_db.add_slot(&add_slot.meeting_uuid, &add_slot.meeting_revision, add_slot.slot) {
-//         Ok(meeting) => Ok(meeting),
-//         Err(err) => Err((StatusCode::INTERNAL_SERVER_ERROR, format!("{err}")))
-//     }
-// }
-
 pub async fn api_admin_login(body: String) -> Result<CookieJar, StatusCode> {
     match is_correct_admin_password(&body) {
         Ok(true) => match get_jwt_secret() {
             Ok(secret) => match AdminClaims::default().to_jwt(&secret) {
                 Ok(token) => {
+                    info!("Admin logged in");
                     let cookie_jar = CookieJar::new()
                         .add(Cookie::build(("admin", token))
                             .path("/api/admin/")
                             .http_only(true));
-                            Ok(cookie_jar)
+                    Ok(cookie_jar)
                 }
-                Err(_) => Err(StatusCode::FORBIDDEN),
+                Err(error) => {
+                    warn!("Error encoding to jwt {error}");
+                    Err(StatusCode::FORBIDDEN)
+                }
             }
-
-            Err(_) => Err(StatusCode::FORBIDDEN),
+            Err(error) => {
+                warn!("Error gettin jwt secret {error}");
+                Err(StatusCode::FORBIDDEN)
+            },
         }
-        _ => Err(StatusCode::FORBIDDEN),
+        Ok(false) => {
+            warn!("Wrong admin password");
+            Err(StatusCode::FORBIDDEN)
+        }
+        Err(error) => {
+            warn!("Error with admin password {error}");
+            Err(StatusCode::FORBIDDEN)
+        },
     }
 }
 
