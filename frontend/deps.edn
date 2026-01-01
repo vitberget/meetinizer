@@ -11,6 +11,6 @@
 
         ; thheller/shadow-cljs {:mvn/version "2.28.18"}
         thheller/shadow-cljs {:mvn/version "3.3.4"}
-        no.cjohansen/replicant {:mvn/version "2025.02.02"}
+        no.cjohansen/replicant {:mvn/version "2025.12.1"}
         }
  }

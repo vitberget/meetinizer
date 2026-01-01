@@ -60,8 +60,10 @@
                                      (if (zero? c)
                                        (compare (:end a) (:end b))
                                        c)))))]
-    [:main.meet.meeting {:replicant/on-mount [[:meeting/monitor-meeting :start meeting-name]]}
+    [:main.meet.meeting 
      [:h1 meeting-name]
+     [:div.hidden-lifetime {:replicant/on-mount [[:meeting/monitor-meeting :start meeting-name]]}]
+
      (when-let [comment (:comment meeting)]
        [:div.comment comment])
      [:table

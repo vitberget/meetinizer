@@ -20,7 +20,7 @@
 (defn render-login [_]
   [:main.admin.login
    [:h1 "Enter admin password"]
-   [:input#login-email {:type "email"
+   [:input#login-email {:type "password"
                         :replicant/on-mount [[:db/assoc :admin/login-form-element :dom/node]]
                         :on {:input [[:db/assoc :admin/login-form :event/target.value]]}}]
    [:input {:type "button" 
@@ -107,13 +107,13 @@
 (defn- render-comment [{comment :comment}]
   [:section.comment
    [:h2 "Comment"]
-   [:input {:type "textarea" :value comment}]
-   ])
+   [:input {:type "textarea" :value comment}] ])
 
 (defn render-meeting [{meeting-name :name :as meeting}]
-  [:main.admin.meeting {:replicant/on-mount [[:admin/monitor-meeting :start meeting-name]]
-                        :replicant/on-unmount [[:admin/monitor-meeting :stop meeting-name]] }
+  [:main.admin.meeting 
    [:h1 "Meeting: " meeting-name]
+   [:div.hidden-lifetime {:replicant/on-mount [[:admin/monitor-meeting :start meeting-name]]
+                          :replicant/on-unmount [[:admin/monitor-meeting :stop meeting-name]]}]
    [:input {:type "button"
             :value "Back to list"
             :on {:click [[:db/dissoc :admin/selected-meeting]]}}]

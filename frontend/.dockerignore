@@ -1,4 +1,10 @@
 node_modules/
+public/
+resources/public/app-js/
 Dockerfile
 README.md
 dev.sh
+.clj-kondo/
+.cpcache/
+.lsp/
+.shadow-cljs/

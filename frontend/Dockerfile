@@ -1,4 +1,6 @@
-FROM node:24.12-alpine3.22 AS builder
+FROM clojure:tools-deps-trixie AS builder
+
+RUN apt update && apt install -y nodejs npm
 
 WORKDIR /build/
 

@@ -64,6 +64,7 @@
   (af/create-meeting meeting-name))
 
 (defn event-handler [{:replicant/keys [^js js-event] :as replicant-data} actions]
+  (println actions)
   (doseq [action actions]
     (prn "Triggered action" action)
     (let [enriched-action (->> action
