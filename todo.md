@@ -11,6 +11,7 @@
 - [ ] Limit users from seeing all emails?
 - [ ] "This site uses cookies"?
 - [ ] GDPR?
+- [ ] Documentation
 
 ## Frontend
 
