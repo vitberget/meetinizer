@@ -41,7 +41,7 @@ pub async fn register_login(meeting: &str, email: &str) -> anyhow::Result<i64> {
         secret = urlencoding::encode(&secret)
     );
 
-    mail_link(email, &login_url).await?;
+    mail_link(email, meeting, &login_url).await?;
 
     debug!("  Login url: {login_url}");
 

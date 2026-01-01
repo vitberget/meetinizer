@@ -18,15 +18,16 @@ pub enum CliCommands {
     /// Generate admin password hash
     GenerateAdminHash,
 
+    /// Test email delivery
+    TestEmail { email_address: String },
+
     /// Print the default configuration to std out
     PrintDefaultConfig,
     /// Print the default logging configuration to std out
     PrintDefaultLogConfig,
 
     /// Shell completion
-    Completion {
-        shell: Shell
-    }
+    Completion { shell: Shell }
 }
 
 pub fn print_completions<G: Generator>(shell: G) {
