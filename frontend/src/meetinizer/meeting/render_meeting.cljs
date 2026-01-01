@@ -61,12 +61,12 @@
                                        (compare (:end a) (:end b))
                                        c)))))]
     [:main.meet.meeting {:replicant/on-mount [[:meeting/monitor-meeting :start meeting-name]]}
-     [:h1 "Meeting \"" meeting-name "\""]
+     [:h1 meeting-name]
      (when-let [comment (:comment meeting)]
        [:div.comment comment])
      [:table
       [:tr.header
-       [:th.blank [:div.dateheader [:div.start " "] [:div.end " "] ]]
+       [:th.blank ]
        (->> slots (map render-slot-header))]
       (->> users 
            (filter (fn[user] (not= user my-user)))

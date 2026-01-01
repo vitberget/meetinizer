@@ -1,6 +1,17 @@
+html {
+    height: 100%;
+}
 body {
     font-size: 26px;
     font-family: sans-serif;
+    background: linear-gradient(#f0f0ff, #e0e0ff);
+    min-height: 100%;
+
+    --border-col: rgba(0,0,0,0.5);
+    --vote-active-main: green;
+    --vote-active-bg: #ddffdd;
+    --vote-inactive-main: red;
+    --vote-inactive-bg: #ffdddd;
 }
 
 main {
@@ -32,15 +43,26 @@ main {
             table {
                 border-collapse: separate;
                 border-spacing: 0;
-                /* border: 1px solid black; */
-                /* border-radius: 0.5em; */
 
                 .dateheader {
+                    box-sizing: border-box;
+                    vertical-align: bottom;
                     font-size: 0.5em;
                     display: inline-flex;
                     flex-direction: column;
+                    justify-content: center;
                     padding-left: 10px;
                     padding-right: 10px;
+                    height: 3em;
+                    background: linear-gradient(-20deg, white, #eeeeee);
+                    border-top-right-radius: 0.5rem;
+                    border-top-left-radius: 0.5rem;
+                    border-top: 1px solid var(--border-col);
+                    border-left: 1px solid var(--border-col);
+                    border-right: 1px solid var(--border-col);
+                    margin-left: -1px;
+                    margin-right: -1px;
+                    margin-bottom: -1px;
                 }
 
                 td.vote {
@@ -53,16 +75,17 @@ main {
                     border-width: 3px;
                     border-style: solid;
                     width: 1.4em;
-                    color: red;
-                    border-color: #ffdddd;
-                    background-color: #ffdddd;
+                    color: var(--vote-inactive-main);
+                    border-color: var(--vote-inactive-bg);
+                    background-color: var(--vote-inactive-bg);
                     &.active {
-                        color: green;
-                        border-color: #ddffdd;
-                        background-color: #ddffdd;
+                        color: var(--vote-active-main);
+                        border-color: var(--vote-active-bg);
+                        background-color: var(--vote-active-bg);
                     }
                 }
                 td.name { 
+                    background: #eeeeee;
                     padding-left: 0.4em;
                     padding-right: 0.6em;
                 }
@@ -73,62 +96,51 @@ main {
                 }
                 tr:nth-child(2) {
                     td {
-                        border-top: 1px solid black;
+                        border-top: 1px solid var(--border-col);
                     }
                     td:first-child {
                         border-top-left-radius: 1.0rem;
                     }
-                    td:last-child {
-                        border-top-right-radius: 1.0rem;
-                    }
                 }
                 tr:nth-last-child(2) {
                     td {
-                        border-bottom: 1px solid black;
+                        border-bottom: 1px solid var(--border-col);
                     }
                     td:first-child {
                         border-bottom-left-radius: 1.0rem;
                     }
-                    td:last-child {
-                        border-bottom-right-radius: 1.0rem;
-                    }
                 }
                 tr:nth-child(n+2) {
                     td:first-child {
-                        border-left: 1px solid black;
+                        border-left: 1px solid var(--border-col);
                     }
                     td:last-child {
-                        border-right: 1px solid black;
+                        border-right: 1px solid var(--border-col);
                     }
 
                 }
                 tr.my-user {
                     td {
-                        border-bottom: 1px solid black;
+                        border-bottom: 1px solid var(--border-col);
                     }
                     td:first-child {
                         border-top-left-radius: 1.0rem;
                         border-bottom-left-radius: 1.0rem;
                     }
                     td:last-child {
-                        border-top-right-radius: 1.0rem;
                         border-bottom-right-radius: 1.0rem;
                     }
                     td.vote {
                         cursor: pointer;
                     }
                     div.vote {
-                        border-color: red;
-                        color: red;
-                        background: #ffdddd;
+                        border-color: var(--vote-inactive-main);
                         &.active {
-                            color: green;
-                            border-color: green;
-                            background: #ddffdd;
+                            border-color: var(--vote-active-main);
                         }
                     }
                     td.name {
-                        background-color: #cccccc;
+                        background-color: white;
                     }
                     td:nth-child(2n+2) {
                         background-color: #eeeeee;
