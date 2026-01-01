@@ -60,6 +60,9 @@
     (add-vote meeting-id vote)
     (rm-vote meeting-id vote))))
 
+(defn- do-admin-create-meeting [meeting-name]
+  (af/create-meeting meeting-name))
+
 (defn event-handler [{:replicant/keys [^js js-event] :as replicant-data} actions]
   (doseq [action actions]
     (prn "Triggered action" action)
@@ -83,6 +86,7 @@
         :admin/add-slot (apply af/add-slot args)
         :admin/rm-slot (apply af/rm-slot args)
         :admin/monitor-meeting (apply do-admin-monitor-meeting args)
+        :admin/create-meeting (apply do-admin-create-meeting args)
 
         )))
   ; (main-thing el @state-atom)

@@ -49,6 +49,13 @@ impl MeetingDB {
         Ok(())
     }
 
+    pub fn create_meeting(&self, meeting_name: &str) -> anyhow::Result<()> {
+        let meeting = Meeting::new(meeting_name);
+        self.insert_meeting(&meeting)?;
+        Ok(())
+    }
+
+
     pub fn get_meeting_names(&self) -> anyhow::Result<Vec<String>> {
         let conn = get_meeting_connection()?;
         let mut stmt = conn.prepare("SELECT DISTINCT name from meetings")?;

@@ -37,7 +37,14 @@
      [:ul (->> meeting-ids
                (map (fn[m] [:li [:input {:type "button"
                                          :value m
-                                         :on {:click [[:db/assoc :admin/selected-meeting m]]}}]])))])])
+                                         :on {:click [[:db/assoc :admin/selected-meeting m]]}}]])))])
+   [:div.new-meeting
+    [:input {:type "text"
+             :on {:input [[:db/assoc :admin/create-meeting-form :event/target.value]]}}]
+    [:input {:type "button" 
+             :value "Create new meeting"
+             :on {:click [[:admin/create-meeting [:db/get :admin/create-meeting-form]]
+                          [:db/assoc :admin/create-meeting-form ""]]}}]]])
 
 (defn render-slots [{slots :slots id :name}]
   [:section.slots
@@ -97,6 +104,12 @@
                (map (fn [{username :name email :email}] (str username " <" email ">" )))
                (s/join ", "))]]])
 
+(defn- render-comment [{comment :comment}]
+  [:section.comment
+   [:h2 "Comment"]
+   [:input {:type "textarea" :value comment}]
+   ])
+
 (defn render-meeting [{meeting-name :name :as meeting}]
   [:main.admin.meeting {:replicant/on-mount [[:admin/monitor-meeting :start meeting-name]]
                         :replicant/on-unmount [[:admin/monitor-meeting :stop meeting-name]] }
@@ -104,6 +117,7 @@
    [:input {:type "button"
             :value "Back to list"
             :on {:click [[:db/dissoc :admin/selected-meeting]]}}]
+   (render-comment meeting)
    (render-slots meeting)
    (render-users meeting)])
 

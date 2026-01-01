@@ -8,7 +8,9 @@
     - [ ] Woodpecker
     - [ ] GitHub
 - [x] Meetings with special character names
-- [ ] Limit users to see all emails?
+- [ ] Limit users from seeing all emails?
+- [ ] "This site uses cookies"?
+- [ ] GDPR?
 
 ## Frontend
 

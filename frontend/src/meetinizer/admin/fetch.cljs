@@ -16,6 +16,7 @@
 
                    (swap! state-atom assoc-in [:admin :meeting id] :error)))))))
 
+
 (defn fetch-meeting-list []
   (-> (js/fetch "/api/admin/meetings/list")
       (.then (fn [the-result]
@@ -29,6 +30,11 @@
                    403 (swap! state-atom assoc-in [:meeting-ids] :forbidden)
 
                    (swap! state-atom assoc-in [:meeting-ids] :error)))))))
+
+(defn create-meeting [meeting-name]
+  (-> (js/fetch (str "/api/admin/meeting/" meeting-name "/create"))
+      (.then (fn [_]
+               (fetch-meeting-list)))))
 
 (defn add-slot [id start end]
   (let [start (-> start (js/Date.) (.toISOString))
@@ -78,11 +84,8 @@
                               (let [data (as-> event $
                                            (.-data $)
                                            (.parse js/JSON $)
-                                           (js->clj $ {:keywordize-keys true})
-                                           )]
-                                (swap! state-atom assoc-in [:admin :meeting id] data)
-                                (prn "event" data))))
-    ))
+                                           (js->clj $ {:keywordize-keys true}))]
+                                (swap! state-atom assoc-in [:admin :meeting id] data))))))
 
 (defn admin-stop-sse [id]
   (.close (get-in @state-atom [:admin :sse id]))

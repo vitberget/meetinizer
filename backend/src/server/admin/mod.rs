@@ -21,6 +21,33 @@ use crate::structs::{Meeting, Slot};
 pub mod claim;
 pub mod login;
 
+
+pub async fn api_admin_create_meeting(
+    Path(id): Path<String>,
+    cookies: CookieJar,
+) -> Result<StatusCode, StatusCode> {
+    match AdminClaims::get_and_validate(&cookies) {
+        Err(error) => {
+            warn!("error getting admin claims {error}");
+            Err(StatusCode::FORBIDDEN)
+        }
+        Ok(_) => {
+            let arc = Arc::clone(&MEETING_DB);
+            let meeting_db = arc.lock().await;
+            match meeting_db.create_meeting(&id) {
+                Ok(_) => {
+                    info!("Admin creeated meeting {id}");
+                    Ok(StatusCode::OK)
+                }
+                Err(error) => {
+                    warn!("Failed to create meeting for admin {id}: {error}");
+                    Err(StatusCode::INTERNAL_SERVER_ERROR)
+                }
+            }
+        }
+    }
+}
+
 pub async fn api_admin_add_slot(
     Path(id): Path<String>,
     cookies: CookieJar,
