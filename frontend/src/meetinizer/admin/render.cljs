@@ -1,9 +1,9 @@
 (ns meetinizer.admin.render
   (:require
-    [clojure.string :as s]
-    [meetinizer.admin.fetch :refer [fetch-meeting fetch-meeting-list]]
-    [meetinizer.meeting.render-meeting :refer [date-from time-from]]
-    [meetinizer.the-state :refer [state-atom]]))
+   [clojure.string :as s]
+   [meetinizer.admin.fetch :refer [fetch-meeting fetch-meeting-list]]
+   [meetinizer.meeting.render-meeting :refer [date-from sort-slots time-from]]
+   [meetinizer.the-state :refer [state-atom]]))
 
 (defn render-loading [_]
   [:main.admin.loading
@@ -46,11 +46,12 @@
              :on {:click [[:admin/create-meeting [:db/get :admin/create-meeting-form]]
                           [:db/assoc :admin/create-meeting-form ""]]}}]]])
 
-(defn render-slots [{slots :slots id :name}]
+(defn render-slots [{slots :slots id :name votes :votes}]
   [:section.slots
    [:h2 "Slots"]
    [:div.slots
     (->> slots
+         (sort-slots)
          (map (fn[slot] [:div.slot 
                          [:div.from 
                           [:div.date (date-from (:start slot))]
@@ -58,6 +59,12 @@
                          [:div.to 
                           [:div.date (date-from (:end slot))]
                           [:div.date (time-from (:end slot))]]
+                         [:div.count
+                          (->> votes
+                               (filter (fn[vote] (= (:slot vote) slot)))
+                               (count))
+                          " vote(s)"
+                          ]
                          [:div.action 
                           [:input {:type "button" 
                                    :value "Remove"

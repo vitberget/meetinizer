@@ -46,7 +46,12 @@
      [:div.dateheader
       [:div.start date-from-start " " time-from-start]
       [:div.end date-from-end " " time-from-end]])]))
-
+(defn sort-slots [slots]
+  (->> slots
+       (sort (fn [a b] (let [c (compare (:start a) (:start b))]
+                         (if (zero? c)
+                           (compare (:end a) (:end b))
+                           c))))))
 (defn render-actually [state 
                        {meeting-name :name 
                         slots :slots 
@@ -55,20 +60,16 @@
                         :as meeting}
                        my-user]
   (prn meeting)
-  (let [slots (->> slots
-                   (sort (fn [a b] (let [c (compare (:start a) (:start b))]
-                                     (if (zero? c)
-                                       (compare (:end a) (:end b))
-                                       c)))))]
+  (let [slots (sort-slots slots)]
     [:main.meet.meeting 
      [:h1 meeting-name]
      [:div.hidden-lifetime {:replicant/on-mount [[:meeting/monitor-meeting :start meeting-name]]}]
 
      (when-let [comment (:comment meeting)]
        [:div.comment (as-> comment $
-                          (str/split $ "\n\n")
-                          (map (fn [p] [:p p]) $)
-                          )])
+                       (str/split $ "\n\n")
+                       (map (fn [p] [:p p]) $)
+                       )])
      [:table
       [:tr.header
        [:th.blank ]
