@@ -10,7 +10,7 @@ use axum::response::sse::{Event, KeepAlive};
 use axum_extra::extract::CookieJar;
 use axum_extra::extract::cookie::Cookie;
 use futures_util::Stream;
-use tracing::{info, warn};
+use tracing::{debug, info, warn};
 
 use crate::config::get_jwt_secret;
 use crate::db::meeting::{MEETING_DB, subscribe_to_meeting_queue};
@@ -193,6 +193,7 @@ pub async fn sse_admin_meeting(
     Path(id): Path<String>,
     cookies: CookieJar
 ) -> Result<Sse<impl Stream<Item = Result<Event, Infallible>>>, StatusCode> {
+    info!("client connected");
     match AdminClaims::get_and_validate(&cookies) {
         Err(error) => {
             warn!("Error getting claims {error}");
@@ -202,9 +203,27 @@ pub async fn sse_admin_meeting(
             let mut queue = subscribe_to_meeting_queue();
 
             Ok(Sse::new(try_stream! {
+                {
+                    let arc = Arc::clone(&MEETING_DB);
+                    match arc.lock().await.get_meeting_by_name(&id) {
+                        Ok(meeting) => {
+                            if let Ok(json) = serde_json::to_string(&meeting) {
+                                debug!("releasing event from db {json}");
+                                let event = Event::default().data(json);
+                                yield event;
+                            }
+                        }
+                        Err(err) => {
+                            warn!("Error getting meeting {err}");
+                            // Err(StatusCode::FORBIDDEN)
+                        }
+                    }
+                }
+
                 while let Ok(meeting) = queue.recv().await {
                     if meeting.get_name() == id
                         && let Ok(json) = serde_json::to_string(&meeting) {
+                            debug!("releasing event {json}");
                             let event = Event::default().data(json);
                             yield event;
                     }

@@ -15,21 +15,10 @@ pub fn get_jwt_secret() -> anyhow::Result<String> {
     Ok(secret)
 }
 
-pub fn get_jwt_valid_seconds() -> anyhow::Result<i64> {
-    let seconds = get_config()?.get_int("jwt.valid_seconds")?;
-    Ok(seconds)
-}
 
 pub fn get_admin_hash() -> anyhow::Result<String> {
     let hash = get_config()?.get_string("admin.hash")?;
     Ok(hash)
-}
-
-fn get_config() -> anyhow::Result<Config> {
-    Ok(Config::builder()
-        .add_source(config::File::with_name("settings.toml").required(false)) 
-        .add_source(config::Environment::with_prefix("MEETINIZER").separator("_"))
-        .build()?)
 }
 
 pub fn get_mail_server() -> anyhow::Result<String> {
@@ -55,4 +44,16 @@ pub fn get_mail_password() -> anyhow::Result<String> {
 pub fn get_mail_from() -> anyhow::Result<String> {
     let from = get_config()?.get_string("mail.from")?;
     Ok(from)
+}
+
+pub fn get_mail_seconds() -> anyhow::Result<i64> {
+    let seconds = get_config()?.get_int("mail.seconds")?;
+    Ok(seconds)
+}
+
+fn get_config() -> anyhow::Result<Config> {
+    Ok(Config::builder()
+        .add_source(config::File::with_name("settings.toml").required(false)) 
+        .add_source(config::Environment::with_prefix("MEETINIZER").separator("_"))
+        .build()?)
 }

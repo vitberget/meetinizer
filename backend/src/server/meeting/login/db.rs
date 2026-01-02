@@ -6,7 +6,7 @@ use tokio::sync::Mutex;
 use tracing::{debug, info, warn};
 use uuid::Uuid;
 
-use crate::config::{get_host, get_jwt_secret, get_jwt_valid_seconds};
+use crate::config::{get_host, get_jwt_secret, get_mail_seconds};
 use crate::server::meeting::login::claims::MeetingEmailClaims;
 use crate::server::meeting::login::mail::mail_link;
 
@@ -23,7 +23,7 @@ static FAKE_DB: LazyLock<Arc<Mutex<Vec<Login>>>> = LazyLock::new(Default::defaul
 pub async fn register_login(meeting: &str, email: &str) -> anyhow::Result<i64> {
     info!("register_login {meeting} {email}");
 
-    let valid_time: Duration = Duration::seconds(get_jwt_valid_seconds()?);
+    let valid_time: Duration = Duration::seconds(get_mail_seconds()?);
     let secret = Uuid::new_v4().to_string();
     let valid_until = Utc::now() + valid_time;
 
