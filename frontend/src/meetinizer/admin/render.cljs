@@ -118,7 +118,7 @@
               } comment]  
    [:input {:type "button"
             :value "Update comment"
-            :on {:click [[:admin/update-comment id [:db/get :admin/comment]]]} } ]])
+            :on {:click [[:admin/update-comment id [:db/get :admin/comment]]]}}]])
 
 (defn render-meeting [{meeting-name :name :as meeting}]
   [:main.admin.meeting 

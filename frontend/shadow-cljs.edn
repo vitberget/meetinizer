@@ -6,5 +6,4 @@
  {:meetinizer
   {:target :browser
    :modules {:main {:init-fn meetinizer.main/init!}}
-   :dev {:output-dir "resources/public/app-js"}}}
- }
+   :dev {:output-dir "resources/public/app-js"}}}}
