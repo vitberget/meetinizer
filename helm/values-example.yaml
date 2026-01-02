@@ -1,0 +1,87 @@
+nameOverride: ""
+fullnameOverride: ""
+
+ingress:
+  enabled: true
+  className: ""
+  # annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "21600"
+    nginx.ingress.kubernetes.io/eventsource: "true"
+
+  hosts:
+    - host: meet.example.com
+      paths:
+        - path: /api/
+          pathType: ImplementationSpecific
+          service: meet-server
+          port: 80
+        - path: /
+          pathType: ImplementationSpecific
+          service: meet-web
+          port: 80
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+
+server:
+  image:
+    repository: my-registry/meetinizer-server
+    pullPolicy: IfNotPresent
+    tag: "6"
+
+  imagePullSecrets:
+  - name: regcred
+
+  env:
+  - name: MEETINIZER_SERVER_BIND
+    value: 0.0.0.0:80
+  - name: MEETINIZER_SERVER_HOST
+    value: "https://meetinizer.example.com/"
+  - name: MEETINIZER_ADMIN_HASH
+    valueFrom:
+      secretKeyRef:
+        name: admin-hash
+        key: hash
+  - name: MEETINIZER_JWT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: jwt
+        key: secret
+  - name: MEETINIZER_MAIL_SECONDS
+    value: "900"
+  - name: MEETINIZER_MAIL_SERVER
+    value: "my.mail.host"
+  - name: MEETINIZER_MAIL_PORT
+    value: "465"
+  - name: MEETINIZER_MAIL_USER
+    value: "user@example.com"
+  - name: MEETINIZER_MAIL_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: mail
+        key: password
+  - name: MEETINIZER_MAIL_FROM
+    value: "meetinizer@example.com"
+    
+  volumes: 
+  - name: meet-data
+    nfs:
+      server: nfs-host
+      path: /path/for/meetinizer/
+  volumeMounts: 
+  - name: meet-data
+    mountPath: "/app/data"
+
+web:
+  image:
+    repository: my-registry/meetinizer-web
+    pullPolicy: IfNotPresent
+    tag: "7"
+
+  imagePullSecrets:
+  - name: regcred
