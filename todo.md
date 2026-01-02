@@ -13,6 +13,7 @@
 - [ ] GDPR?
 - [ ] Documentation
 - [ ] Fancier/Richtext comments?
+- [ ] Spam protection
 
 ## Frontend
 
