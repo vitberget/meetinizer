@@ -88,7 +88,7 @@ pub async fn post_vote_add(
     Path(id): Path<String>,
     cookies: CookieJar,
     Json(slot): Json<Slot>
-) -> Result<StatusCode, StatusCode> {
+) -> Result<Json<Meeting>, StatusCode> {
     match MeetingEmailClaims::get_and_validate(&id, &cookies) {
         Err(error) => {
             warn!("Error getting claim: {error}");
@@ -101,9 +101,9 @@ pub async fn post_vote_add(
             };
             let arc = Arc::clone(&MEETING_DB);
             match arc.lock().await.add_vote_unsafe(&id, vote.to_owned()) {
-                Ok(_) => {
+                Ok(meeting) => {
                     info!("User {user:?} adding vote on {vote:?} in {id}", user = claims.get_email());
-                    Ok(StatusCode::OK)
+                    Ok(Json(meeting))
                 }
                 Err(err) => {
                     warn!("Error when user {user:?} adding vote on {vote:?} in {id} {err}", user = claims.get_email());
@@ -118,7 +118,7 @@ pub async fn post_vote_rm(
     Path(id): Path<String>,
     cookies: CookieJar,
     Json(slot): Json<Slot>
-) -> Result<StatusCode, StatusCode> {
+) -> Result<Json<Meeting>, StatusCode> {
     match MeetingEmailClaims::get_and_validate(&id, &cookies) {
         Err(error) => {
             warn!("Error getting claim: {error}");
@@ -131,9 +131,9 @@ pub async fn post_vote_rm(
             };
             let arc = Arc::clone(&MEETING_DB);
             match arc.lock().await.rm_vote_unsafe(&id, vote.to_owned()) {
-                Ok(_) => {
+                Ok(meeting) => {
                     info!("User {user:?} removed vote on {vote:?} in {id}", user = claims.get_email());
-                    Ok(StatusCode::OK)
+                    Ok(Json(meeting))
                 }
                 Err(err) => {
                     warn!("Error when user {user:?} removing vote on {vote:?} in {id} {err}", user = claims.get_email());
@@ -148,7 +148,7 @@ pub async fn post_register_name(
     Path(id): Path<String>,
     cookies: CookieJar,
     Json(name): Json<RegisterName>
-) -> Result<StatusCode, StatusCode> {
+) -> Result<Json<Meeting>, StatusCode> {
     match MeetingEmailClaims::get_and_validate(&id, &cookies) {
         Err(error) => {
             warn!("Error getting claim: {error}");
@@ -159,9 +159,9 @@ pub async fn post_register_name(
 
             let arc = Arc::clone(&MEETING_DB);
             match arc.lock().await.add_user_unsafe(&id, user.to_owned()) {
-                Ok(_) => {
+                Ok(meeting) => {
                     info!("User {user:?} registred on {id}");
-                    Ok(StatusCode::OK)
+                    Ok(Json(meeting))
                 }
                 Err(err) => {
                     warn!("Error adding user {user:?} to meeting {id}: {err}");

@@ -49,10 +49,10 @@ impl MeetingDB {
         Ok(())
     }
 
-    pub fn create_meeting(&self, meeting_name: &str) -> anyhow::Result<()> {
+    pub fn create_meeting(&self, meeting_name: &str) -> anyhow::Result<Meeting> {
         let meeting = Meeting::new(meeting_name);
         self.insert_meeting(&meeting)?;
-        Ok(())
+        Ok(meeting)
     }
 
 

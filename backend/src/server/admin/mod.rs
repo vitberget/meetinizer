@@ -25,7 +25,7 @@ pub mod login;
 pub async fn api_admin_create_meeting(
     Path(id): Path<String>,
     cookies: CookieJar,
-) -> Result<StatusCode, StatusCode> {
+) -> Result<Json<Meeting>, StatusCode> {
     match AdminClaims::get_and_validate(&cookies) {
         Err(error) => {
             warn!("error getting admin claims {error}");
@@ -35,9 +35,9 @@ pub async fn api_admin_create_meeting(
             let arc = Arc::clone(&MEETING_DB);
             let meeting_db = arc.lock().await;
             match meeting_db.create_meeting(&id) {
-                Ok(_) => {
+                Ok(meeting) => {
                     info!("Admin creeated meeting {id}");
-                    Ok(StatusCode::OK)
+                    Ok(Json(meeting))
                 }
                 Err(error) => {
                     warn!("Failed to create meeting for admin {id}: {error}");
@@ -52,7 +52,7 @@ pub async fn api_admin_update_comment(
     Path(id): Path<String>,
     cookies: CookieJar,
     comment: String
-) -> Result<StatusCode, StatusCode> {
+) -> Result<Json<Meeting>, StatusCode> {
     match AdminClaims::get_and_validate(&cookies) {
         Err(error) => {
             warn!("error getting admin claims {error}");
@@ -62,9 +62,9 @@ pub async fn api_admin_update_comment(
             let arc = Arc::clone(&MEETING_DB);
             let meeting_db = arc.lock().await;
             match meeting_db.update_comment(&id, &comment) {
-                Ok(_) => {
+                Ok(meeting) => {
                     info!("admin udated comment {comment:?} into {id}");
-                    Ok(StatusCode::OK)
+                    Ok(Json(meeting))
                 }
                 Err(error) => {
                     warn!("admin failed to update comment {comment:?} into {id}: {error}");
@@ -80,7 +80,7 @@ pub async fn api_admin_add_slot(
     Path(id): Path<String>,
     cookies: CookieJar,
     Json(slot): Json<Slot>
-) -> Result<StatusCode, StatusCode> {
+) -> Result<Json<Meeting>, StatusCode> {
     match AdminClaims::get_and_validate(&cookies) {
         Err(error) => {
             warn!("error getting admin claims {error}");
@@ -90,9 +90,9 @@ pub async fn api_admin_add_slot(
             let arc = Arc::clone(&MEETING_DB);
             let meeting_db = arc.lock().await;
             match meeting_db.add_slot_unsafe(&id, slot.to_owned()) {
-                Ok(_) => {
+                Ok(meeting) => {
                     info!("admin insert slot {slot:?} into {id}");
-                    Ok(StatusCode::OK)
+                    Ok(Json(meeting))
                 }
                 Err(error) => {
                     warn!("admin failed to insert slot {slot:?} into {id}: {error}");
@@ -108,7 +108,7 @@ pub async fn api_admin_rm_slot(
     Path(id): Path<String>,
     cookies: CookieJar,
     Json(slot): Json<Slot>
-) -> Result<StatusCode, StatusCode> {
+) -> Result<Json<Meeting>, StatusCode> {
     match AdminClaims::get_and_validate(&cookies) {
         Err(error) => {
             warn!("error getting admin claims {error}");
@@ -118,9 +118,9 @@ pub async fn api_admin_rm_slot(
             let arc = Arc::clone(&MEETING_DB);
             let meeting_db = arc.lock().await;
             match meeting_db.rm_slot_unsafe(&id, slot.to_owned()) {
-                Ok(_) => {
+                Ok(meeting) => {
                     info!("admin removed slot {slot:?} into {id}");
-                    Ok(StatusCode::OK)
+                    Ok(Json(meeting))
                 }
                 Err(error) => {
                     warn!("admin failed to remove slot {slot:?} into {id}: {error}");
@@ -155,7 +155,7 @@ pub async fn api_admin_get_meeting(
     }
 }
 
-pub async fn api_admin_list_meetings( cookies: CookieJar) -> Result<Json<Vec<String>>, StatusCode> {
+pub async fn api_admin_list_meetings(cookies: CookieJar) -> Result<Json<Vec<String>>, StatusCode> {
     match AdminClaims::get_and_validate(&cookies) {
         Ok(_) => {
             let arc = Arc::clone(&MEETING_DB);
