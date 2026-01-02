@@ -1,12 +1,15 @@
 html {
-    height: 100%;
+    min-height: 100dvh;
 }
 body {
     font-size: 26px;
     font-family: sans-serif;
-    background: linear-gradient(#f0f0ff, #e0e0ff);
-    min-height: 100%;
+    background: linear-gradient(#f0f0ff, #e0e0ef);
+    min-height: 100dvh;
 
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-top: 0.2em;
     --border-col: rgba(0,0,0,0.5);
     --vote-active-main: green;
     --vote-active-bg: #ddffdd;
@@ -51,9 +54,10 @@ main {
                     display: inline-flex;
                     flex-direction: column;
                     justify-content: center;
-                    padding-left: 10px;
-                    padding-right: 10px;
+                    /* padding-left: 10px; */
+                    /* padding-right: 10px; */
                     height: 3em;
+                    min-width: 8.5em;
                     background: linear-gradient(-20deg, white, #eeeeee);
                     border-top-right-radius: 0.5rem;
                     border-top-left-radius: 0.5rem;
