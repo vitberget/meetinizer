@@ -2,7 +2,7 @@
 
 ## Generic
 
-- [ ] Helm
+- [x] Helm
 - [ ] Docker compose
 - [ ] CI/CD
     - [ ] Woodpecker
@@ -32,4 +32,4 @@
     - [x] Admin
     - [x] User 
         - [x] by mail
-- [ ] Nicer mail
+- [x] Nicer mail
