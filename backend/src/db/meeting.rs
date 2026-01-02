@@ -155,6 +155,12 @@ impl MeetingDB {
         self.insert_meeting(&meeting)?;
         Ok(meeting)
     }
+    pub fn update_comment(&self, meeting_name: &str, comment: &str) -> anyhow::Result<Meeting> {
+        let mut meeting = self.get_meeting_by_name(meeting_name)?;
+        meeting.set_comment(comment);
+        self.insert_meeting(&meeting)?;
+        Ok(meeting)
+    }
 }
 
 #[cfg(test)]

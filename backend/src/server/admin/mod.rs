@@ -48,6 +48,34 @@ pub async fn api_admin_create_meeting(
     }
 }
 
+pub async fn api_admin_update_comment(
+    Path(id): Path<String>,
+    cookies: CookieJar,
+    comment: String
+) -> Result<StatusCode, StatusCode> {
+    match AdminClaims::get_and_validate(&cookies) {
+        Err(error) => {
+            warn!("error getting admin claims {error}");
+            Err(StatusCode::FORBIDDEN)
+        }
+        Ok(_) => {
+            let arc = Arc::clone(&MEETING_DB);
+            let meeting_db = arc.lock().await;
+            match meeting_db.update_comment(&id, &comment) {
+                Ok(_) => {
+                    info!("admin udated comment {comment:?} into {id}");
+                    Ok(StatusCode::OK)
+                }
+                Err(error) => {
+                    warn!("admin failed to update comment {comment:?} into {id}: {error}");
+                    Err(StatusCode::INTERNAL_SERVER_ERROR)
+                }
+            }
+
+        }
+    }
+}
+
 pub async fn api_admin_add_slot(
     Path(id): Path<String>,
     cookies: CookieJar,

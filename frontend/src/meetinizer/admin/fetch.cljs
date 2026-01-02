@@ -48,6 +48,14 @@
                  (let [status (.-status the-result)]
                    (prn "added" status)))))))
 
+(defn update-comment [id comment]
+  (-> (js/fetch (str "/api/admin/meeting/" id "/comment")
+                (clj->js {:method "POST"
+                          :body comment}))
+      (.then (fn [the-result]
+               (let [status (.-status the-result)]
+                 (prn "added" status))))))
+
 (defn rm-slot [id slot]
   (prn "rm-slot" id slot)
   (-> (js/fetch (str "/api/admin/meeting/" id "/slot/rm")

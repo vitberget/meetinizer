@@ -1,6 +1,6 @@
 (ns meetinizer.meeting.render-meeting
-  (:require [meetinizer.the-state :refer [state-atom]])
-  )
+  (:require [meetinizer.the-state :refer [state-atom]]
+            [clojure.string :as str]))
 
 (defn date-from [timeline]
   (let [js-date (->> timeline 
@@ -65,7 +65,10 @@
      [:div.hidden-lifetime {:replicant/on-mount [[:meeting/monitor-meeting :start meeting-name]]}]
 
      (when-let [comment (:comment meeting)]
-       [:div.comment comment])
+       [:div.comment (as-> comment $
+                          (str/split $ "\n\n")
+                          (map (fn [p] [:p p]) $)
+                          )])
      [:table
       [:tr.header
        [:th.blank ]

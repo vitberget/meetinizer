@@ -104,10 +104,16 @@
                (map (fn [{username :name email :email}] (str username " <" email ">" )))
                (s/join ", "))]]])
 
-(defn- render-comment [{comment :comment}]
+(defn- render-comment [{comment :comment id :name}]
   [:section.comment
    [:h2 "Comment"]
-   [:input {:type "textarea" :value comment}] ])
+   ; [:input {:type "textarea" :value comment}]
+  [:textarea {:cols "80" :rows "20"
+              :on {:input [[:db/assoc :admin/comment :event/target.value]]}
+              } comment]  
+   [:input {:type "button"
+            :value "Update comment"
+            :on {:click [[:admin/update-comment id [:db/get :admin/comment]]]} } ]])
 
 (defn render-meeting [{meeting-name :name :as meeting}]
   [:main.admin.meeting 

@@ -63,6 +63,9 @@
 (defn- do-admin-create-meeting [meeting-name]
   (af/create-meeting meeting-name))
 
+(defn- do-admin-update-comment [meeting-name comment]
+  (af/update-comment meeting-name comment))
+
 (defn event-handler [{:replicant/keys [^js js-event] :as replicant-data} actions]
   (println actions)
   (doseq [action actions]
@@ -88,6 +91,7 @@
         :admin/rm-slot (apply af/rm-slot args)
         :admin/monitor-meeting (apply do-admin-monitor-meeting args)
         :admin/create-meeting (apply do-admin-create-meeting args)
+        :admin/update-comment (apply do-admin-update-comment args)
 
         )))
   ; (main-thing el @state-atom)
