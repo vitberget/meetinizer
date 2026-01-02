@@ -63,22 +63,20 @@
                           (->> votes
                                (filter (fn[vote] (= (:slot vote) slot)))
                                (count))
-                          " vote(s)"
-                          ]
+                          " vote(s)"]
                          [:div.action 
                           [:input {:type "button" 
                                    :value "Remove"
-                                   :on {:click [[:admin/rm-slot id slot]]}}]
-                          ] ])))
+                                   :on {:click [[:admin/rm-slot id slot]]}}]]])))
     [:div.slot.add
      [:div.from "Start"
       [:input {:type "datetime-local"
                :replicant/on-mount [[:db/assoc :admin/admin-slot-start-element :dom/node]]
-               :on {:input [[:db/assoc :admin/login-slot-start :event/target.value]]} }]]
+               :on {:input [[:db/assoc :admin/login-slot-start :event/target.value]]}}]]
      [:div.to "End"
       [:input {:type "datetime-local"
                :replicant/on-mount [[:db/assoc :admin/admin-slot-end-element :dom/node]]
-               :on {:input [[:db/assoc :admin/login-slot-end :event/target.value]]} }]] 
+               :on {:input [[:db/assoc :admin/login-slot-end :event/target.value]]}}]] 
      [:div.action 
       [:input {:type "button" 
                :value "Add"
