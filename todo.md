@@ -12,6 +12,7 @@
 - [ ] "This site uses cookies"?
 - [ ] GDPR?
 - [ ] Documentation
+- [ ] Fancier/Richtext comments?
 
 ## Frontend
 
