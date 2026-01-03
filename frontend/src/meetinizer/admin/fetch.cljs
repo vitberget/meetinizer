@@ -2,19 +2,22 @@
   (:require
     [meetinizer.the-state :refer [state-atom]]))
 
+(defn update-meeting-state [id the-result]
+  (fn [the-result]
+    (let [status (.-status the-result)]
+      (condp = status
+        200 (-> (.json the-result)
+                (.then (fn [json]
+                         (let [data (js->clj json :keywordize-keys true)]
+                           (swap! state-atom assoc-in [:admin :meeting id] data)))))
+
+        403 (swap! state-atom assoc-in [:admin :meeting id] :forbidden)
+
+        (swap! state-atom assoc-in [:admin :meeting id] :error)))))
+
 (defn fetch-meeting [id]
   (-> (js/fetch (str "/api/admin/meeting/" id))
-      (.then (fn [the-result]
-               (let [status (.-status the-result)]
-                 (condp = status
-                   200 (-> (.json the-result)
-                           (.then (fn [json]
-                                    (let [data (js->clj json :keywordize-keys true)]
-                                      (swap! state-atom assoc-in [:admin :meeting id] data)))))
-
-                   403 (swap! state-atom assoc-in [:admin :meeting id] :forbidden)
-
-                   (swap! state-atom assoc-in [:admin :meeting id] :error)))))))
+      (.then (fn [the-result] (update-meeting-state id the-result)))))
 
 
 (defn fetch-meeting-list []
@@ -39,22 +42,17 @@
 (defn add-slot [id start end]
   (let [start (-> start (js/Date.) (.toISOString))
         end (-> end (js/Date.) (.toISOString))]
-    (prn "add slot" id start end)
     (-> (js/fetch (str "/api/admin/meeting/" id "/slot/add")
                   (clj->js {:method "POST"
                             :headers {"Content-Type" "application/json"}
                             :body (.stringify js/JSON (clj->js {:start start :end end}))}))
-        (.then (fn [the-result]
-                 (let [status (.-status the-result)]
-                   (prn "added" status)))))))
+        (.then (fn [the-result] (update-meeting-state id the-result))))))
 
 (defn update-comment [id comment]
   (-> (js/fetch (str "/api/admin/meeting/" id "/comment")
                 (clj->js {:method "POST"
                           :body comment}))
-      (.then (fn [the-result]
-               (let [status (.-status the-result)]
-                 (prn "added" status))))))
+      (.then (fn [the-result] (update-meeting-state id the-result)))))
 
 (defn rm-slot [id slot]
   (prn "rm-slot" id slot)

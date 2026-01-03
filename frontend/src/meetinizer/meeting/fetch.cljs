@@ -1,10 +1,8 @@
 (ns meetinizer.meeting.fetch
   (:require [meetinizer.the-state :refer [state-atom]]))
 
-(defn fetch-meeting [id]
-  (-> (js/fetch (str "/api/meeting/" (js/encodeURIComponent  id)))
-      (.then (fn [the-result]
-               (let [status (.-status the-result)]
+(defn update-meeting-state [id the-result]
+  (let [status (.-status the-result)]
                  (condp = status
                    200 (-> (.json the-result)
                            (.then (fn [json]
@@ -13,7 +11,11 @@
 
                    403 (swap! state-atom assoc-in [:meeting id] :forbidden)
 
-                   (swap! state-atom assoc-in [:meeting id] :error)))))))
+                   (swap! state-atom assoc-in [:meeting id] :error))))
+
+(defn fetch-meeting [id]
+  (-> (js/fetch (str "/api/meeting/" (js/encodeURIComponent  id)))
+      (.then (fn [the-result] (update-meeting-state id the-result)))))
 
 (defn fetch-whoami [id]
   (-> (js/fetch (str "/api/meeting/" id "/whoami"))
@@ -46,29 +48,22 @@
   (-> (js/fetch (str "/api/meeting/" meeting-name "/register-name") 
                 (clj->js {:method "POST" 
                           :headers {"Content-Type" "application/json"}
-                          :body (.stringify js/JSON (clj->js {:name username}))
-                          }))
-      (.then (fn [the-result]
-               (let [status (.-status the-result)]
-                 (prn status))))))
+                          :body (.stringify js/JSON (clj->js {:name username}))}))
+      (.then (fn [the-result] (update-meeting-state meeting-name the-result)))))
 
 (defn add-vote [meeting-name vote]
   (-> (js/fetch (str "/api/meeting/" meeting-name "/vote/add") 
                 (clj->js {:method "POST" 
                           :headers {"Content-Type" "application/json"}
                           :body (.stringify js/JSON (clj->js vote))}))
-      (.then (fn [the-result]
-               (let [status (.-status the-result)]
-                 (prn "add-vote" status))))))
+      (.then (fn [the-result] (update-meeting-state meeting-name the-result)))))
 
 (defn rm-vote [meeting-name vote]
   (-> (js/fetch (str "/api/meeting/" meeting-name "/vote/rm") 
                 (clj->js {:method "POST" 
                           :headers {"Content-Type" "application/json"}
                           :body (.stringify js/JSON (clj->js vote))}))
-      (.then (fn [the-result]
-               (let [status (.-status the-result)]
-                 (prn "add-vote" status))))))
+      (.then (fn [the-result] (update-meeting-state meeting-name the-result)))))
 
 (defn meeting-sse [id]
   (let [sse (js/EventSource. (str "/api/meeting/" id "/sse"))]
