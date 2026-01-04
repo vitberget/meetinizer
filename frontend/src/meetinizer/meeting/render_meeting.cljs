@@ -59,7 +59,6 @@
                         votes :votes 
                         :as meeting}
                        my-user]
-  (prn meeting)
   (let [slots (sort-slots slots)]
     [:main.meet.meeting 
      [:h1 meeting-name]
@@ -68,8 +67,7 @@
      (when-let [comment (:comment meeting)]
        [:div.comment (as-> comment $
                        (str/split $ "\n\n")
-                       (map (fn [p] [:p p]) $)
-                       )])
+                       (map (fn [p] [:p p]) $))])
      [:table
       [:tr.header
        [:th.blank ]
@@ -95,7 +93,11 @@
                      [:td.vote {:on {:click [[:meeting/set-vote slot (not is-active)]]}}
                       [:div.vote 
                        {:class (if is-active ["vote" "active"] ["vote"])} 
-                       (if is-active "✓" "✗")]]))))]]]))
+                       (if is-active "✓" "✗")]]))))]]
+     [:div.logout 
+      [:input {:type "button"
+               :value "Log out"
+               :on {:click [[:meeting/logout meeting-name]]}}]]]))
 
 
 (comment

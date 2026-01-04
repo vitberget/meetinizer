@@ -6,7 +6,7 @@ use tracing::{Level, info};
 use crate::config::get_bind;
 use crate::db::init::init_meeting;
 use crate::server::admin::{api_admin_add_slot, api_admin_create_meeting, api_admin_get_meeting, api_admin_list_meetings, api_admin_login, api_admin_logout, api_admin_rm_slot, api_admin_update_comment, sse_admin_all_meetings, sse_admin_meeting};
-use crate::server::meeting::login::{api_attempt_login, api_request_login};
+use crate::server::meeting::login::{api_attempt_login, api_logout, api_request_login};
 use crate::server::meeting::{get_meeting, get_whoami, post_register_name, post_vote_add, post_vote_rm, sse_meeting};
 
 pub mod admin;
@@ -42,7 +42,8 @@ pub async fn start_server() -> anyhow::Result<()> {
         .route("/api/meeting/{id}/vote/add", post(post_vote_add))
         .route("/api/meeting/{id}/vote/rm", post(post_vote_rm))
         .route("/api/meeting/{id}/request-login/{email}", get(api_request_login))
-        .route("/api/meeting/{id}/login/{email}/{token}", get(api_attempt_login));
+        .route("/api/meeting/{id}/login/{email}/{token}", get(api_attempt_login))
+        .route("/api/meeting/{id}/logout", get(api_logout));
 
     let bind = get_bind()?;
 

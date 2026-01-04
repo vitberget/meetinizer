@@ -1,10 +1,6 @@
-html {
-    min-height: 100dvh;
-}
 body {
     font-size: 26px;
     font-family: sans-serif;
-    min-height: 100dvh;
 
     padding-left: 1em;
     padding-right: 1em;
@@ -39,8 +35,20 @@ main {
     &.meet {
         &.login {
             div.info {
-                margin-top:1em;
-                margin-bottom:1.5em;
+                font-weight: 500;
+            }
+            div.gdpr {
+                font-style: italic;
+                margin: 2em 0;
+            }
+            div.form {
+                border: 1px solid var(--text-col);
+                margin-top: 0.2em;
+                padding: 0.7em 1em;
+                border-radius: 0.5em;
+            }
+            label {
+                font-weight: 500;
             }
             input[type="email"] {
                 margin-left: 2em;
@@ -48,11 +56,32 @@ main {
                 font-size: 26px;
             }
             input[type="button"] {
-                margin-top: 1em;
+                margin-top: 0.6em;
+                padding: 0.1em 0.5em;
                 display: block;
-                background: transparent;
                 font-size: 0.8em;
                 border-radius: 6px;
+                background: var(--text-col);
+                color: var(--bg-col);
+                font-size: 1em;
+                font-weight: 500;
+            }
+        }
+
+        &.enter-name {
+            input[type="text"] {
+                font-size: 26px;
+            }
+            input[type="button"] {
+                margin-top: 0.6em;
+                padding: 0.1em 0.5em;
+                display: block;
+                font-size: 0.8em;
+                border-radius: 6px;
+                background: var(--text-col);
+                color: var(--bg-col);
+                font-size: 1em;
+                font-weight: 500;
             }
         }
 
@@ -140,7 +169,6 @@ main {
                     td:last-child {
                         border-right: 1px solid var(--border-col);
                     }
-
                 }
                 tr.my-user {
                     --vote-color: var(--theme-col-1);
@@ -177,8 +205,21 @@ main {
                     text-align: center;
                 }
             }
+            input[type="button"] {
+                position: absolute;
+                top: 55px;
+                right: 30px;
+                padding: 0.1em 0.5em;
+                display: block;
+                border-radius: 6px;
+                background: var(--theme-col-3);
+                color: var(--text-col);
+                font-size: 0.8em;
+                font-weight: 500;
+            }
         }
     }
+
     &.admin {
         &.meeting {
             div.slots {
@@ -194,16 +235,11 @@ main {
                     border-radius: 10px;
                     background: #c9c9ff;
 
-                    &:nth-child(2) {
-                        background: #ffc9c9;
-                    }
-
                     &.add {
                         background: none;
                     }
                 }
                 div.from, div.to {
-                    /* background: #95a3e8; */
                     width: 200px;
                     border-radius: 10px;
                 }

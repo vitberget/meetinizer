@@ -6,7 +6,7 @@
    [meetinizer.utils.cookie :refer [get-cookie]]))
 
 (defn render-requesting [_]
-  [:main.meet.meeting.requesting 
+  [:main.meet.requesting 
    [:h1 "Requesting login email"]])
 
 (defn render-requested [state]
@@ -15,24 +15,29 @@
                        (path-part->meeting-id))
         seconds (get-in state [:meeting meeting-id :requested])]
     (prn meeting-id)
-    [:main.meet.meeting.reqeusted
+    [:main.meet.reqeusted
      [:h1 "Login mail sent"]
      [:div "Check your email inbox!"]
      [:div "Valid for " seconds " seconds."]]))
 
 (defn render-loading [_]
-  [:main.meet.meeting.loading
+  [:main.meet.loading
    [:h1 "Loading..."]])
 
 (defn render-error [_]
-  [:main.meet.meeting.error
+  [:main.meet.error
    [:h1 "Error!"]])
 
 (defn render-login [{path-parts :path-parts}]
   (let [meeting-id (path-part->meeting-id path-parts)]
-  [:main.meet.meeting.login
+  [:main.meet.login
    [:h1 "Login to meeting"]
-   [:div.info "Login to meeting with id: " meeting-id]
+   [:div.gdpr 
+    [:p "When you request to login, an email will be sent to your email with a link which you "
+     "can log in with."]
+    [:p "After you login, your email and alias will be stored in a database. Your email will also be"
+     "stored in a login cookie."]]
+   [:div.info "Login to " meeting-id]
    [:div.form
     [:label "Email:"
      [:input#login-email {:type "email"

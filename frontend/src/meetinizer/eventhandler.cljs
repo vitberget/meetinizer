@@ -32,6 +32,9 @@
     (swap! state-atom assoc-in [:meeting meeting-id] :requesting)
     (mf/login meeting-id email)))
 
+(defn- do-the-logout [meeting-id]
+  (mf/logout meeting-id))
+
 (defn do-admin-login [password]
   (swap! state-atom assoc :meeting-ids :requesting-login)
   (af/admin-login password))
@@ -66,6 +69,7 @@
 (defn- do-admin-update-comment [meeting-name comment]
   (af/update-comment meeting-name comment))
 
+
 (defn event-handler [{:replicant/keys [^js js-event] :as replicant-data} actions]
   (println actions)
   (doseq [action actions]
@@ -81,6 +85,7 @@
         :db/dissoc (apply swap! state-atom dissoc args)
 
         :meeting/login (apply do-the-login args)
+        :meeting/logout (apply do-the-logout args)
         :meeting/register-name (apply do-the-register-name args)
         :meeting/monitor-meeting (apply do-monitor-meeting args)
         :meeting/set-vote (apply do-set-vote args)

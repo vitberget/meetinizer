@@ -30,6 +30,10 @@
 
                    (swap! state-atom assoc-in [:whoami id] :error)))))))
 
+(defn logout [id]
+  (-> (js/fetch (str "/api/meeting/" id "/logout"))
+      (.then (fn[_] (swap! state-atom assoc-in [:meeting id] nil)))))
+
 (defn login [id email]
   (-> (js/fetch (str "/api/meeting/" id "/request-login/" email))
       (.then (fn [the-result]
