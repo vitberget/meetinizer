@@ -4,7 +4,6 @@ html {
 body {
     font-size: 26px;
     font-family: sans-serif;
-    background: linear-gradient(#f0f0ff, #e0e0ef);
     min-height: 100dvh;
 
     padding-left: 1em;
@@ -15,6 +14,15 @@ body {
     --vote-active-bg: #ddffdd;
     --vote-inactive-main: red;
     --vote-inactive-bg: #ffdddd;
+
+    --text-col: #191716;
+    --bg-col: #E0E2DB;
+    --theme-col-1: #e6af2e;
+    --theme-col-2: #3d348b;
+    --theme-col-3: #beb7a4;
+
+    background: var(--bg-col);
+    color: var(--text-col);
 }
 
 main {
@@ -39,6 +47,9 @@ main {
         }
 
         &.meeting {
+            --border-col: var(--theme-col-2);
+            --vote-color: var(--theme-col-3);
+
             .comment {
                 margin-top: 2em;
                 margin-bottom: 2em;
@@ -54,11 +65,9 @@ main {
                     display: inline-flex;
                     flex-direction: column;
                     justify-content: center;
-                    /* padding-left: 10px; */
-                    /* padding-right: 10px; */
                     height: 3em;
                     min-width: 8.5em;
-                    background: linear-gradient(-20deg, white, #eeeeee);
+                    background: var(--theme-col-3);
                     border-top-right-radius: 0.5rem;
                     border-top-left-radius: 0.5rem;
                     border-top: 1px solid var(--border-col);
@@ -89,7 +98,7 @@ main {
                     }
                 }
                 td.name { 
-                    background: #eeeeee;
+                    background: var(--theme-col-3);
                     padding-left: 0.4em;
                     padding-right: 0.6em;
                 }
@@ -124,6 +133,7 @@ main {
 
                 }
                 tr.my-user {
+                    --vote-color: var(--theme-col-1);
                     td {
                         border-bottom: 1px solid var(--border-col);
                     }
@@ -144,20 +154,14 @@ main {
                         }
                     }
                     td.name {
-                        background-color: white;
+                        background-color: var(--theme-col-1);
                     }
-                    td:nth-child(2n+2) {
-                        background-color: #eeeeee;
-                    }
-                    td:nth-child(2n+3) {
-                        background-color: #cccccc;
-                    }
-                }
-                td:nth-child(2n+2) {
-                    background-color: #cccccc;
                 }
                 td:nth-child(2n+3) {
-                    background-color: #aaaaaa;
+                    background-color: var(--vote-color);
+                }
+                td:nth-child(2n+2) {
+                    background-color:  color-mix(in oklab, var(--vote-color), white 30%)
                 }
                 td:nth-child(n+2) {
                     text-align: center;
