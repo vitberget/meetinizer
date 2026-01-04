@@ -25,6 +25,16 @@ body {
     color: var(--text-col);
 }
 
+@media (prefers-color-scheme: dark) {
+    body {
+        --text-col: #e2fdfe;
+        --bg-col: #293241;
+        --theme-col-1: #ee6c4d;
+        --theme-col-2: #787179;
+        --theme-col-3: #3d5a80;
+    }
+}
+
 main {
     &.meet {
         &.login {
