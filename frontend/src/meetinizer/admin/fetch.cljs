@@ -3,17 +3,17 @@
     [meetinizer.the-state :refer [state-atom]]))
 
 (defn update-meeting-state [id the-result]
-  (fn [the-result]
-    (let [status (.-status the-result)]
-      (condp = status
-        200 (-> (.json the-result)
-                (.then (fn [json]
-                         (let [data (js->clj json :keywordize-keys true)]
-                           (swap! state-atom assoc-in [:admin :meeting id] data)))))
+  (let [status (.-status the-result)]
+    (prn "admin update-meeting-state" id status)
+    (condp = status
+      200 (-> (.json the-result)
+              (.then (fn [json]
+                       (let [data (js->clj json :keywordize-keys true)]
+                         (swap! state-atom assoc-in [:admin :meeting id] data)))))
 
-        403 (swap! state-atom assoc-in [:admin :meeting id] :forbidden)
+      403 (swap! state-atom assoc-in [:admin :meeting id] :forbidden)
 
-        (swap! state-atom assoc-in [:admin :meeting id] :error)))))
+      (swap! state-atom assoc-in [:admin :meeting id] :error))))
 
 (defn fetch-meeting [id]
   (-> (js/fetch (str "/api/admin/meeting/" id))
