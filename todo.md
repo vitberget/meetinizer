@@ -22,6 +22,10 @@
 - [ ] favicon
 - [ ] Split admin/meeeting?
 - [ ] <https://github.com/tonsky/tongue>
+- [ ] theme
+    - [ ] <https://coolors.co/02111b-3f4045-30292f-5d737e-fcfcfc>
+    - [ ] <https://coolors.co/3d5a80-98c1d9-e0fbfc-ee6c4d-293241>
+    - [ ] <https://coolors.co/191716-e6af2e-e0e2db-3d348b-beb7a4>
 
 ## Backend
 
