@@ -17,7 +17,9 @@
                   (assoc :path path)
                   (assoc :path-parts path-parts))]
     (condp = (first path-parts)
-      "meet" (r/render el (mr/render-meeting state))
+      "meet" (do
+               (mr/set-title state) 
+               (r/render el (mr/render-meeting state)))
       "admin" (r/render el (ar/render-admin state))
 
       (r/render el (status-404)) )))
