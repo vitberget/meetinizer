@@ -23,19 +23,19 @@ pub async fn get_meeting(
     cookies: CookieJar
 ) -> Result<Json<Meeting>, StatusCode> {
     match MeetingEmailClaims::get_and_validate(&id, &cookies) {
-        Ok(_) => {
+        Err(err) => {
+            warn!("Error getting claims {err}");
+            Err(StatusCode::FORBIDDEN)
+        }
+        Ok(claims) => {
             let arc = Arc::clone(&MEETING_DB);
             match arc.lock().await.get_meeting_by_name(&id) {
-                Ok(meeting) => Ok(Json(meeting)),
+                Ok(meeting) => Ok(Json(meeting.filter_out_emails(claims.get_email()))),
                 Err(error) => {
                     warn!("Error getting meeting: {error}");
                     Err(StatusCode::FORBIDDEN)
                 }
             }
-        }
-        Err(err) => {
-            warn!("Error getting claims {err}");
-            Err(StatusCode::FORBIDDEN)
         }
     }
 }
@@ -50,13 +50,13 @@ pub async fn sse_meeting(
             warn!("Error getting claims {error}");
             Err(StatusCode::FORBIDDEN)
         }
-        Ok(_) => {
+        Ok(claims) => {
             let mut queue = subscribe_to_meeting_queue();
 
             Ok(Sse::new(try_stream! {
                 while let Ok(meeting) = queue.recv().await {
                     if meeting.get_name() == id
-                        && let Ok(json) = serde_json::to_string(&meeting) {
+                        && let Ok(json) = serde_json::to_string(&meeting.filter_out_emails(claims.get_email())) {
                             let event = Event::default().data(json);
                             yield event;
                     }
@@ -103,7 +103,7 @@ pub async fn post_vote_add(
             match arc.lock().await.add_vote_unsafe(&id, vote.to_owned()) {
                 Ok(meeting) => {
                     info!("User {user:?} adding vote on {vote:?} in {id}", user = claims.get_email());
-                    Ok(Json(meeting))
+                    Ok(Json(meeting.filter_out_emails(claims.get_email())))
                 }
                 Err(err) => {
                     warn!("Error when user {user:?} adding vote on {vote:?} in {id} {err}", user = claims.get_email());
@@ -133,7 +133,7 @@ pub async fn post_vote_rm(
             match arc.lock().await.rm_vote_unsafe(&id, vote.to_owned()) {
                 Ok(meeting) => {
                     info!("User {user:?} removed vote on {vote:?} in {id}", user = claims.get_email());
-                    Ok(Json(meeting))
+                    Ok(Json(meeting.filter_out_emails(claims.get_email())))
                 }
                 Err(err) => {
                     warn!("Error when user {user:?} removing vote on {vote:?} in {id} {err}", user = claims.get_email());
@@ -161,7 +161,7 @@ pub async fn post_register_name(
             match arc.lock().await.add_user_unsafe(&id, user.to_owned()) {
                 Ok(meeting) => {
                     info!("User {user:?} registred on {id}");
-                    Ok(Json(meeting))
+                    Ok(Json(meeting.filter_out_emails(claims.get_email())))
                 }
                 Err(err) => {
                     warn!("Error adding user {user:?} to meeting {id}: {err}");

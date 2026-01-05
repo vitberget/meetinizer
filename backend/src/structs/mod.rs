@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use anyhow::{bail, ensure};
 use chrono::{DateTime, Local};
@@ -136,5 +136,41 @@ impl Meeting {
     pub fn remove_vote(&mut self, vote: &Vote) {
         self.votes.remove(vote);
         self.revision = Uuid::new_v4();
+    }
+
+    pub fn filter_out_emails(&self, not_this_one_email: &str) -> Self {
+        let emails: HashSet<&String> = self.users.iter()
+            .map(|user| &user.email)
+            .collect();
+        let more_emails: HashSet<&String> = self.votes.iter()
+            .map(|vote| &vote.user_email)
+            .collect();
+        let translation_map: HashMap<&String, String> = emails.union(&more_emails)
+            .filter(|email| **email != not_this_one_email)
+            .enumerate()
+            .map(|(i, email)| (*email, format!("{i}@anonymous")))
+            .collect();
+
+        let users: HashSet<User> = self.users.iter()
+            .map(|user| match translation_map.get(&user.email) {
+                Some(translation) => User { name: user.name.clone(), email: translation.to_string()},
+                None => user.clone()
+            }).collect();
+
+        let votes: HashSet<Vote> = self.votes.iter()
+            .map(|vote| match translation_map.get(&vote.user_email) {
+                Some(translation) => Vote { user_email: translation.to_string(), slot: vote.slot.clone() },
+                None => vote.clone()
+            }).collect();
+
+        Self {
+            id: self.id,
+            revision: self.revision,
+            name: self.name.clone(),
+            comment: self.comment.clone(),
+            slots: self.slots.clone(),
+            users,
+            votes,
+        }
     }
 }
