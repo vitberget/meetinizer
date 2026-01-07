@@ -20,3 +20,4 @@ pom.xml.asc
 .hgignore
 .hg/
 .cpcache
+.nvmrc
