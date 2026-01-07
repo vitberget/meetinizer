@@ -30,12 +30,7 @@ ingress:
 
 server:
   image:
-    repository: my-registry/meetinizer-server
-    pullPolicy: IfNotPresent
-    tag: "6"
-
-  imagePullSecrets:
-  - name: regcred
+    tag: "2026-01-07"
 
   env:
   - name: MEETINIZER_SERVER_BIND
@@ -79,9 +74,4 @@ server:
 
 web:
   image:
-    repository: my-registry/meetinizer-web
-    pullPolicy: IfNotPresent
-    tag: "7"
-
-  imagePullSecrets:
-  - name: regcred
+    tag: "2026-01-07"

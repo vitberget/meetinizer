@@ -1,2 +1,3 @@
 Chart.lock
 values.yaml
+charts/*.tgz
