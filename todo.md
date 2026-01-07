@@ -15,6 +15,7 @@
 - [ ] Fancier/Richtext comments?
 - [ ] Spam protection
 - [ ] Fix when no meeting-id/name is provided in login web request
+- [ ] Logo
 
 ## Frontend
 
