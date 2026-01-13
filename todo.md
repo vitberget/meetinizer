@@ -25,6 +25,8 @@
 - [ ] Split admin/meeeting?
 - [ ] <https://github.com/tonsky/tongue>
 - [x] theme
+- [ ] mobile
+- [ ] when no in uri
 
 ## Backend
 
