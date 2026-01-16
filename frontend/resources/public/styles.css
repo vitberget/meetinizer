@@ -2,9 +2,9 @@ body {
     font-size: 26px;
     font-family: sans-serif;
 
-    padding-left: 1em;
-    padding-right: 1em;
-    padding-top: 0.2em;
+    margin-left: 2em;
+    margin-right: 2em;
+    margin-top: 0.2em;
     --border-col: rgba(0,0,0,0.5);
     --vote-active-main: green;
     --vote-active-bg: #ddffdd;
@@ -93,9 +93,11 @@ main {
                 margin-top: 2em;
                 margin-bottom: 2em;
             }
+
             table {
                 border-collapse: separate;
                 border-spacing: 0;
+                table-layout: fixed;
 
                 .dateheader {
                     box-sizing: border-box;
@@ -206,7 +208,7 @@ main {
                 }
             }
             input[type="button"] {
-                position: absolute;
+                position: fixed;
                 top: 55px;
                 right: 30px;
                 padding: 0.1em 0.5em;
@@ -233,7 +235,7 @@ main {
                     column-gap: 20px;
                     border: 1px solid black;
                     border-radius: 10px;
-                    background: #c9c9ff;
+                    background: #39397f;
 
                     &.add {
                         background: none;
@@ -241,18 +243,24 @@ main {
                 }
                 div.from, div.to {
                     width: 200px;
+                    background: #c9c9ff;
+                    color: black;
                     border-radius: 10px;
+                    border-color: #445599;
+                    border-style: solid;
+                    border-width: 0;
                 }
                 div.to {
-                    border-left: 1px solid #445599;
+                    border-left-width: 1px;
                 }
                 div.from {
-                    border-right: 1px solid #445599;
+                    border-left-width: 1px;
                 }
             }
             div.emails {
                 div {
                     background: #dedede;
+                    color: black;
                     margin-bottom: 1em;
                 }
             }
