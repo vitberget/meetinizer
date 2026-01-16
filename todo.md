@@ -14,7 +14,7 @@
 - [ ] Documentation
 - [ ] Fancier/Richtext comments?
 - [ ] Spam protection
-- [ ] Fix when no meeting-id/name is provided in login web request
+- [x] Fix when no meeting-id/name is provided in login web request
 - [ ] Logo
 
 ## Frontend
@@ -26,7 +26,7 @@
 - [ ] <https://github.com/tonsky/tongue>
 - [x] theme
 - [ ] mobile
-- [ ] when no in uri
+- [x] when no in uri
 
 ## Backend
 
