@@ -16,10 +16,15 @@
         state (-> state 
                   (assoc :path path)
                   (assoc :path-parts path-parts))]
+    (prn "path parts" path-parts)
+    (prn "path parts second" (not (second path-parts)))
     (condp = (first path-parts)
-      "meet" (do
-               (mr/set-title state) 
-               (r/render el (mr/render-meeting state)))
+      "meet" (if (second path-parts)
+               (do
+                 (mr/set-title state) 
+                 (r/render el (mr/render-meeting state)))
+               (r/render el (status-404)))
+
       "admin" (r/render el (ar/render-admin state))
 
       (r/render el (status-404)) )))
