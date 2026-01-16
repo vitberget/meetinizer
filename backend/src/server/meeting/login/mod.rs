@@ -9,9 +9,15 @@ pub mod db;
 pub mod claims;
 pub mod mail;
 
-pub async fn api_request_login(Path((id,email)): Path<(String,String)>) -> String {
-    let valid = db::register_login(&id, &email).await.unwrap();
-    format!("{valid}")
+pub async fn api_request_login(Path((id,email)): Path<(String,String)>) -> Result<String,StatusCode> {
+    if id.trim().is_empty() || email.trim().is_empty() {
+        Err(StatusCode::BAD_REQUEST)
+    } else {
+        match db::register_login(&id, &email).await {
+            Ok(valid) => Ok(format!("{valid}")),
+            Err(_) => Err(StatusCode::BAD_REQUEST)
+        }
+    }
 }
 
 pub async fn api_attempt_login(Path((meeting, email, token)): Path<(String, String, String)>) -> Result<(CookieJar, Redirect), StatusCode> {
