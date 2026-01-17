@@ -66,8 +66,8 @@
 (defn- do-admin-create-meeting [meeting-name]
   (af/create-meeting meeting-name))
 
-(defn- do-admin-update-comment [meeting-name comment]
-  (af/update-comment meeting-name comment))
+(defn- do-admin-update-comment [meeting-name comment-text]
+  (af/update-comment meeting-name comment-text))
 
 
 (defn event-handler [{:replicant/keys [^js js-event] :as replicant-data} actions]

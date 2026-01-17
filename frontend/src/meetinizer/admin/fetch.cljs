@@ -48,10 +48,10 @@
                             :body (.stringify js/JSON (clj->js {:start start :end end}))}))
         (.then (fn [the-result] (update-meeting-state id the-result))))))
 
-(defn update-comment [id comment]
+(defn update-comment [id comment-text]
   (-> (js/fetch (str "/api/admin/meeting/" id "/comment")
                 (clj->js {:method "POST"
-                          :body comment}))
+                          :body comment-text}))
       (.then (fn [the-result] (update-meeting-state id the-result)))))
 
 (defn rm-slot [id slot]
