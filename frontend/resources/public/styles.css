@@ -264,6 +264,71 @@ main {
                     margin-bottom: 1em;
                 }
             }
+            table {
+                margin-top: 2em;
+                border-collapse: separate;
+                border-spacing: 0;
+                table-layout: fixed;
+
+                .dateheader {
+                    box-sizing: border-box;
+                    vertical-align: bottom;
+                    font-size: 0.5em;
+                    display: inline-flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    height: 3em;
+                    min-width: 8.5em;
+                    background: var(--theme-col-3);
+                    border-top-right-radius: 0.5rem;
+                    border-top-left-radius: 0.5rem;
+                    border-top: 1px solid var(--border-col);
+                    border-left: 1px solid var(--border-col);
+                    border-right: 1px solid var(--border-col);
+                    margin-left: -1px;
+                    margin-right: -1px;
+                    margin-bottom: -1px;
+                }
+
+                td.vote {
+                    padding: 0.2em;
+                    user-select: none;
+                }
+                div.vote {
+                    display: inline-block;
+                    border-radius: 50%;
+                    border-width: 3px;
+                    border-style: solid;
+                    width: 1.4em;
+                    color: var(--vote-inactive-main);
+                    border-color: var(--vote-inactive-bg);
+                    background-color: var(--vote-inactive-bg);
+                    &.active {
+                        color: var(--vote-active-main);
+                        border-color: var(--vote-active-bg);
+                        background-color: var(--vote-active-bg);
+                    }
+                }
+                td.name { 
+                    background: var(--theme-col-3);
+                    padding-left: 0.4em;
+                    padding-right: 0.6em;
+                }
+                td.blank {
+                    max-height: 10px;
+                    height: 10px;
+                    font-size: 0.5em;
+                }
+                td:nth-child(2n+3) {
+                    background-color: var(--vote-color);
+                }
+                td:nth-child(2n+2) {
+                    background-color:  color-mix(in oklab, var(--vote-color), white 30%)
+                }
+                td:nth-child(n+2) {
+                    text-align: center;
+                }
+            }
         }
     }
 }

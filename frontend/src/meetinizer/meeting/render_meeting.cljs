@@ -52,6 +52,38 @@
                          (if (zero? c)
                            (compare (:end a) (:end b))
                            c))))))
+
+(defn render-vote-table [{slots :slots 
+                          users :users 
+                          votes :votes}
+                         my-user]
+  [:table.vote-table
+   [:tr.header
+    [:th.blank ]
+    (->> slots (map render-slot-header))]
+   (->> users 
+        (filter (fn[user] (not= user my-user)))
+        (sort (fn [a b] (compare (:name a) (:name b))))
+        (map (fn[user]
+               [:tr.other-user
+                [:td.name (:name user)]
+                (->> slots
+                     (map (fn[slot]
+                            (let [is-active (votes-contains? votes user slot)]
+                              [:td.vote [:div.vote
+                                         {:class (if is-active ["vote" "active"] ["vote"])} 
+                                         (if is-active "✓" "✗")]]))))])))
+   (when my-user
+     [:tr.my-user
+      [:td.name (:name my-user)]
+      (->> slots
+           (map (fn[slot]
+                  (let [is-active (votes-contains? votes my-user slot)]
+                    [:td.vote {:on {:click [[:meeting/set-vote slot (not is-active)]]}}
+                     [:div.vote 
+                      {:class (if is-active ["vote" "active"] ["vote"])} 
+                      (if is-active "✓" "✗")]]))))])])
+
 (defn render-actually [state 
                        {meeting-name :name 
                         slots :slots 
@@ -68,32 +100,7 @@
        [:div.comment (as-> comment $
                        (str/split $ "\n\n")
                        (map (fn [p] [:p p]) $))])
-     [:table
-      [:tr.header
-       [:th.blank ]
-       (->> slots (map render-slot-header))]
-      (->> users 
-           (filter (fn[user] (not= user my-user)))
-           (sort (fn [a b] (compare (:name a) (:name b))))
-           (map (fn[user]
-                  [:tr.other-user
-                   [:td.name (:name user)]
-                   (->> slots
-                        (map (fn[slot]
-                               (let [is-active (votes-contains? votes user slot)]
-                                 [:td.vote [:div.vote
-                                            {:class (if is-active ["vote" "active"] ["vote"])} 
-                                            (if is-active "✓" "✗")]]))))])))
-
-      [:tr.my-user
-       [:td.name (:name my-user)]
-       (->> slots
-            (map (fn[slot]
-                   (let [is-active (votes-contains? votes my-user slot)]
-                     [:td.vote {:on {:click [[:meeting/set-vote slot (not is-active)]]}}
-                      [:div.vote 
-                       {:class (if is-active ["vote" "active"] ["vote"])} 
-                       (if is-active "✓" "✗")]]))))]]
+     (render-vote-table meeting my-user)
      [:div.logout 
       [:input {:type "button"
                :value "Log out"
@@ -102,5 +109,6 @@
 
 (comment
   @state-atom
+  "fd"
 
   )

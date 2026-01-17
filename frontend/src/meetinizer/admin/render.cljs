@@ -2,7 +2,7 @@
   (:require
    [clojure.string :as s]
    [meetinizer.admin.fetch :refer [fetch-meeting fetch-meeting-list]]
-   [meetinizer.meeting.render-meeting :refer [date-from sort-slots time-from]]
+   [meetinizer.meeting.render-meeting :as rm]
    [meetinizer.the-state :refer [state-atom]]))
 
 (defn render-loading [_]
@@ -51,14 +51,14 @@
    [:h2 "Slots"]
    [:div.slots
     (->> slots
-         (sort-slots)
+         (rm/sort-slots)
          (map (fn[slot] [:div.slot 
                          [:div.from 
-                          [:div.date (date-from (:start slot))]
-                          [:div.date (time-from (:start slot))]]
+                          [:div.date (rm/date-from (:start slot))]
+                          [:div.date (rm/time-from (:start slot))]]
                          [:div.to 
-                          [:div.date (date-from (:end slot))]
-                          [:div.date (time-from (:end slot))]]
+                          [:div.date (rm/date-from (:end slot))]
+                          [:div.date (rm/time-from (:end slot))]]
                          [:div.count
                           (->> votes
                                (filter (fn[vote] (= (:slot vote) slot)))
@@ -130,7 +130,9 @@
             :on {:click [[:db/dissoc :admin/selected-meeting]]}}]
    (render-comment meeting)
    (render-slots meeting)
-   (render-users meeting)])
+   (rm/render-vote-table meeting nil)
+   (render-users meeting)
+   ])
 
 (defn render-admin [state]
   (let [meetings (:meeting-ids state)
