@@ -3,6 +3,7 @@ use axum::http::StatusCode;
 use axum::response::Redirect;
 use axum_extra::extract::CookieJar;
 use axum_extra::extract::cookie::Cookie;
+use cookie::time::Duration;
 use uri_encode::encode_uri_component;
 
 pub mod db;
@@ -29,9 +30,18 @@ pub async fn api_attempt_login(Path((meeting, email, token)): Path<(String, Stri
         let redirect_path = format!("/meet/{meeting}");
         let redirect = Redirect::to(&redirect_path);
 
-        let jwt_cookie = Cookie::build(("login", token)).path(path.to_owned()).http_only(true);
-        let meeting_cookie = Cookie::build(("meeting", meeting)).path(redirect_path.to_owned());
-        let email_cookie = Cookie::build(("email", email)).path(redirect_path.to_owned());
+        let jwt_cookie = Cookie::build(("login", token))
+            .max_age(Duration::days(30))
+            .path(path.to_owned())
+            .http_only(true);
+
+        let meeting_cookie = Cookie::build(("meeting", meeting))
+            .max_age(Duration::days(30))
+            .path(redirect_path.to_owned());
+
+        let email_cookie = Cookie::build(("email", email))
+            .max_age(Duration::days(30))
+            .path(redirect_path.to_owned());
 
         let jar = CookieJar::new()
             .add(jwt_cookie)

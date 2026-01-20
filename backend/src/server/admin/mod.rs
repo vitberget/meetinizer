@@ -11,6 +11,7 @@ use axum_extra::extract::CookieJar;
 use axum_extra::extract::cookie::Cookie;
 use futures_util::Stream;
 use tracing::{debug, info, warn};
+use cookie::time::Duration;
 
 use crate::config::get_jwt_secret;
 use crate::db::meeting::{MEETING_DB, subscribe_to_meeting_queue};
@@ -182,6 +183,7 @@ pub async fn api_admin_login(body: String) -> Result<CookieJar, StatusCode> {
                     info!("Admin logged in");
                     let cookie_jar = CookieJar::new()
                         .add(Cookie::build(("admin", token))
+                            .max_age(Duration::days(30))
                             .path("/api/admin/")
                             .http_only(true));
                     Ok(cookie_jar)
