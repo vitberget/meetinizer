@@ -75,7 +75,7 @@
                               (let [is-active (votes-contains? votes user slot)]
                                 [:td.vote [:div.vote
                                            {:class (if is-active ["vote" "active"] ["vote"])} 
-                                           (if is-active "✓" "✗")]]))))]))))
+                                           (if is-active "✓" "✗")]]))))])))
      (when my-user
        [:tr.my-user
         [:td.name (:name my-user)]
@@ -85,7 +85,7 @@
                       [:td.vote {:on {:click [[:meeting/set-vote slot (not is-active)]]}}
                        [:div.vote 
                         {:class (if is-active ["vote" "active"] ["vote"])} 
-                        (if is-active "✓" "✗")]]))))])])
+                        (if is-active "✓" "✗")]]))))])]))
 
 (defn render-actually [_ {meeting-name :name :as meeting} my-user]
   [:main.meet.meeting 
