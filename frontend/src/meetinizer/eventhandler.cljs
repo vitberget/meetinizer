@@ -50,7 +50,6 @@
     (prn "do-monitor-meeting no action for" action)))
 
 (defn- do-monitor-meeting [action id]
-  (prn "do-monitor-meeting" action id)
   (condp = action
     :start (when-not (get-in @state-atom [:sse id])
              (meeting-sse id))
@@ -73,13 +72,10 @@
 (defn event-handler [{:replicant/keys [^js js-event] :as replicant-data} actions]
   (println actions)
   (doseq [action actions]
-    (prn "Triggered action" action)
     (let [enriched-action (->> action
                                (enrich-action-from-event replicant-data)
                                (enrich-action-from-state @state-atom))
           [action-name & args] enriched-action]
-      (prn "Enriched action" enriched-action)
-      (prn "args" args)
       (condp = action-name
         :db/assoc (apply swap! state-atom assoc args)
         :db/dissoc (apply swap! state-atom dissoc args)

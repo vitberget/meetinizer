@@ -55,7 +55,6 @@
       (.then (fn [the-result] (update-meeting-state id the-result)))))
 
 (defn rm-slot [id slot]
-  (prn "rm-slot" id slot)
   (-> (js/fetch (str "/api/admin/meeting/" id "/slot/rm")
                 (clj->js {:method "POST"
                           :headers {"Content-Type" "application/json"}

@@ -91,7 +91,6 @@
   [:main.meet.meeting 
    [:h1 meeting-name]
    [:div.hidden-lifetime {:replicant/on-mount [[:meeting/monitor-meeting :start meeting-name]]}]
-
    (when-let [comment-text (:comment meeting)]
      [:div.comment (as-> comment-text $
                      (str/split $ "\n\n")

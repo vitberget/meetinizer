@@ -94,7 +94,7 @@ main {
                 margin-bottom: 2em;
             }
 
-            table {
+            table.vote-table {
                 border-collapse: separate;
                 border-spacing: 0;
                 table-layout: fixed;
@@ -264,7 +264,18 @@ main {
                     margin-bottom: 1em;
                 }
             }
-            table {
+            table.users {
+                th {
+                    text-align: left;
+                }
+
+                th:nth-child(2),
+                td:nth-child(2) {
+                    padding-left: 1em;
+                    padding-right: 1em;
+                }
+            }
+            table.vote-table {
                 margin-top: 2em;
                 border-collapse: separate;
                 border-spacing: 0;

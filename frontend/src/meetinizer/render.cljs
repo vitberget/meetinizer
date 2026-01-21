@@ -16,8 +16,6 @@
         state (-> state 
                   (assoc :path path)
                   (assoc :path-parts path-parts))]
-    (prn "path parts" path-parts)
-    (prn "path parts second" (not (second path-parts)))
     (condp = (first path-parts)
       "meet" (if (second path-parts)
                (do

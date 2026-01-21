@@ -24,7 +24,9 @@
 - [ ] Split admin/meeeting?
 - [ ] <https://github.com/tonsky/tongue>
 - [ ] mobile
-- [ ] Sort users/emails in admin
+- [x] Sort users/emails in admin
 - [ ] meeting table - click on other user to see that row highlighted
-- [ ] Fix styling other tables admin
+- [x] Fix styling other tables admin
 - [ ] "This site uses cookies"?
+- [ ] On enter
+- [ ] admin comment button only when text dirty

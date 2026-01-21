@@ -14,7 +14,6 @@
                        (:path-parts)
                        (path-part->meeting-id))
         seconds (get-in state [:meeting meeting-id :requested])]
-    (prn meeting-id)
     [:main.meet.reqeusted
      [:h1 "Login mail sent"]
      [:div "Check your email inbox!"]
@@ -43,6 +42,7 @@
      [:div.form
       [:label "Email:"
        [:input#login-email {:type "email"
+                            :autofocus true
                             :replicant/on-mount [[:db/assoc :meeting/login-form-element :dom/node]]
                             :on {:input [[:db/assoc :meeting/login-form :event/target.value]]} }]]
       [:input {:type "button" 
@@ -53,9 +53,9 @@
   [:main.meet.enter-name {:replicant/on-mount [[:meeting/monitor-meeting :start meeting-name]]}
    [:h1 "Welcome, who are you?"]
    [:input#login-email {:type "text"
+                        :autofocus true
                         :replicant/on-mount [[:db/assoc :meeting/name-form-element :dom/node]]
-                        :on {:input [[:db/assoc :meeting/name-form :event/target.value]]}
-                        }]
+                        :on {:input [[:db/assoc :meeting/name-form :event/target.value]]}}]
    [:input {:type "button" 
             :value "Register name"
             :on {:click [[:meeting/register-name [:db/get :meeting/name-form]]]}}]])
@@ -98,7 +98,6 @@
   (let [meeting-id (path-part->meeting-id (:path-parts state))
         meeting (get-in state [:meeting meeting-id])
         my-email (get-cookie "email")]
-    (prn state)
     (cond
       (nil? meeting)
       (set! js/document.title "Meetinizer | Loading")

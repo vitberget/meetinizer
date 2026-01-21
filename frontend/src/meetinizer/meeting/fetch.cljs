@@ -77,8 +77,7 @@
                                            (.-data $)
                                            (.parse js/JSON $)
                                            (js->clj $ {:keywordize-keys true}))]
-                                (swap! state-atom assoc-in [:meeting id] data)
-                                (prn "event" data))))
+                                (swap! state-atom assoc-in [:meeting id] data))))
     (set! (.-onerror sse) (fn [error]
                             (prn "error sse" error)
                             (.close sse) 

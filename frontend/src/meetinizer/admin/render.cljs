@@ -21,6 +21,7 @@
   [:main.admin.login
    [:h1 "Enter admin password"]
    [:input#login-email {:type "password"
+                        :autofocus true
                         :replicant/on-mount [[:db/assoc :admin/login-form-element :dom/node]]
                         :on {:input [[:db/assoc :admin/login-form :event/target.value]]}}]
    [:input {:type "button" 
@@ -30,7 +31,8 @@
 (defn render-list [{meeting-ids :meeting-ids}]
   [:main.admin.list
    [:h1 "Meetings"]
-   [:input {:type "button" :value "Log out"
+   [:input {:type "button" 
+            :value "Log out"
             :on {:click [[:admin/logout]]}}]
    (if (empty? meeting-ids)
      "No meetings yet"   
@@ -85,36 +87,38 @@
                             [:db/dissoc :admin/login-slot-end]]}}]]]]])
 
 (defn- render-users [{users :users votes :votes}]
-  [:section.users
-   [:h2 "Users"]
-   [:table.users
-    [:tr
-     [:th "User"]
-     [:th "Email"]
-     [:th "Vote count"] ]
-    (->> users
-         (map (fn[{username :name email :email}] 
-                [:tr 
-                 [:td username]
-                 [:td email]
-                 [:td (->> votes
-                           (filter (fn [{e :user_email}] (= email e)))
-                           (count))]])))]
-   [:h3 "All email"]
-   [:div.emails
-    [:div (->> users
-               (map :email)
-               (s/join ", "))]
-    [:div (->> users
-               (map (fn [{username :name email :email}] (str username " <" email ">" )))
-               (s/join ", "))]]])
+  (let [users (sort-by :name users)]
+    [:section.users
+     [:h2 "Users"]
+     [:table.users
+      [:tr
+       [:th "User"]
+       [:th "Email"]
+       [:th "Vote count"] ]
+      (->> users
+           (map (fn[{username :name email :email}] 
+                  [:tr 
+                   [:td username]
+                   [:td email]
+                   [:td (->> votes
+                             (filter (fn [{e :user_email}] (= email e)))
+                             (count))]])))]
+     [:h3 "All email"]
+     [:div.emails
+      [:div (->> users
+                 (map :email)
+                 (s/join ", "))]
+      [:div (->> users
+                 (map (fn [{username :name email :email}] (str username " <" email ">" )))
+                 (s/join ", "))]]]))
 
 (defn- render-comment [{comment-text :comment id :name}]
   [:section.comment
    [:h2 "Comment"]
-  [:textarea {:cols "80" :rows "20"
-              :on {:input [[:db/assoc :admin/comment :event/target.value]]}
-              } comment-text]  
+   [:textarea {:cols "80" 
+               :rows "20"
+               :on {:input [[:db/assoc :admin/comment :event/target.value]]}}
+    comment-text]  
    [:input {:type "button"
             :value "Update comment"
             :on {:click [[:admin/update-comment id [:db/get :admin/comment]]]}}]])
@@ -136,7 +140,6 @@
   (let [meetings (:meeting-ids state)
         active-meeting (:admin/selected-meeting state)
         meeting (get-in state [:admin :meeting active-meeting])]
-    (prn state)
     (cond 
       (nil? meetings)
       (do
