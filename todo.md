@@ -6,12 +6,17 @@
 - [ ] CI/CD
     - [ ] Woodpecker
     - [ ] GitHub
-- [ ] "This site uses cookies"?
 - [ ] GDPR?
 - [ ] Documentation
 - [ ] Fancier/Richtext comments?
 - [ ] Spam protection
 - [ ] Logo
+- [ ] Validate slot end is not before start
+- [ ] Meeting
+    * Rename name to id or whatever
+    * Remove revision and uuid
+    * Add title
+- [ ] Make available on Github, or other?
 
 ## Frontend
 
@@ -22,3 +27,4 @@
 - [ ] Sort users/emails in admin
 - [ ] meeting table - click on other user to see that row highlighted
 - [ ] Fix styling other tables admin
+- [ ] "This site uses cookies"?
