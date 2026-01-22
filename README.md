@@ -1,7 +1,23 @@
 # Meetinizer
 
-* [backend/README.md](backend/README.md)
-* [frontend/README.md](frontend/README.md)
+A self hosted service that anyone can use to get a bunch of people to decide what date/time suits the most the best, 
+without giving away their <del>souls</del> personal data.
+
+## Goal
+
+* Easy to deploy
+    * Helm/Kubernetes
+    * Docker compose (to be done)
+* No user passwords, login via mailed links
+    * Verifying mails
+    * No DB with passwords to hack
+    * Separate login per meeting/event
+* No default admin password
+    * Stored safely / Secure algoritm / Argon2
+    * Use backend server to create Argon2 hash 
+* No external dependencies
+    * sqlite database
+    * Still needs mail though
 
 ## Security
 
@@ -11,34 +27,28 @@ Should I trust you/this project? -- Of course not.
 
 ### GDPR
 
-Sorta...
+TODO
 
-## Goal
+### Cookies
 
-A self hosted service that anyone can use to get a bunch of people to decide what date/time suits the most the best, 
-without giving away their <del>souls</del> personal data.
+TODO
 
-Login via email, to verify that the emails are correct and up to date.
+## How to be the administrator
 
-Admin login in a secure way, create meetings etc.
+### Generating admin password
 
-### Auth
+TODO
 
-For normal users:
+### Deploying
 
-* One admin password 
-* Via mail - code / HMAC thingie
+TODO
 
-For admin user:
+#### Helm
 
-* Store argon2 hash somewhere
-* Onetime passwords in log?
+TODO
 
-### Options
+## For developers
 
-* Day
-    * Multiday choise over multiple month calendar
-* Time
-    * Multiple days
-* Location
-* Activity
+* [developer.md](developer.md)
+* [backend/README.md](backend/README.md)
+* [frontend/README.md](frontend/README.md)
