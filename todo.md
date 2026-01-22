@@ -30,3 +30,4 @@
 - [ ] "This site uses cookies"?
 - [ ] On enter
 - [ ] admin comment button only when text dirty
+- [ ] Set title
