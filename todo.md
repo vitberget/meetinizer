@@ -21,13 +21,13 @@
 ## Frontend
 
 - [ ] favicon
-- [ ] Split admin/meeeting?
-- [ ] <https://github.com/tonsky/tongue>
+- [ ] Split admin/meeting?
+- [ ] Internationalization <https://github.com/tonsky/tongue>
 - [ ] mobile
-- [x] Sort users/emails in admin
 - [ ] meeting table - click on other user to see that row highlighted
-- [x] Fix styling other tables admin
+- [ ] Improve meeting table when multiple timeslots on same days
 - [ ] "This site uses cookies"?
-- [ ] On enter
-- [ ] admin comment button only when text dirty
+- [ ] On enter in inputs
 - [ ] Set title
+- [ ] Make admin site nice, dark/light theme
+- [ ] admin comment button only when text dirty
