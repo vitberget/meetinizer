@@ -13,9 +13,10 @@
 - [ ] Logo
 - [ ] Validate slot end is not before start
 - [ ] Meeting
-    * Rename name to id or whatever
-    * Remove revision and uuid
-    * Add title
+    - [ ] Remake db
+    - [ ] Rename name to id or whatever
+    - [ ] Remove revision and uuid
+    - [ ] Add title
 - [ ] Make available on Github, or other?
 
 ## Frontend
