@@ -70,7 +70,6 @@
 
 
 (defn event-handler [{:replicant/keys [^js js-event] :as replicant-data} actions]
-  (println actions)
   (doseq [action actions]
     (let [enriched-action (->> action
                                (enrich-action-from-event replicant-data)

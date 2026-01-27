@@ -4,7 +4,6 @@
 
 (defn update-meeting-state [id the-result]
   (let [status (.-status the-result)]
-    (prn "admin update-meeting-state" id status)
     (condp = status
       200 (-> (.json the-result)
               (.then (fn [json]

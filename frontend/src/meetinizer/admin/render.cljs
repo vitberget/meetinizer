@@ -94,7 +94,7 @@
       [:tr
        [:th "User"]
        [:th "Email"]
-       [:th "Vote count"] ]
+       [:th "Vote count"]]
       (->> users
            (map (fn[{username :name email :email}] 
                   [:tr 
