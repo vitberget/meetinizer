@@ -3,6 +3,7 @@
 ## Generic
 
 - [ ] Docker compose
+- [ ] One Docker image with both backend and frontend
 - [ ] CI/CD
     - [ ] Woodpecker
     - [ ] GitHub
@@ -32,3 +33,4 @@
 - [ ] Set title
 - [ ] Make admin site nice, dark/light theme
 - [ ] admin comment button only when text dirty
+- [ ] Remove all :db/assoc and :db/dissoc
