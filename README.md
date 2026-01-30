@@ -33,19 +33,11 @@ TODO
 
 TODO
 
-## How to be the administrator
+## How to administrate
 
-### Generating admin password
+How to administrate, install, host somewhere etc.
 
-TODO
-
-### Deploying
-
-TODO
-
-#### Helm
-
-TODO
+[administrator.md](administrator.md)
 
 ## For developers
 
