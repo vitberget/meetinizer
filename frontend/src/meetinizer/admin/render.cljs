@@ -22,11 +22,11 @@
    [:h1 "Enter admin password"]
    [:input#login-email {:type "password"
                         :autofocus true
-                        :replicant/on-mount [[:db/assoc :admin/login-form-element :dom/node]]
-                        :on {:input [[:db/assoc :admin/login-form :event/target.value]]}}]
+                        :replicant/on-mount [[:admin/assoc-password-element :dom/node]]
+                        :on {:input [[:admin/update-password]]}}]
    [:input {:type "button" 
             :value "Login as admin"
-            :on {:click [[:admin/login [:db/get :admin/login-form]]]}}]])
+            :on {:click [[:admin/login]]}}]])
 
 (defn render-list [{meeting-ids :meeting-ids}]
   [:main.admin.list
