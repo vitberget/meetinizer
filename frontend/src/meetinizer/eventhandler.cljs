@@ -61,6 +61,12 @@
   (let [password-text (:admin/password-text @state-atom)]
     (af/admin-login password-text)))
 
+(defn admin-update-password-keydown [replicant-data]
+  (let [code (-> replicant-data
+                 (:replicant/dom-event)
+                 (.-code))]
+    (when (= code "Enter")
+      (do-admin-login))))
 
 (defn event-handler [{:replicant/keys [^js js-event] :as replicant-data} actions]
   (doseq [action actions]
@@ -79,6 +85,7 @@
         :meeting/set-vote (apply do-set-vote args)
 
         :admin/update-password (admin-update-password replicant-data)
+        :admin/update-password-keydown (admin-update-password-keydown replicant-data)
         :admin/assoc-password-element (swap! state-atom assoc :admin/password-element (first args))
         :admin/login (do-admin-login)
         :admin/logout (af/admin-logout)

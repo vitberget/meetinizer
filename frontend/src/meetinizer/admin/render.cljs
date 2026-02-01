@@ -23,7 +23,9 @@
    [:input#login-email {:type "password"
                         :autofocus true
                         :replicant/on-mount [[:admin/assoc-password-element :dom/node]]
-                        :on {:input [[:admin/update-password]]}}]
+                        :on {:input [[:admin/update-password]]
+                             :keydown [[:admin/update-password-keydown]] 
+                             }}]
    [:input {:type "button" 
             :value "Login as admin"
             :on {:click [[:admin/login]]}}]])
