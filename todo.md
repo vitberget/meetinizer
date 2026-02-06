@@ -7,10 +7,14 @@
 - [ ] CI/CD
     - [ ] Woodpecker
     - [ ] GitHub
-- [ ] GDPR?
+- [ ] Popup/other texts?
+    - [ ] GDPR?
+    - [ ] Califonia law?
+    - [ ] cookies?
 - [ ] Documentation
 - [ ] Fancier/Richtext comments?
 - [ ] Spam protection
+- [ ] Abuse protection
 - [ ] Logo
 - [ ] Validate slot end is not before start
 - [ ] Meeting
@@ -18,11 +22,10 @@
     - [ ] Rename name to id or whatever
     - [ ] Remove revision and uuid
     - [ ] Add title
-- [ ] Make available on Github, or other?
+- [x] Make available on Github, or other?
 
 ## Frontend
 
-- [ ] favicon
 - [ ] Split admin/meeting?
 - [ ] Internationalization <https://github.com/tonsky/tongue>
 - [ ] mobile
@@ -34,3 +37,7 @@
 - [ ] Make admin site nice, dark/light theme
 - [ ] admin comment button only when text dirty
 - [ ] Remove all :db/assoc and :db/dissoc
+- [ ] Branding
+    - [ ] Link to github repo somewhere 
+    - [ ] favicon
+    - [ ] Logo
