@@ -19,12 +19,16 @@ body {
 
     background: var(--bg-col);
     color: var(--text-col);
+
+    a, a:visited, a:link, a:hover, a:active {
+        color: var(--theme-col-2);
+    }
 }
 
 @media (prefers-color-scheme: dark) {
     body {
-        --text-col: #e2fdfe;
         --bg-col: #293241;
+        --text-col: #e2fdfe;
         --theme-col-1: #ee6c4d;
         --theme-col-2: #787179;
         --theme-col-3: #3d5a80;
@@ -32,6 +36,16 @@ body {
 }
 
 main {
+    .powered {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 0.8em;
+        color: var(--theme-col-3);
+    }
+
     &.meet {
         &.login {
             div.info {

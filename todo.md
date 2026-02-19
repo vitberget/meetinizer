@@ -38,7 +38,7 @@
 - [ ] admin comment button only when text dirty
 - [ ] Remove all :db/assoc and :db/dissoc
 - [ ] Branding
-    - [ ] Link to github repo somewhere 
+    - [x] Link to github repo somewhere 
     - [ ] favicon
     - [ ] Logo
 - [ ] Clickable links in the meet description

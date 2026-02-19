@@ -26,6 +26,9 @@
                            (= (:slot vote) slot))))
        (first)))
 
+(defn powered-by []
+  [:div.powered "Powered by " [:a {:href "https://github.com/vitberget/meetinizer"} "Meetinizer"]])
+
 (defn render-slot-header [{start :start end :end}]
   (let [date-from-start (date-from start)
         date-from-end (date-from end)
@@ -99,8 +102,8 @@
    [:div.logout 
     [:input {:type "button"
              :value "Log out"
-             :on {:click [[:meeting/logout meeting-name]]}}]]])
-
+             :on {:click [[:meeting/logout meeting-name]]}}]]
+   (powered-by)])
 
 (comment
   @state-atom
