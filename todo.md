@@ -41,3 +41,4 @@
     - [ ] Link to github repo somewhere 
     - [ ] favicon
     - [ ] Logo
+- [ ] Clickable links in the meet description
