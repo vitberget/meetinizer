@@ -51,6 +51,8 @@ pub struct Meeting {
     revision: Uuid,
     name: String,
     comment: String,
+    #[serde(default)]
+    locked: bool,
     slots: HashSet<Slot>,
     users: HashSet<User>,
     votes: HashSet<Vote>
@@ -63,6 +65,7 @@ impl Meeting {
             revision: Uuid::new_v4(),
             name: name.to_string(),
             comment: "".to_string(),
+            locked: false,
             slots: HashSet::new(),
             users: HashSet::new(),
             votes: HashSet::new(),
@@ -81,6 +84,11 @@ impl Meeting {
     pub fn get_comment(&self) -> String { self.comment.to_owned() }
     pub fn set_comment(&mut self, new_comment: &str) {
         self.comment = new_comment.to_string(); 
+        self.revision = Uuid::new_v4();
+    }
+
+    pub fn set_locked(&mut self, locked: bool) {
+        self.locked = locked_now;
         self.revision = Uuid::new_v4();
     }
 
@@ -103,6 +111,12 @@ impl Meeting {
             .any(|vote| vote.user_email == user.email);
         ensure!(!has_vote, "User has votes");
 
+        self.users.remove(&user);
+        self.revision = Uuid::new_v4();
+        Ok(())
+    }
+
+    pub fn remove_user_unsafe(&mut self, user: User) -> anyhow::Result<()> { 
         self.users.remove(&user);
         self.revision = Uuid::new_v4();
         Ok(())
@@ -168,6 +182,7 @@ impl Meeting {
             revision: self.revision,
             name: self.name.clone(),
             comment: self.comment.clone(),
+            locked: self.locked,
             slots: self.slots.clone(),
             users,
             votes,

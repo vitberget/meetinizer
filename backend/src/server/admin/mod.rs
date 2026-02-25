@@ -283,4 +283,3 @@ pub async fn sse_admin_all_meetings(cookies: CookieJar) -> Result<Sse<impl Strea
         }
     }
 }
-
