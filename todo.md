@@ -23,7 +23,13 @@
     - [ ] Remove revision and uuid
     - [ ] Add title
     - [ ] Lock meeting from further votes
+        - [x] Backend DB
+        - [ ] Admin view
+        - [ ] Meeting view
     - [ ] Delete me (user)
+        - [x] Backend DB
+        - [ ] Admin view
+        - [ ] Meeting view
 - [x] Make available on Github, or other?
 
 ## Frontend
