@@ -88,7 +88,7 @@ impl Meeting {
     }
 
     pub fn set_locked(&mut self, locked: bool) {
-        self.locked = locked_now;
+        self.locked = locked;
         self.revision = Uuid::new_v4();
     }
 
