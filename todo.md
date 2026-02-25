@@ -22,6 +22,8 @@
     - [ ] Rename name to id or whatever
     - [ ] Remove revision and uuid
     - [ ] Add title
+    - [ ] Lock meeting from further votes
+    - [ ] Delete me (user)
 - [x] Make available on Github, or other?
 
 ## Frontend
@@ -29,7 +31,9 @@
 - [ ] Split admin/meeting?
 - [ ] Internationalization <https://github.com/tonsky/tongue>
 - [ ] mobile
-- [ ] meeting table - click on other user to see that row highlighted
+- [ ] meeting table 
+    - [ ] click on other user to see that row highlighted
+    - [ ] Vote summery
 - [ ] Improve meeting table when multiple timeslots on same days
 - [ ] "This site uses cookies"?
 - [ ] On enter in inputs
