@@ -55,7 +55,9 @@ pub struct Meeting {
     locked: bool,
     slots: HashSet<Slot>,
     users: HashSet<User>,
-    votes: HashSet<Vote>
+    votes: HashSet<Vote>,
+
+    chosen_slot: Option<Slot>
 }
 
 impl Meeting {
@@ -69,6 +71,7 @@ impl Meeting {
             slots: HashSet::new(),
             users: HashSet::new(),
             votes: HashSet::new(),
+            chosen_slot: None
         }
     }
 
@@ -101,10 +104,6 @@ impl Meeting {
         Ok(())
     }
 
-    pub fn add_slot(&mut self, slot: Slot) {
-        self.slots.insert(slot); 
-        self.revision = Uuid::new_v4();
-    }
 
     pub fn remove_user(&mut self, user: User) -> anyhow::Result<()> { 
         let has_vote = self.votes.iter()
@@ -122,6 +121,11 @@ impl Meeting {
         Ok(())
     }
 
+    pub fn add_slot(&mut self, slot: Slot) {
+        self.slots.insert(slot); 
+        self.revision = Uuid::new_v4();
+    }
+
     pub fn remove_slot(&mut self, slot: Slot) -> anyhow::Result<()> { 
         let has_vote = self.votes.iter()
             .any(|vote| vote.slot == slot);
@@ -134,6 +138,11 @@ impl Meeting {
 
     pub fn remove_slot_unsafe(&mut self, slot: Slot) { 
         self.slots.remove(&slot);
+        self.revision = Uuid::new_v4();
+    }
+
+    pub fn set_chosen_slot(&mut self, slot: Option<Slot>) {
+        self.chosen_slot = slot;
         self.revision = Uuid::new_v4();
     }
 
@@ -186,6 +195,7 @@ impl Meeting {
             slots: self.slots.clone(),
             users,
             votes,
+            chosen_slot: self.chosen_slot.clone()
         }
     }
 }

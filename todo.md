@@ -13,16 +13,19 @@
     - [ ] cookies?
 - [ ] Documentation
 - [ ] Fancier/Richtext comments?
-- [ ] Spam protection
-- [ ] Abuse protection
+- [ ] Spam/abuse protection
 - [ ] Logo
-- [ ] Validate slot end is not before start
 - [ ] Meeting
+    - [ ] Validate slot end is not before start
     - [ ] Remake db
     - [ ] Rename name to id or whatever
     - [ ] Remove revision and uuid
     - [ ] Add title
     - [ ] Lock meeting from further votes
+        - [x] Backend DB
+        - [ ] Admin view
+        - [ ] Meeting view
+    - [ ] Select slot for gathering on
         - [x] Backend DB
         - [ ] Admin view
         - [ ] Meeting view
@@ -36,7 +39,7 @@
 
 - [ ] Split admin/meeting?
 - [ ] Internationalization <https://github.com/tonsky/tongue>
-- [ ] mobile
+- [ ] mobile adjustments?
 - [ ] meeting table 
     - [ ] click on other user to see that row highlighted
     - [ ] Vote summery
@@ -52,3 +55,4 @@
     - [ ] favicon
     - [ ] Logo
 - [ ] Clickable links in the meet description
+- [ ] Theme selector
