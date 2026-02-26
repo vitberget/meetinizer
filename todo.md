@@ -29,8 +29,9 @@
         - [x] Backend DB
         - [ ] Admin view
         - [ ] Meeting view
-    - [ ] Delete me (user)
+    - [ ] Delete me/user
         - [x] Backend DB
+        - [ ] Block email/domain
         - [ ] Admin view
         - [ ] Meeting view
 - [x] Make available on Github, or other?
