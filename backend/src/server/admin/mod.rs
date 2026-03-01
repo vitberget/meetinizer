@@ -133,6 +133,58 @@ pub async fn api_admin_rm_slot(
     }
 }
 
+pub async fn api_admin_select(
+    Path(id): Path<String>,
+    cookies: CookieJar,
+    Json(slot): Json<Slot>
+) -> Result<Json<Meeting>, StatusCode> {
+    match AdminClaims::get_and_validate(&cookies) {
+        Err(error) => {
+            warn!("error getting admin claims {error}");
+            Err(StatusCode::FORBIDDEN)
+        }
+        Ok(_) => {
+            let arc = Arc::clone(&MEETING_DB);
+            let meeting_db = arc.lock().await;
+            match meeting_db.select_chosen_slot(&id, Some(slot.to_owned())) {
+                Ok(meeting) => {
+                    info!("admin set chosen slot {slot:?} into {id}");
+                    Ok(Json(meeting))
+                }
+                Err(error) => {
+                    warn!("admin failed to set chosen slot {slot:?} into {id}: {error}");
+                    Err(StatusCode::INTERNAL_SERVER_ERROR)
+                }
+            }
+        }
+    }
+}
+pub async fn api_admin_deselect(
+    Path(id): Path<String>,
+    cookies: CookieJar,
+) -> Result<Json<Meeting>, StatusCode> {
+    match AdminClaims::get_and_validate(&cookies) {
+        Err(error) => {
+            warn!("error getting admin claims {error}");
+            Err(StatusCode::FORBIDDEN)
+        }
+        Ok(_) => {
+            let arc = Arc::clone(&MEETING_DB);
+            let meeting_db = arc.lock().await;
+            match meeting_db.select_chosen_slot(&id, None) {
+                Ok(meeting) => {
+                    info!("admin unset chosen slot in {id}");
+                    Ok(Json(meeting))
+                }
+                Err(error) => {
+                    warn!("admin failed to unset chosen in {id}: {error}");
+                    Err(StatusCode::INTERNAL_SERVER_ERROR)
+                }
+            }
+        }
+    }
+}
+
 pub async fn api_admin_lock(
     Path(id): Path<String>,
     cookies: CookieJar,

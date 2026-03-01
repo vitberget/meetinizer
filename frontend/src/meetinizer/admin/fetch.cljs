@@ -62,6 +62,18 @@
                (let [status (.-status the-result)]
                  (prn "removed" status))))))
 
+(defn select-slot [id slot]
+  (-> (js/fetch (str "/api/admin/meeting/" id "/select")
+                (clj->js {:method "POST"
+                          :headers {"Content-Type" "application/json"}
+                          :body (.stringify js/JSON (clj->js slot))}))
+      (.then (fn [the-result] (update-meeting-state id the-result)))))
+
+(defn deselect-slot [id]
+  (-> (js/fetch (str "/api/admin/meeting/" id "/select")
+                (clj->js {:method "DELETE"}))
+      (.then (fn [the-result] (update-meeting-state id the-result)))))
+
 (defn lock [id locked]
   (-> (js/fetch (str "/api/admin/meeting/" id "/lock")
                 (clj->js {:method "POST"

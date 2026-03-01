@@ -143,6 +143,12 @@ impl MeetingDB {
         self.insert_meeting(&meeting)?;
         Ok(meeting)
     }
+    pub fn select_chosen_slot(&self, meeting_name: &str, slot: Option<Slot>) -> anyhow::Result<Meeting> {
+        let mut meeting = self.get_meeting_by_name(meeting_name)?;
+        meeting.set_chosen_slot(slot);
+        self.insert_meeting(&meeting)?;
+        Ok(meeting)
+    }
     pub fn add_vote_unsafe(&self, meeting_name: &str, vote: Vote) -> anyhow::Result<Meeting> {
         let mut meeting = self.get_meeting_by_name(meeting_name)?;
 

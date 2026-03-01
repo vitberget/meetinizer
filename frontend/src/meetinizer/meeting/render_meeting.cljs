@@ -29,12 +29,12 @@
 (defn powered-by []
   [:div.powered "Powered by " [:a {:href "https://github.com/vitberget/meetinizer"} "Meetinizer"]])
 
-(defn render-slot-header [{start :start end :end}]
+(defn render-slot-header [{start :start end :end :as slot} chosen-slot]
   (let [date-from-start (date-from start)
         date-from-end (date-from end)
         time-from-start (time-from start)
         time-from-end (time-from end)]
-    [:th 
+    [:th (if (= chosen-slot slot) {:class ["chosen"]} {})
      (cond
        (and (= date-from-start date-from-end)
             (= time-from-start time-from-end))
@@ -61,13 +61,14 @@
 (defn render-vote-table [{slots :slots 
                           users :users 
                           votes :votes
-                          locked :locked}
+                          locked :locked
+                          chosen-slot :chosen_slot}
                          my-user]
   (let [slots (sort-slots slots)]
     [:table.vote-table
      [:tr.header
-      [:th.blank ]
-      (->> slots (map render-slot-header))]
+      [:th.blank]
+      (->> slots (map (fn[slot] (render-slot-header slot chosen-slot))))]
      (->> users 
           (filter (fn[user] (not= user my-user)))
           (sort (fn [a b] (compare (:name a) (:name b))))
@@ -77,7 +78,8 @@
                   (->> slots
                        (map (fn[slot]
                               (let [is-active (votes-contains? votes user slot)]
-                                [:td.vote [:div.vote
+                                [:td.vote 
+                                 [:div.vote
                                            {:class (if is-active ["vote" "active"] ["vote"])} 
                                            (if is-active "✓" "✗")]]))))])))
      (when my-user

@@ -90,6 +90,8 @@
         :admin/login (do-admin-login)
         :admin/logout (af/admin-logout)
         :admin/lock (apply af/lock args)
+        :admin/select-slot (apply af/select-slot args)
+        :admin/deselect-slot (apply af/deselect-slot args)
 
         :admin/add-slot (apply af/add-slot args)
         :admin/rm-slot (apply af/rm-slot args)
@@ -97,7 +99,6 @@
         :admin/create-meeting (apply af/create-meeting args)
         :admin/update-comment (apply af/update-comment args)
 
-        (prn "no action for " action)
         )))
   ; (main-thing el @state-atom)
   )

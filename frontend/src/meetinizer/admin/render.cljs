@@ -50,7 +50,7 @@
              :on {:click [[:admin/create-meeting [:db/get :admin/create-meeting-form]]
                           [:db/assoc :admin/create-meeting-form ""]]}}]]])
 
-(defn render-slots [{slots :slots id :name votes :votes}]
+(defn render-slots [{slots :slots id :name votes :votes chosen-slot :chosen_slot}]
   [:section.slots
    [:h2 "Slots"]
    [:div.slots
@@ -69,6 +69,13 @@
                                (count))
                           " vote(s)"]
                          [:div.action 
+                          (if (= chosen-slot slot)
+                            [:input {:type "button" 
+                                     :value "Deselect"
+                                     :on {:click [[:admin/deselect-slot id slot]]}}]
+                            [:input {:type "button" 
+                                     :value "Select"
+                                     :on {:click [[:admin/select-slot id slot]]}}])
                           [:input {:type "button" 
                                    :value "Remove"
                                    :on {:click [[:admin/rm-slot id slot]]}}]]])))
@@ -127,15 +134,15 @@
 
 (defn- render-lock [{id :name locked :locked}]
   [:section.lock
-    [:h2 "Lock"] 
-     [:input {:type "button"
-              :value "Lock"
-              :on {:click [[:admin/lock id true]]}
-              :disabled locked}]
-     [:input {:type "button"
-              :value "Unlock"
-              :on {:click [[:admin/lock id false]]}
-              :disabled (not locked)}]])
+   [:h2 "Lock"] 
+   [:input {:type "button"
+            :value "Lock"
+            :on {:click [[:admin/lock id true]]}
+            :disabled locked}]
+   [:input {:type "button"
+            :value "Unlock"
+            :on {:click [[:admin/lock id false]]}
+            :disabled (not locked)}]])
 
 (defn render-meeting [{meeting-name :name :as meeting}]
   [:main.admin.meeting 

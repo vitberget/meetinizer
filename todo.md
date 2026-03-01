@@ -26,10 +26,10 @@
         - [x] Admin view
         - [x] Meeting view
         - [x] Prevent evil user from voting when locked
-    - [ ] Select slot for gathering on
+    - [s] Select slot for gathering on
         - [x] Backend DB
-        - [ ] Admin view
-        - [ ] Meeting view
+        - [x] Admin view
+        - [s] Meeting view
     - [ ] Delete me/user
         - [x] Backend DB
         - [ ] Block email/domain
@@ -49,7 +49,7 @@
 - [ ] "This site uses cookies"?
 - [ ] On enter in inputs
 - [ ] Set title
-- [ ] Make admin site nice, dark/light theme
+- [ ] Make admin a site nice, dark/light theme
 - [ ] admin comment button only when text dirty
 - [ ] Remove all :db/assoc and :db/dissoc
 - [ ] Branding
