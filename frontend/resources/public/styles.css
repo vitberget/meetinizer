@@ -199,7 +199,17 @@ main {
                         border-bottom-right-radius: 1.0rem;
                     }
                     td.vote {
-                        cursor: pointer;
+                        position: relative;
+                        &:not(.locked) {
+                            cursor: pointer;
+                        }
+                    }
+                    td.vote.locked::before {
+                        content: "🔒";
+                        text-shadow: 1px 1px 4px black;
+                        position: absolute;
+                        top: 0;
+                        left: 5px;
                     }
                     div.vote {
                         border-color: var(--vote-inactive-main);

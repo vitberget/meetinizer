@@ -60,7 +60,8 @@
 
 (defn render-vote-table [{slots :slots 
                           users :users 
-                          votes :votes}
+                          votes :votes
+                          locked :locked}
                          my-user]
   (let [slots (sort-slots slots)]
     [:table.vote-table
@@ -85,7 +86,9 @@
         (->> slots
              (map (fn[slot]
                     (let [is-active (votes-contains? votes my-user slot)]
-                      [:td.vote {:on {:click [[:meeting/set-vote slot (not is-active)]]}}
+                      [:td.vote (if locked 
+                                  {:class ["locked"]} 
+                                  {:on {:click [[:meeting/set-vote slot (not is-active)]]}})
                        [:div.vote 
                         {:class (if is-active ["vote" "active"] ["vote"])} 
                         (if is-active "✓" "✗")]]))))])]))

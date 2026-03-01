@@ -90,6 +90,7 @@ impl Meeting {
         self.revision = Uuid::new_v4();
     }
 
+    pub fn is_locked(&self) -> bool { self.locked }
     pub fn set_locked(&mut self, locked: bool) {
         self.locked = locked;
         self.revision = Uuid::new_v4();

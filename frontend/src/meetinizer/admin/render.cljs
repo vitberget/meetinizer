@@ -125,6 +125,18 @@
             :value "Update comment"
             :on {:click [[:admin/update-comment id [:db/get :admin/comment]]]}}]])
 
+(defn- render-lock [{id :name locked :locked}]
+  [:section.lock
+    [:h2 "Lock"] 
+     [:input {:type "button"
+              :value "Lock"
+              :on {:click [[:admin/lock id true]]}
+              :disabled locked}]
+     [:input {:type "button"
+              :value "Unlock"
+              :on {:click [[:admin/lock id false]]}
+              :disabled (not locked)}]])
+
 (defn render-meeting [{meeting-name :name :as meeting}]
   [:main.admin.meeting 
    [:h1 "Meeting: " meeting-name]
@@ -134,6 +146,7 @@
             :value "Back to list"
             :on {:click [[:db/dissoc :admin/selected-meeting]]}}]
    (render-comment meeting)
+   (render-lock meeting)
    (render-slots meeting)
    (rm/render-vote-table meeting nil)
    (render-users meeting)])

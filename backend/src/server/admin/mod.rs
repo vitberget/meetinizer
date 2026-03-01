@@ -133,6 +133,34 @@ pub async fn api_admin_rm_slot(
     }
 }
 
+pub async fn api_admin_lock(
+    Path(id): Path<String>,
+    cookies: CookieJar,
+    Json(lock): Json<bool>
+) -> Result<Json<Meeting>, StatusCode> {
+    match AdminClaims::get_and_validate(&cookies) {
+        Err(error) => {
+            warn!("error getting admin claims {error}");
+            Err(StatusCode::FORBIDDEN)
+        }
+        Ok(_) => {
+            let arc = Arc::clone(&MEETING_DB);
+            let meeting_db = arc.lock().await;
+            match meeting_db.update_locked(&id, lock) {
+                Ok(meeting) => {
+                    info!("admin set locked to {lock} for {id}");
+                    Ok(Json(meeting))
+                }
+                Err(error) => {
+                    warn!("admin failed to set locked to {lock} for {id}: {error}");
+                    Err(StatusCode::INTERNAL_SERVER_ERROR)
+                }
+            }
+
+        }
+    }
+}
+
 
 pub async fn api_admin_get_meeting(
     Path(id): Path<String>,

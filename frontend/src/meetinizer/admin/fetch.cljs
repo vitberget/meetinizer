@@ -62,6 +62,15 @@
                (let [status (.-status the-result)]
                  (prn "removed" status))))))
 
+(defn lock [id locked]
+  (-> (js/fetch (str "/api/admin/meeting/" id "/lock")
+                (clj->js {:method "POST"
+                          :headers {"Content-Type" "application/json"}
+                          :body (.stringify js/JSON (clj->js locked))}))
+      (.then (fn [the-result]
+               (let [status (.-status the-result)]
+                 (prn "locked" status))))))
+
 (defn admin-login [password]
   (-> (js/fetch "/api/admin/login" (clj->js {:method "POST" :body password}))
       (.then (fn [the-result]

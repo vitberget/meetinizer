@@ -145,12 +145,18 @@ impl MeetingDB {
     }
     pub fn add_vote_unsafe(&self, meeting_name: &str, vote: Vote) -> anyhow::Result<Meeting> {
         let mut meeting = self.get_meeting_by_name(meeting_name)?;
+
+        if meeting.is_locked() { bail!("Meeting is locked"); }
+
         meeting.add_vote(vote)?;
         self.insert_meeting(&meeting)?;
         Ok(meeting)
     }
     pub fn rm_vote_unsafe(&self, meeting_name: &str, vote: Vote) -> anyhow::Result<Meeting> {
         let mut meeting = self.get_meeting_by_name(meeting_name)?;
+
+        if meeting.is_locked() { bail!("Meeting is locked"); }
+
         meeting.remove_vote(&vote);
         self.insert_meeting(&meeting)?;
         Ok(meeting)
@@ -158,6 +164,12 @@ impl MeetingDB {
     pub fn update_comment(&self, meeting_name: &str, comment: &str) -> anyhow::Result<Meeting> {
         let mut meeting = self.get_meeting_by_name(meeting_name)?;
         meeting.set_comment(comment);
+        self.insert_meeting(&meeting)?;
+        Ok(meeting)
+    }
+    pub fn update_locked(&self, meeting_name: &str, lock_state: bool) -> anyhow::Result<Meeting> {
+        let mut meeting = self.get_meeting_by_name(meeting_name)?;
+        meeting.set_locked(lock_state);
         self.insert_meeting(&meeting)?;
         Ok(meeting)
     }

@@ -21,10 +21,11 @@
     - [ ] Rename name to id or whatever
     - [ ] Remove revision and uuid
     - [ ] Add title
-    - [ ] Lock meeting from further votes
+    - [x] Lock meeting from further votes
         - [x] Backend DB
-        - [ ] Admin view
-        - [ ] Meeting view
+        - [x] Admin view
+        - [x] Meeting view
+        - [x] Prevent evil user from voting when locked
     - [ ] Select slot for gathering on
         - [x] Backend DB
         - [ ] Admin view
