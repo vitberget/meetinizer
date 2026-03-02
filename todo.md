@@ -26,7 +26,7 @@
         - [x] Admin view
         - [x] Meeting view
         - [x] Prevent evil user from voting when locked
-    - [s] Select slot for gathering on
+    - [x] Select slot for gathering on
         - [x] Backend DB
         - [x] Admin view
         - [s] Meeting view
@@ -36,6 +36,7 @@
         - [ ] Admin view
         - [ ] Meeting view
 - [x] Make available on Github, or other?
+- [ ] Add description to Github
 
 ## Frontend
 
