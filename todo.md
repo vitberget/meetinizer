@@ -36,7 +36,12 @@
         - [ ] Admin view
         - [ ] Meeting view
 - [x] Make available on Github, or other?
-- [ ] Add description to Github
+- [x] Add description to Github
+- [ ] Make homepage
+    - [ ] Static generator thignie
+    - [ ] Howtos
+    - [ ] FAQ
+    - [ ] Some screenshots and stuff
 
 ## Frontend
 
