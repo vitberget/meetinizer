@@ -38,10 +38,15 @@
 - [x] Make available on Github, or other?
 - [x] Add description to Github
 - [ ] Make homepage
+    - [x] Buy DNS
     - [ ] Static generator thignie
     - [ ] Howtos
     - [ ] FAQ
     - [ ] Some screenshots and stuff
+
+## Backend
+
+- [ ] One logfile per meeting 
 
 ## Frontend
 
