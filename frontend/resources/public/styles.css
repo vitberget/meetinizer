@@ -37,7 +37,9 @@ body {
 
 main {
     .powered {
-        position: absolute;
+        position: fixed;
+        background: var(--bg-col);
+        border-top: 1px solid var(--theme-col-3);
         bottom: 0;
         left: 0;
         right: 0;
@@ -102,6 +104,7 @@ main {
         &.meeting {
             --border-col: var(--theme-col-2);
             --vote-color: var(--theme-col-3);
+            padding-bottom: 2em;
 
             .comment {
                 margin-top: 2em;
