@@ -1,5 +1,5 @@
 use argon2::{Config, verify_encoded};
-use rand::Rng;
+use rand::RngExt;
 use rpassword::prompt_password;
 use tracing::warn;
 
@@ -18,7 +18,7 @@ pub fn generate_admin_hash() {
 
 fn argon_hashy(password: &str) {
     let salt: Vec<u8> = rand::rng()
-        .random_iter::<u8>()
+        .random_iter()
         .take(30)
         .collect();
     let config = Config::default();

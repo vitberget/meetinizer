@@ -1,4 +1,4 @@
-FROM rust:1.92-alpine3.23 as build
+FROM rust:1.95-alpine3.23 as build
 
 WORKDIR /app/
 ADD sql_migrations /app/sql_migrations/
