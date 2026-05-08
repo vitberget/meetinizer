@@ -1,6 +1,6 @@
 use clap::Parser as _;
 
-use crate::cli::{Cli, CliCommands, print_completions};
+use crate::cli::{Cli, CliCommands};
 use crate::server::admin::login::generate_admin_hash;
 use crate::server::meeting::login::mail::test_email;
 use crate::server::start_server;
@@ -21,7 +21,7 @@ pub async fn main() -> anyhow::Result<()> {
         CliCommands::PrintDefaultConfig => todo!(),
         CliCommands::PrintDefaultLogConfig => todo!(),
         CliCommands::TestEmail { email_address } => test_email(&email_address).await,
-        CliCommands::Completion { shell } => print_completions(shell)
+        CliCommands::Completion { shell } => Cli::print_completions(shell)
     }
 
     Ok(())

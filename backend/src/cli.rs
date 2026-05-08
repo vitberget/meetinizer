@@ -30,8 +30,10 @@ pub enum CliCommands {
     Completion { shell: Shell }
 }
 
-pub fn print_completions<G: Generator>(shell: G) {
-    let mut cmd = Cli::command();
-    let name = cmd.get_name().to_string();
-    generate(shell, &mut cmd, name, &mut io::stdout());
+impl Cli {
+    pub fn print_completions<G: Generator>(shell: G) {
+        let mut cmd = Self::command();
+        let name = cmd.get_name().to_string();
+        generate(shell, &mut cmd, name, &mut io::stdout());
+    }
 }
