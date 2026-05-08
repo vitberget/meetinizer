@@ -6,7 +6,6 @@
 - [ ] One Docker image with both backend and frontend
 - [ ] CI/CD
     - [ ] Woodpecker
-    - [ ] GitHub
 - [ ] Popup/other texts?
     - [ ] GDPR?
     - [ ] Califonia law?
