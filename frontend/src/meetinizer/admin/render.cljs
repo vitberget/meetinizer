@@ -33,15 +33,18 @@
 (defn render-list [{meeting-ids :meeting-ids}]
   [:main.admin.list
    [:h1 "Meetings"]
-   [:input {:type "button" 
+   [:input {:id "logout"
+            :type "button" 
             :value "Log out"
             :on {:click [[:admin/logout]]}}]
    (if (empty? meeting-ids)
      "No meetings yet"   
      [:ul (->> meeting-ids
-               (map (fn[m] [:li [:input {:type "button"
-                                         :value m
-                                         :on {:click [[:db/assoc :admin/selected-meeting m]]}}]])))])
+               (map (fn[m] [:li 
+                            [:span m]
+                            [:input {:type "button"
+                                     :value "View"
+                                     :on {:click [[:db/assoc :admin/selected-meeting m]]}}]])))])
    [:div.new-meeting
     [:input {:type "text"
              :on {:input [[:db/assoc :admin/create-meeting-form :event/target.value]]}}]
@@ -149,7 +152,8 @@
    [:h1 "Meeting: " meeting-name]
    [:div.hidden-lifetime {:replicant/on-mount [[:admin/monitor-meeting :start meeting-name]]
                           :replicant/on-unmount [[:admin/monitor-meeting :stop meeting-name]]}]
-   [:input {:type "button"
+   [:input {:id "back-to-list"
+            :type "button"
             :value "Back to list"
             :on {:click [[:db/dissoc :admin/selected-meeting]]}}]
    (render-comment meeting)

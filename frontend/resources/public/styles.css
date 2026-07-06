@@ -264,6 +264,17 @@ main {
     }
 
     &.admin {
+        #logout, #back-to-list {
+            position: fixed;
+            top: 0.5em;
+            right: 1em;
+        }
+        &.list {
+            ul span {
+                min-width: 20ch;
+                display: inline-block;
+            }
+        }
         &.meeting {
             div.slots {
                 display: inline-flex;
