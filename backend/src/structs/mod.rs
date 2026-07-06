@@ -4,7 +4,6 @@ use anyhow::{bail, ensure};
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
-use uuid::Uuid;
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize, ToSchema)]
 pub struct User {
@@ -47,8 +46,6 @@ pub struct Vote {
 
 #[derive(Clone, Debug, Serialize, Deserialize, ToSchema)]
 pub struct Meeting {
-    id: Uuid,
-    revision: Uuid,
     name: String,
     comment: String,
     #[serde(default)]
@@ -63,8 +60,6 @@ pub struct Meeting {
 impl Meeting {
     pub fn new(name: &str) -> Self {
         Self {
-            id: Uuid::new_v4(),
-            revision: Uuid::new_v4(),
             name: name.to_string(),
             comment: "".to_string(),
             locked: false,
@@ -75,36 +70,22 @@ impl Meeting {
         }
     }
 
-    pub fn get_id(&self) -> Uuid { self.id }
-    pub fn get_revision(&self) -> Uuid { self.revision }
-
     pub fn get_name(&self) -> String { self.name.to_owned() }
-    pub fn set_name(&mut self, new_name: String) { 
-        self.name = new_name;
-        self.revision = Uuid::new_v4();
-    }
+    pub fn set_name(&mut self, new_name: String) { self.name = new_name; }
 
     pub fn get_comment(&self) -> String { self.comment.to_owned() }
-    pub fn set_comment(&mut self, new_comment: &str) {
-        self.comment = new_comment.to_string(); 
-        self.revision = Uuid::new_v4();
-    }
+    pub fn set_comment(&mut self, new_comment: &str) { self.comment = new_comment.to_string(); }
 
     pub fn is_locked(&self) -> bool { self.locked }
-    pub fn set_locked(&mut self, locked: bool) {
-        self.locked = locked;
-        self.revision = Uuid::new_v4();
-    }
+    pub fn set_locked(&mut self, locked: bool) { self.locked = locked; }
 
     pub fn add_user(&mut self, user: User) -> anyhow::Result<()> { 
         if self.users.iter().any(|u| u.name == user.name || u.email == user.email) {
             bail!("Conflicting user name and/or email");
         }
         self.users.insert(user); 
-        self.revision = Uuid::new_v4();
         Ok(())
     }
-
 
     pub fn remove_user(&mut self, user: User) -> anyhow::Result<()> { 
         let has_vote = self.votes.iter()
@@ -112,19 +93,16 @@ impl Meeting {
         ensure!(!has_vote, "User has votes");
 
         self.users.remove(&user);
-        self.revision = Uuid::new_v4();
         Ok(())
     }
 
     pub fn remove_user_unsafe(&mut self, user: User) -> anyhow::Result<()> { 
         self.users.remove(&user);
-        self.revision = Uuid::new_v4();
         Ok(())
     }
 
     pub fn add_slot(&mut self, slot: Slot) {
         self.slots.insert(slot); 
-        self.revision = Uuid::new_v4();
     }
 
     pub fn remove_slot(&mut self, slot: Slot) -> anyhow::Result<()> { 
@@ -133,18 +111,15 @@ impl Meeting {
         ensure!(!has_vote, "Slot has votes");
 
         self.slots.remove(&slot);
-        self.revision = Uuid::new_v4();
         Ok(())
     }
 
     pub fn remove_slot_unsafe(&mut self, slot: Slot) { 
         self.slots.remove(&slot);
-        self.revision = Uuid::new_v4();
     }
 
     pub fn set_chosen_slot(&mut self, slot: Option<Slot>) {
         self.chosen_slot = slot;
-        self.revision = Uuid::new_v4();
     }
 
     pub fn add_vote(&mut self, vote: Vote) -> anyhow::Result<()> {
@@ -152,15 +127,11 @@ impl Meeting {
         ensure!(self.slots.contains(&vote.slot), "Slot not in list of slots");
 
         self.votes.insert(vote);
-        self.revision = Uuid::new_v4();
 
         Ok(())
     }
 
-    pub fn remove_vote(&mut self, vote: &Vote) {
-        self.votes.remove(vote);
-        self.revision = Uuid::new_v4();
-    }
+    pub fn remove_vote(&mut self, vote: &Vote) { self.votes.remove(vote); }
 
     pub fn filter_out_emails(&self, not_this_one_email: &str) -> Self {
         let emails: HashSet<&String> = self.users.iter()
@@ -188,8 +159,6 @@ impl Meeting {
             }).collect();
 
         Self {
-            id: self.id,
-            revision: self.revision,
             name: self.name.clone(),
             comment: self.comment.clone(),
             locked: self.locked,

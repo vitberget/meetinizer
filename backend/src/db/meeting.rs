@@ -6,7 +6,6 @@ use serde_json::json;
 use tokio::sync::broadcast::{Receiver, Sender, channel};
 use tokio::sync::{Mutex};
 use tracing::error;
-use uuid::Uuid;
 
 use crate::db::get_meeting_connection;
 use crate::structs::{Meeting, Slot, User, Vote};
@@ -35,8 +34,6 @@ impl MeetingDB {
             "INSERT INTO meetings (name, uuid, version, json) VALUES (:name, :uuid, :version, :json)", 
             named_params! {
                 ":name": meeting.get_name(),
-                ":uuid": meeting.get_id().to_string(),
-                ":version": meeting.get_revision().to_string(),
                 ":json": json!(&meeting).to_string()
             })?;
 
@@ -67,7 +64,7 @@ impl MeetingDB {
 
     pub fn get_meeting_by_name(&self, name: &str) -> anyhow::Result<Meeting> {
         let conn = get_meeting_connection()?;
-        let mut stmt = conn.prepare("SELECT name, uuid, version, json from meetings where name = :name order by created desc limit 1")?;
+        let mut stmt = conn.prepare("SELECT name, json from meetings where name = :name order by created desc limit 1")?;
 
         Ok(stmt.query_row(
             named_params! { ":name": name },
@@ -84,35 +81,6 @@ impl MeetingDB {
         )?)
     }
 
-    pub fn get_meeting_by_uuid(&self, uuid: &Uuid) -> anyhow::Result<Meeting> {
-        let conn = get_meeting_connection()?;
-        let mut stmt = conn.prepare("SELECT name, uuid, version, json from meetings where uuid = :uuid order by created desc limit 1")?;
-
-        Ok(stmt.query_row(
-            named_params! { ":uuid": uuid.to_string() },
-            |row| {
-                let json: String = row.get("json")?;
-                match serde_json::from_str::<Meeting>(&json) {
-                    Ok(meeting) => Ok(meeting),
-                    Err(err) => {
-                        error!("Failed to parse json to meeting {json} {err}");
-                        Err(Error::InvalidColumnName("Not json in json".to_string()))
-                    }
-                }
-            }
-        )?)
-    }
-
-    pub fn add_user(&self, meeting_uuid: &Uuid, revision: &Uuid, user: User) -> anyhow::Result<Meeting> {
-        let mut meeting = self.get_meeting_by_uuid(meeting_uuid)?;
-        if meeting.get_revision() == *revision {
-            meeting.add_user(user)?;
-            self.insert_meeting(&meeting)?;
-            Ok(meeting)
-        } else {
-            bail!("Wrong revision");
-        }
-    }
     pub fn add_user_unsafe(&self, meeting_id: &str, user: User) -> anyhow::Result<Meeting> {
         let mut meeting = self.get_meeting_by_name(meeting_id)?;
         meeting.add_user(user)?;
@@ -120,35 +88,27 @@ impl MeetingDB {
         Ok(meeting)
     }
 
-    pub fn add_slot(&self, meeting_uuid: &Uuid, revision: &Uuid, slot: Slot) -> anyhow::Result<Meeting> {
-        let mut meeting = self.get_meeting_by_uuid(meeting_uuid)?;
-        if meeting.get_revision() == *revision {
-            // let slot = Slot::from_str(start, end)?;
-            meeting.add_slot(slot);
-            self.insert_meeting(&meeting)?;
-            Ok(meeting)
-        } else {
-            bail!("Wrong revision");
-        }
-    }
     pub fn add_slot_unsafe(&self, meeting_name: &str, slot: Slot) -> anyhow::Result<Meeting> {
         let mut meeting = self.get_meeting_by_name(meeting_name)?;
         meeting.add_slot(slot);
         self.insert_meeting(&meeting)?;
         Ok(meeting)
     }
+
     pub fn rm_slot_unsafe(&self, meeting_name: &str, slot: Slot) -> anyhow::Result<Meeting> {
         let mut meeting = self.get_meeting_by_name(meeting_name)?;
         meeting.remove_slot_unsafe(slot);
         self.insert_meeting(&meeting)?;
         Ok(meeting)
     }
+
     pub fn select_chosen_slot(&self, meeting_name: &str, slot: Option<Slot>) -> anyhow::Result<Meeting> {
         let mut meeting = self.get_meeting_by_name(meeting_name)?;
         meeting.set_chosen_slot(slot);
         self.insert_meeting(&meeting)?;
         Ok(meeting)
     }
+
     pub fn add_vote_unsafe(&self, meeting_name: &str, vote: Vote) -> anyhow::Result<Meeting> {
         let mut meeting = self.get_meeting_by_name(meeting_name)?;
 
@@ -158,6 +118,7 @@ impl MeetingDB {
         self.insert_meeting(&meeting)?;
         Ok(meeting)
     }
+
     pub fn rm_vote_unsafe(&self, meeting_name: &str, vote: Vote) -> anyhow::Result<Meeting> {
         let mut meeting = self.get_meeting_by_name(meeting_name)?;
 
@@ -167,12 +128,14 @@ impl MeetingDB {
         self.insert_meeting(&meeting)?;
         Ok(meeting)
     }
+
     pub fn update_comment(&self, meeting_name: &str, comment: &str) -> anyhow::Result<Meeting> {
         let mut meeting = self.get_meeting_by_name(meeting_name)?;
         meeting.set_comment(comment);
         self.insert_meeting(&meeting)?;
         Ok(meeting)
     }
+
     pub fn update_locked(&self, meeting_name: &str, lock_state: bool) -> anyhow::Result<Meeting> {
         let mut meeting = self.get_meeting_by_name(meeting_name)?;
         meeting.set_locked(lock_state);
@@ -189,18 +152,6 @@ mod tests {
     use chrono::{DateTime, Datelike, Local, NaiveDate, Timelike};
 
     use super::*;
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_get_meeting_by_uuid() -> anyhow::Result<()> {
-        let arc = Arc::clone(&MEETING_DB);
-        let real_db = arc.lock().await;
-        let meeting = real_db.get_meeting_by_uuid(&Uuid::from_str("497eb28f-2f5a-4668-8275-22904646bfe5")?)?;
-        println!("meeting {meeting:?}");
-
-        bail!("meh")
-    }
-
 
     #[tokio::test]
     #[ignore]

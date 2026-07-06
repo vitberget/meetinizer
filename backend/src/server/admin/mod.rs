@@ -241,7 +241,7 @@ pub async fn api_admin_list_meetings(cookies: CookieJar) -> Result<Json<Vec<Stri
         Ok(_) => {
             let arc = Arc::clone(&MEETING_DB);
             match arc.lock().await.get_meeting_names() {
-                Ok(meetings) => Ok(Json(meetings)),
+                Ok(names) => Ok(Json(names)),
                 Err(err) => {
                     warn!("Error getting meeting names {err}");
                     Err(StatusCode::FORBIDDEN)

@@ -18,7 +18,7 @@
     - [ ] Validate slot end is not before start
     - [ ] Remake db
     - [ ] Rename name to id or whatever
-    - [ ] Remove revision and uuid
+    - [x] Remove revision and uuid
     - [ ] Add title
     - [ ] Delete me/user
         - [x] Backend DB
