@@ -1,9 +1,9 @@
 (ns meetinizer.admin.render
   (:require
-   [clojure.string :as s]
-   [meetinizer.admin.fetch :refer [fetch-meeting fetch-meeting-list]]
-   [meetinizer.meeting.render-meeting :as rm]
-   [meetinizer.the-state :refer [state-atom]]))
+    [clojure.string :as s]
+    [meetinizer.admin.fetch :refer [fetch-meeting fetch-meeting-list]]
+    [meetinizer.meeting.render-meeting :as rm]
+    [meetinizer.the-state :refer [state-atom]]))
 
 (defn render-loading [_]
   [:main.admin.loading
@@ -117,12 +117,22 @@
                              (count))]])))]
      [:h3 "All email"]
      [:div.emails
-      [:div (->> users
-                 (map :email)
-                 (s/join ", "))]
-      [:div (->> users
-                 (map (fn [{username :name email :email}] (str username " <" email ">" )))
-                 (s/join ", "))]]]))
+      (let [emails (->> users
+                        (map :email)
+                        (s/join ", "))]
+        [:div 
+         [:div emails] 
+         [:input {:type "button"
+                  :value "Copy"
+                  :on {:click [[:util/copy-to-clipboard emails]]}}]])
+      (let [emails (->> users
+                        (map (fn [{username :name email :email}] (str username " <" email ">" )))
+                        (s/join ", "))]
+        [:div 
+         [:div emails]
+         [:input {:type "button"
+                  :value "Copy"
+                  :on {:click [[:util/copy-to-clipboard emails]]}}]])]]))
 
 (defn- render-comment [{comment-text :comment id :name}]
   [:section.comment

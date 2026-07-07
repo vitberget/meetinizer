@@ -75,6 +75,8 @@
                                (enrich-action-from-state @state-atom))
           [action-name & args] enriched-action]
       (condp = action-name
+        :util/copy-to-clipboard (.writeText js/navigator.clipboard (first args))
+
         :db/assoc (apply swap! state-atom assoc args)
         :db/dissoc (apply swap! state-atom dissoc args)
 
