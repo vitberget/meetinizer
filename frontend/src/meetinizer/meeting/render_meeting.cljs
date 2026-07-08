@@ -95,9 +95,9 @@
                         {:class (if is-active ["vote" "active"] ["vote"])} 
                         (if is-active "✓" "✗")]]))))])]))
 
-(defn render-actually [_ {meeting-name :name :as meeting} my-user]
+(defn render-actually [_ {meeting-name :name meeting-title :title :as meeting} my-user]
   [:main.meet.meeting 
-   [:h1 meeting-name]
+   [:h1 (or meeting-title meeting-name)]
    [:div.hidden-lifetime {:replicant/on-mount [[:meeting/monitor-meeting :start meeting-name]]}]
    (when-let [comment-text (:comment meeting)]
      [:div.comment (as-> comment-text $
@@ -112,6 +112,4 @@
 
 (comment
   @state-atom
-  "fd"
-
   )

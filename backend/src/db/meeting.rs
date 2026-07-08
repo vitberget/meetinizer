@@ -31,7 +31,7 @@ pub struct MeetingDB {
 impl MeetingDB {
     fn insert_meeting(&self, meeting: &Meeting) -> anyhow::Result<()> {
         get_meeting_connection()?.execute(
-            "INSERT INTO meetings (name, uuid, version, json) VALUES (:name, :uuid, :version, :json)", 
+            "INSERT INTO meetings (name, json) VALUES (:name, :json)", 
             named_params! {
                 ":name": meeting.get_name(),
                 ":json": json!(&meeting).to_string()

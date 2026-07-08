@@ -47,6 +47,7 @@ pub struct Vote {
 #[derive(Clone, Debug, Serialize, Deserialize, ToSchema)]
 pub struct Meeting {
     name: String,
+    title: Option<String>,
     comment: String,
     #[serde(default)]
     locked: bool,
@@ -61,6 +62,7 @@ impl Meeting {
     pub fn new(name: &str) -> Self {
         Self {
             name: name.to_string(),
+            title: None,
             comment: "".to_string(),
             locked: false,
             slots: HashSet::new(),
@@ -160,6 +162,7 @@ impl Meeting {
 
         Self {
             name: self.name.clone(),
+            title: self.title.clone(),
             comment: self.comment.clone(),
             locked: self.locked,
             slots: self.slots.clone(),
