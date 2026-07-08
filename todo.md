@@ -19,7 +19,7 @@
     - [ ] Remake db
     - [ ] Rename name to id or whatever
     - [x] Remove revision and uuid
-    - [ ] Add title
+    - [x] Add title
     - [ ] Delete me/user
         - [x] Backend DB
         - [ ] Block email/domain
