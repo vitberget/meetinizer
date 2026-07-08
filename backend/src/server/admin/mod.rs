@@ -208,7 +208,33 @@ pub async fn api_admin_lock(
                     Err(StatusCode::INTERNAL_SERVER_ERROR)
                 }
             }
+        }
+    }
+}
 
+pub async fn api_admin_title(
+    Path(id): Path<String>,
+    cookies: CookieJar,
+    title: String
+) -> Result<Json<Meeting>, StatusCode> {
+    match AdminClaims::get_and_validate(&cookies) {
+        Err(error) => {
+            warn!("error getting admin claims {error}");
+            Err(StatusCode::FORBIDDEN)
+        }
+        Ok(_) => {
+            let arc = Arc::clone(&MEETING_DB);
+            let meeting_db = arc.lock().await;
+            match meeting_db.update_title(&id, title.clone()) {
+                Ok(meeting) => {
+                    info!("admin set title to {title} for {id}");
+                    Ok(Json(meeting))
+                }
+                Err(error) => {
+                    warn!("admin failed to set title to {title} for {id}: {error}");
+                    Err(StatusCode::INTERNAL_SERVER_ERROR)
+                }
+            }
         }
     }
 }

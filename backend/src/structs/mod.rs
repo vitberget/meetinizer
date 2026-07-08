@@ -81,6 +81,14 @@ impl Meeting {
     pub fn is_locked(&self) -> bool { self.locked }
     pub fn set_locked(&mut self, locked: bool) { self.locked = locked; }
 
+    pub fn set_title(&mut self, title: String) { 
+        if title.trim().is_empty() {
+            self.title = None;
+        } else {
+            self.title = Some(title);
+        }
+    }
+
     pub fn add_user(&mut self, user: User) -> anyhow::Result<()> { 
         if self.users.iter().any(|u| u.name == user.name || u.email == user.email) {
             bail!("Conflicting user name and/or email");

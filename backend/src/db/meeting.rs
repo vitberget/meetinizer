@@ -142,6 +142,13 @@ impl MeetingDB {
         self.insert_meeting(&meeting)?;
         Ok(meeting)
     }
+
+    pub fn update_title(&self, meeting_name: &str, title: String) -> anyhow::Result<Meeting> {
+        let mut meeting = self.get_meeting_by_name(meeting_name)?;
+        meeting.set_title(title);
+        self.insert_meeting(&meeting)?;
+        Ok(meeting)
+    }
 }
 
 #[cfg(test)]

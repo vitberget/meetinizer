@@ -134,6 +134,16 @@
                   :value "Copy"
                   :on {:click [[:util/copy-to-clipboard emails]]}}]])]]))
 
+(defn- render-title [{title-text :title id :name}]
+  [:section.title
+   [:h2 "Title"]
+   [:input {:type "text"
+            :value title-text
+            :on {:input [[:db/assoc :admin/title :event/target.value]]}}]
+   [:input {:type "button"
+            :value "Update title"
+            :on {:click [[:admin/update-title id [:db/get :admin/title]]]}}]])
+
 (defn- render-comment [{comment-text :comment id :name}]
   [:section.comment
    [:h2 "Comment"]
@@ -166,6 +176,7 @@
             :type "button"
             :value "Back to list"
             :on {:click [[:db/dissoc :admin/selected-meeting]]}}]
+   (render-title meeting)
    (render-comment meeting)
    (render-lock meeting)
    (render-slots meeting)

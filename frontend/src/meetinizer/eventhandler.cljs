@@ -100,6 +100,7 @@
         :admin/monitor-meeting (apply do-admin-monitor-meeting args)
         :admin/create-meeting (apply af/create-meeting args)
         :admin/update-comment (apply af/update-comment args)
+        :admin/update-title (apply af/update-title args)
 
         )))
   ; (main-thing el @state-atom)

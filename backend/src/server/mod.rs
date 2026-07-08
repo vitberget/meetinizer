@@ -5,7 +5,7 @@ use tracing::{Level, info};
 
 use crate::config::get_bind;
 use crate::db::init::init_meeting;
-use crate::server::admin::{api_admin_add_slot, api_admin_create_meeting, api_admin_deselect, api_admin_get_meeting, api_admin_list_meetings, api_admin_lock, api_admin_login, api_admin_logout, api_admin_rm_slot, api_admin_select, api_admin_update_comment, sse_admin_all_meetings, sse_admin_meeting};
+use crate::server::admin::{api_admin_add_slot, api_admin_create_meeting, api_admin_deselect, api_admin_get_meeting, api_admin_list_meetings, api_admin_lock, api_admin_login, api_admin_logout, api_admin_rm_slot, api_admin_select, api_admin_title, api_admin_update_comment, sse_admin_all_meetings, sse_admin_meeting};
 use crate::server::meeting::login::{api_attempt_login, api_logout, api_request_login};
 use crate::server::meeting::{get_meeting, get_whoami, post_register_name, post_vote_add, post_vote_rm, sse_meeting};
 
@@ -31,6 +31,7 @@ pub async fn start_server() -> anyhow::Result<()> {
         .route("/api/admin/meeting/{id}/slot/add", post(api_admin_add_slot))
         .route("/api/admin/meeting/{id}/slot/rm", post(api_admin_rm_slot))
         .route("/api/admin/meeting/{id}/lock", post(api_admin_lock))
+        .route("/api/admin/meeting/{id}/title", post(api_admin_title))
         .route("/api/admin/meeting/{id}/select", post(api_admin_select).delete(api_admin_deselect))
         .route("/api/admin/meetings/sse", get(sse_admin_all_meetings))
         .route("/api/admin/meetings/list", get(api_admin_list_meetings))

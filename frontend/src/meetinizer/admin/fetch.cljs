@@ -53,6 +53,12 @@
                           :body comment-text}))
       (.then (fn [the-result] (update-meeting-state id the-result)))))
 
+(defn update-title [id title-text]
+  (-> (js/fetch (str "/api/admin/meeting/" id "/title")
+                (clj->js {:method "POST"
+                          :body title-text}))
+      (.then (fn [the-result] (update-meeting-state id the-result)))))
+
 (defn rm-slot [id slot]
   (-> (js/fetch (str "/api/admin/meeting/" id "/slot/rm")
                 (clj->js {:method "POST"
