@@ -20,7 +20,7 @@ pub async fn main() -> anyhow::Result<()> {
         CliCommands::GenerateAdminHash => generate_admin_hash(),
         CliCommands::PrintDefaultConfig => todo!(),
         CliCommands::PrintDefaultLogConfig => todo!(),
-        CliCommands::TestEmail { email_address } => test_email(&email_address).await,
+        CliCommands::TestEmail { email_recipient } => test_email(&email_recipient).await,
         CliCommands::Completion { shell } => Cli::print_completions(shell)
     }
 

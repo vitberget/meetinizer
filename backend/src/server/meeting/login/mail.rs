@@ -46,8 +46,8 @@ pub async fn mail_link(email: &str, meeting: &str, login_url: &str) -> anyhow::R
     Ok(())
 }
 
-pub async fn test_email(email: &str) {
-    match mail_link(email, "TestEmail", "https://www.example.com/not/a/valid/login/link").await {
+pub async fn test_email(email_recipient: &str) {
+    match mail_link(email_recipient, "TestEmail", "https://www.example.com/not/a/valid/login/link").await {
         Ok(_) => {
             println!("Mail sent successfully, please check your inbox.");
         }

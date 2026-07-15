@@ -19,7 +19,7 @@ pub enum CliCommands {
     GenerateAdminHash,
 
     /// Test email delivery
-    TestEmail { email_address: String },
+    TestEmail { email_recipient: String },
 
     /// Print the default configuration to std out
     PrintDefaultConfig,
