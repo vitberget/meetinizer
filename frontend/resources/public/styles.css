@@ -275,6 +275,13 @@ main {
                 display: inline-block;
             }
         }
+        input[type=button] {
+            padding: 0 0.4em;
+            min-width: 5ch;
+        }
+        input, textarea {
+            font-size: 1.0em;
+        }
         &.meeting {
             div.slots {
                 display: inline-flex;
@@ -394,4 +401,8 @@ main {
             }
         }
     }
+}
+
+.no-route {
+    text-align: center;
 }

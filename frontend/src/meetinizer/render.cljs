@@ -7,7 +7,7 @@
 
 (defn status-404 [] 
   [:main.no-route
-   [:div [:h1 "404"]]
+   [:div [:h1 "404 - Not found"]]
    "In the future, there will be some helpful text here."])
 
 (defn main-thing [el state]
