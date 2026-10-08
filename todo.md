@@ -26,6 +26,7 @@
         - [ ] Admin view
         - [ ] Meeting view
     - [ ] Mail ICS meeting
+    - [ ] In the admin page, link to meet/blabla 
 - [ ] Make homepage
     - [x] Buy DNS
     - [ ] Static generator thignie
